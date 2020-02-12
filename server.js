@@ -1,8 +1,9 @@
 const express = require('express')
 const app = express()
-const mongoose = require('mongoose')
+var mongoose = require('mongoose')
 const cors = require('cors')
 const admin = require('./routes/api/admin')
+const university=require('./routes/api/university')
 
 
 
@@ -11,17 +12,21 @@ const db = require('./config/keys').mongoURI
 const dotenv=require('dotenv')
 dotenv.config()
 
-// Connect to mongo
-//as
+
+
 mongoose
-  .connect(db)
+  .connect(db,{useNewUrlParser:true,useUnifiedTopology:true})
   .then(() => console.log('Connected to MongoDB'))
-  .catch(err => console.log(err))
+  .catch(err => console.log(err)),
+  // mongoose.set('useUnifiedTopology', true);
+  // mongoose.set('useNewUrlParser', true);
+  // mongoose.set('useCreateIndex', true);
+  // mongoose.set('useFindAndModify', false);
 
 
-mongoose.set('useFindAndModify', false);
-mongoose.set('useNewUrlParser', true);
-mongoose.set('useUnifiedTopology', true);
+
+
+
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 
@@ -38,7 +43,7 @@ app.use(express.urlencoded({ extended: false }))
 
 
   app.use('/api/admin', admin)
-
+  app.use('/api/university',university)
 
   app.use((req, res) => {
     res.status(404).send({ err: 'We can not find what you are looking for' })
