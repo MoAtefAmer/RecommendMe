@@ -92,8 +92,6 @@ router.post("/adminLogin", async (req, res) => {
         .send({ auth: false, msg: "Incorrect email or password" });
     }
 
-
-    
     var token = jwt.sign({ id: admin._id }, config.secret, {
       expiresIn: 86400
     });
@@ -134,5 +132,8 @@ router.delete("/deleteDoctor", async (req, res) => {
     res.json({ msg: "Doctor account deleted Successfully" });
   });
 });
+
+
+
 
 module.exports = router;
