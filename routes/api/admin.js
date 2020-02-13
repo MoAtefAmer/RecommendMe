@@ -91,6 +91,9 @@ router.post("/adminLogin", async (req, res) => {
         .status(401)
         .send({ auth: false, msg: "Incorrect email or password" });
     }
+
+
+    
     var token = jwt.sign({ id: admin._id }, config.secret, {
       expiresIn: 86400
     });
