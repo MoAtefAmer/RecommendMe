@@ -13,8 +13,8 @@ module.exports = {
   },
   createValidation: request => {
     const createSchema = {
-      email: Joi.string(),
-      password: Joi.string().min(8).max(30)
+      email: Joi.string().required(),
+      password: Joi.string().required().min(8).max(30)
     }
 
     return Joi.validate(request, createSchema)

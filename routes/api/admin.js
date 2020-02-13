@@ -4,11 +4,11 @@ var jwt = require("jsonwebtoken");
 const router = express.Router();
 var config = require("../../config/jwt");
 const Admin = require("../../models/Admin");
+const Doctor= require("../../models/Doctor")
 
 const validator = require("../../validations/AdminValidations");
 //var emailCheck = require("email-check");
 //var verifier = require("email-exist");
-
 
 //Create Admin account
 router.post("/createAdmin", async (req, res) => {
@@ -98,13 +98,41 @@ router.post("/adminLogin", async (req, res) => {
   });
 });
 
+// delete a doctor's account
+router.delete("/deleteDoctor",async (req,res)=>{
+  const email=req.body
+  var stat = 0;
+  var token = req.headers["x-access-token"];
+  if (!token) {
+    return res
+      .status(401)
+      .send({ auth: false, message: "Please login first." });
+  }
+  jwt.verify(token, config.secret, async function(err, decoded) {
+    if (err) {
+      return res
+        .status(500)
+        .send({ auth: false, message: "Failed to authenticate token." });
+    }
+    stat = decoded.id;
+
+    const admin = await Admin.findById(stat)
+  if (!admin) {
+    return res.status(404).send({ error: 'Invalid Token' })
+  }
+
+ const doctor= await Doctor.findOne(email)
+ if(!doctor){
+   return res.status(404).send({error: "Account does not exist"})
+ }
+
+    await Doctor.findOneAndDelete(email)
+    res.json({ msg: 'Doctor account deleted Successfully' })
 
 
 
-
-
-
-
+  });
+})
 
 
 

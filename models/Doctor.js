@@ -19,6 +19,24 @@ const DoctorSchema = new Schema({
        type:String,
        required:true
    },
+   mastersTitle:{
+     type:String,
+     required:false,
+     default:null
+   },
+   phdTitle:{
+     type:String,
+     required:false,
+     default:null
+   },
+   currentJob:{
+     type:String,
+     required:true
+   },
+   researchPaperslink:{
+     type:Array,
+     required:false
+   }
    
   
   })
