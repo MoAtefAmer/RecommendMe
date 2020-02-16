@@ -6,6 +6,7 @@ var config = require("../../config/jwt");
 const Doctor = require("../../models/Doctor");
 const validator = require("../../validations/DoctorValidations");
 
+
 //Doctor Signup
 router.post("/docSignup", async (req, res) => {
   const {

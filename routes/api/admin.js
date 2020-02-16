@@ -5,6 +5,7 @@ const router = express.Router();
 var config = require("../../config/jwt");
 const Admin = require("../../models/Admin");
 const Doctor = require("../../models/Doctor");
+const University = require("../../models/University");
 
 const validator = require("../../validations/AdminValidations");
 //var emailCheck = require("email-check");
@@ -133,7 +134,75 @@ router.delete("/deleteDoctor", async (req, res) => {
   });
 });
 
+// delete a University account
+router.delete("/deleteUniversity", async (req, res) => {
+  const email = req.body;
+  var stat = 0;
+  var token = req.headers["x-access-token"];
+  if (!token) {
+    return res
+      .status(401)
+      .send({ auth: false, message: "Please login first." });
+  }
+  jwt.verify(token, config.secret, async function(err, decoded) {
+    if (err) {
+      return res
+        .status(500)
+        .send({ auth: false, message: "Failed to authenticate token." });
+    }
+    stat = decoded.id;
 
+    const admin = await Admin.findById(stat);
+    if (!admin) {
+      return res.status(404).send({ error: "Invalid Token" });
+    }
 
+    const university = await University.findOne(email);
+    if (!university) {
+      return res.status(404).send({ error: "Account does not exist" });
+    }
+
+    await University.findOneAndDelete(email);
+
+    res.json({ msg: "University account deleted Successfully" });
+  });
+});
+
+// edit a doctor's account
+router.put("/editDoctor/:email", async (req, res) => {
+  const email= req.params;
+
+  var stat = 0;
+  var token = req.headers["x-access-token"];
+  if (!token) {
+    return res
+      .status(401)
+      .send({ auth: false, message: "Please login first." });
+  }
+  jwt.verify(token, config.secret, async function(err, decoded) {
+    if (err) {
+      return res
+        .status(500)
+        .send({ auth: false, message: "Failed to authenticate token." });
+    }
+    stat = decoded.id;
+
+    const admin = await Admin.findById(stat);
+    if (!admin) {
+      return res.status(404).send({ error: "Invalid Token" });
+    }
+    
+    const doctor = await Doctor.findOne(email);
+    if (!doctor) {
+      return res.status(404).send({ error: "Account does not exist" });
+    }
+
+    await Doctor.findOneAndUpdate(email, 
+     req.body
+    );
+
+    res.json({ msg: "Doctor account edited Successfully" });
+  });
+});
 
 module.exports = router;
