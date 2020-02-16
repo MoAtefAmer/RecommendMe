@@ -36,6 +36,10 @@ const DoctorSchema = new Schema({
    researchPaperslink:{
      type:Array,
      required:false
+   },
+   contactInfo:{
+     type:String,
+     required:false
    }
    
   

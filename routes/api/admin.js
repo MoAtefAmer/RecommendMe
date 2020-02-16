@@ -96,7 +96,7 @@ router.post("/adminLogin", async (req, res) => {
     var token = jwt.sign({ id: admin._id }, config.secret, {
       expiresIn: 86400
     });
-    res.status(200).send({ auth: true, token: token, id: admin._id });
+    res.status(200).send({ auth: true, token: token, id: admin._id, email:admin.email });
   });
 });
 
@@ -168,7 +168,7 @@ router.delete("/deleteUniversity", async (req, res) => {
   });
 });
 
-// edit a doctor's account
+// edit a doctor's account by email
 router.put("/editDoctor/:email", async (req, res) => {
   const email= req.params;
 
@@ -204,5 +204,46 @@ router.put("/editDoctor/:email", async (req, res) => {
     res.json({ msg: "Doctor account edited Successfully" });
   });
 });
+
+// edit a University account by email
+router.put("/editUniversity/:uemail", async (req, res) => {
+  const uemail = req.params;
+  var stat = 0;
+  var token = req.headers["x-access-token"];
+  if (!token) {
+    return res
+      .status(401)
+      .send({ auth: false, message: "Please login first." });
+  }
+  jwt.verify(token, config.secret, async function(err, decoded) {
+    if (err) {
+      return res
+        .status(500)
+        .send({ auth: false, message: "Failed to authenticate token." });
+    }
+    stat = decoded.id;
+
+    const admin = await Admin.findById(stat);
+    if (!admin) {
+      return res.status(404).send({ error: "Invalid Token" });
+    }
+
+    const university = await University.findOne(uemail);
+    if (!university) {
+      return res.status(404).send({ error: "Account does not exist" });
+    }
+
+    await University.findOneAndUpdate(uemail, 
+      req.body
+     );
+
+    res.json({ msg: "University account edited Successfully" });
+  });
+});
+
+
+
+
+
 
 module.exports = router;

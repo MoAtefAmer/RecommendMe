@@ -12,7 +12,8 @@ module.exports = {
         currentJob:Joi.string(),
         mastersTitle: Joi.string(),
         phdTitle: Joi.string(),
-        researchPaperslink:Joi.string()
+        researchPaperslink:Joi.string(),
+        contactInfo:Joi.string()
     
     }
     return Joi.validate(request, updateSchema)
@@ -26,7 +27,8 @@ module.exports = {
       currentJob:Joi.string().required(),
       mastersTitle: Joi.string(),
       phdTitle: Joi.string(),
-      researchPaperslink:Joi.string()
+      researchPaperslink:Joi.string(),
+      contactInfo:Joi.string()
     }
 
     return Joi.validate(request, createSchema)
