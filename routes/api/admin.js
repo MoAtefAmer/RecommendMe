@@ -9,27 +9,16 @@ const University = require("../../models/University");
 
 const validator = require("../../validations/AdminValidations");
 //var emailCheck = require("email-check");
-//var verifier = require("email-exist");
+
+const Verifier = require("email-verifier");
 
 //Create Admin account
 router.post("/createAdmin", async (req, res) => {
   const { email, password } = req.body;
 
   const isValidated = validator.createValidation(req.body);
-  // var realEmail=undefined;
-  // verifier.verify( email, function( err, info ){
-  //   if( err ) {
-  //     console.log(err);
 
-  //   }else{
-  //     console.log( "Success: " + info.success );
-  //      console.log( "Info: " + info.info );
-  //    //  console.log( "Response from smtp: " + info.response );
-  //     realEmail=info.success
-  //   }
-  // });
-
-  //  if(realEmail){
+ 
   const admin = await Admin.findOne({ email });
   if (admin) return res.status(400).json({ error: "Email already exists" });
   if (isValidated.error) {
@@ -43,7 +32,7 @@ router.post("/createAdmin", async (req, res) => {
     password: hashedPassword
   });
 
-  const createAdmin = await Admin.create(newAdmin);
+  await Admin.create(newAdmin);
   token = jwt.sign({ id: newAdmin._id }, config.secret, {
     expiresIn: 86400 // expires in 24 hours
   });
@@ -55,12 +44,6 @@ router.post("/createAdmin", async (req, res) => {
   });
 
   res.json({ msg: "Admin was created successfully" });
-  //}
-  //  else{
-  //    if(!realEmail)
-  //    res.json({msg:"Email does not exist!"})
-
-  //  }
 });
 
 //Admin Login
@@ -96,7 +79,9 @@ router.post("/adminLogin", async (req, res) => {
     var token = jwt.sign({ id: admin._id }, config.secret, {
       expiresIn: 86400
     });
-    res.status(200).send({ auth: true, token: token, id: admin._id, email:admin.email });
+    res
+      .status(200)
+      .send({ auth: true, token: token, id: admin._id, email: admin.email });
   });
 });
 
@@ -170,7 +155,7 @@ router.delete("/deleteUniversity", async (req, res) => {
 
 // edit a doctor's account by email
 router.put("/editDoctor/:email", async (req, res) => {
-  const email= req.params;
+  const email = req.params;
 
   var stat = 0;
   var token = req.headers["x-access-token"];
@@ -191,15 +176,13 @@ router.put("/editDoctor/:email", async (req, res) => {
     if (!admin) {
       return res.status(404).send({ error: "Invalid Token" });
     }
-    
+
     const doctor = await Doctor.findOne(email);
     if (!doctor) {
       return res.status(404).send({ error: "Account does not exist" });
     }
 
-    await Doctor.findOneAndUpdate(email, 
-     req.body
-    );
+    await Doctor.findOneAndUpdate(email, req.body);
 
     res.json({ msg: "Doctor account edited Successfully" });
   });
@@ -233,17 +216,10 @@ router.put("/editUniversity/:uemail", async (req, res) => {
       return res.status(404).send({ error: "Account does not exist" });
     }
 
-    await University.findOneAndUpdate(uemail, 
-      req.body
-     );
+    await University.findOneAndUpdate(uemail, req.body);
 
     res.json({ msg: "University account edited Successfully" });
   });
 });
-
-
-
-
-
 
 module.exports = router;

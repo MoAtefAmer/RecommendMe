@@ -1,17 +1,16 @@
-require('dotenv').config();
+require("dotenv").config();
 const express = require("express");
 const bcrypt = require("bcryptjs");
 var jwt = require("jsonwebtoken");
 const router = express.Router();
 var config = require("../../config/jwt");
 const Doctor = require("../../models/Doctor");
+const University = require("../../models/University");
 const validator = require("../../validations/DoctorValidations");
 const mailer = require("nodemailer");
 var cors = require("cors");
 
 router.use(cors());
-
-
 
 //Doctor Signup
 router.post("/docSignup", async (req, res) => {
@@ -143,85 +142,99 @@ router.put("/editProfile", async (req, res) => {
 
 //Send recommendation
 router.post("/sendRecommendation", async (req, res) => {
-
   const receiverEmail = req.body.receiver;
   const studentEmail = req.body.studentEmail;
   const subject = req.body.subject;
   var message = req.body.message;
   var pdfLink = req.body.pdfLink;
-  const filename=req.body.filename;
+  const filename = req.body.filename;
 
-  try{
-  var stat = 0;
-  var token = req.headers["x-access-token"];
-  if (!token) {
-    return res
-      .status(401)
-      .send({ auth: false, message: "Please login first." });
-  }
-  jwt.verify(token, config.secret, async function(err, decoded) {
-    if (err) {
+  try {
+    var stat = 0;
+    var token = req.headers["x-access-token"];
+    if (!token) {
       return res
-        .status(500)
-        .send({ auth: false, message: "Failed to authenticate token." });
+        .status(401)
+        .send({ auth: false, message: "Please login first." });
     }
-    stat = decoded.id;
-
-    const doctor = await Doctor.findById(stat);
-    if (!doctor) {
-      return res.status(404).send({ error: "Invalid Token" });
-    }
-
-
-
-    const senderEmail = await doctor.email;
-
-    // message =
-    //   userEmail +
-    //   "sent you a feed back about the redeem system: " +
-    //   "\n" +
-    //   feedback;
-
-    let transporter = mailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL,
-        pass: process.env.PASSWORD
-      },
-      tls: {
-        rejectUnauthorized: false
-    }
-    });
-    console.log(pdfLink)
-const reciepients=[receiverEmail,studentEmail]
-
-    let mailOptions = {
-      from: senderEmail,
-      to:reciepients,
-      subject: subject,
-      text: message,
-      attachments: [  {   // use URL as an attachment
-      filename:"RecommendationLetter.pdf",
-        content: pdfLink,
-        contentType: 'application/pdf'
-    }],
-    };
-
-    transporter.sendMail(mailOptions, function(error, info) {
-      if (error) {
-        console.log(error);
-        return res.status(401).send({ msg: "Error while sending email" });
-      } else {
-        console.log("Email sent: " + info.response);
+    jwt.verify(token, config.secret, async function(err, decoded) {
+      if (err) {
         return res
-          .status(200)
-          .send({ msg: "recommendation email sent successfully" });
+          .status(500)
+          .send({ auth: false, message: "Failed to authenticate token." });
       }
+      stat = decoded.id;
+
+      const doctor = await Doctor.findById(stat);
+      if (!doctor) {
+        return res.status(404).send({ error: "Invalid Token" });
+      }
+
+      const senderEmail = await doctor.email;
+
+      const reciepients = [receiverEmail, studentEmail];
+
+      let transporter = mailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.EMAIL,
+          pass: process.env.PASSWORD
+        },
+        tls: {
+          rejectUnauthorized: false
+        }
+      });
+      console.log(pdfLink);
+
+      let mailOptions = {
+        from: senderEmail,
+        to: reciepients,
+        subject: subject,
+        text: message,
+        attachments: [
+          {
+            // use URL as an attachment
+            filename: "RecommendationLetter.pdf",
+            contentType: "application/pdf",
+            path: pdfLink
+          }
+        ]
+      };
+
+      transporter.sendMail(mailOptions, async function(error, info) {
+        if (error) {
+          console.log(error);
+          return res.status(401).send({ msg: "Error while sending email" });
+        } else {
+          console.log("Email sent: " + info.response);
+          const uemail = req.body.receiver;
+          let uni = await University.findOne({ uemail });
+
+          if (uni != null) {
+            let uniID = await uni._id;
+
+            await University.findByIdAndUpdate(uniID, {
+              $addToSet: {
+                notificationList: {
+                  info:
+                    "Professor " +
+                    doctor.firstName +
+                    " " +
+                    doctor.lastName +
+                    " has sent you an email"
+                }
+              }
+            });
+          }
+          return res
+            .status(200)
+            .send({ msg: "recommendation email sent successfully" });
+        }
+      });
     });
-  });
-}catch(error){
-  console.log(error)
-}
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 module.exports = router;
