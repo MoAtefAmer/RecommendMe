@@ -10,7 +10,9 @@ module.exports = {
       password: Joi.string().min(8).max(30),
       image: Joi.string(),
       websiteLink: Joi.string(),
-      contactInfo: Joi.string()
+      contactInfo: Joi.string(),
+      activated:Joi.boolean(),
+      activationToken:Joi.string().min(10)
     
     }
     return Joi.validate(request, updateSchema)
@@ -22,7 +24,9 @@ module.exports = {
       password: Joi.string().min(8).max(30).required(),
       image: Joi.string(),
       websiteLink: Joi.string().required(),
-      contactInfo: Joi.string()
+      contactInfo: Joi.string(),
+      activated:Joi.boolean(),
+      activationToken:Joi.string()
     }
 
     return Joi.validate(request, createSchema)

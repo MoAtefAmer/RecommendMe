@@ -5,6 +5,9 @@ const router = express.Router();
 var config = require("../../config/jwt");
 const University = require("../../models/University");
 const validator = require("../../validations/UniversityValidations");
+var cors = require("cors");
+
+//router.use(cors());
 
 //University Signup
 router.post("/uniSignup", async (req, res) => {

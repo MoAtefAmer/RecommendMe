@@ -11,6 +11,14 @@ const DoctorSchema = new Schema({
       type: String,
       required: true
     },
+    activated:{
+      type:Boolean,
+      default:false
+    },
+    activationToken:{
+      type:String,
+      default:null
+    },
    firstName:{
        type:String,
        required:true

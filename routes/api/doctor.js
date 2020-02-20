@@ -10,7 +10,7 @@ const validator = require("../../validations/DoctorValidations");
 const mailer = require("nodemailer");
 var cors = require("cors");
 
-router.use(cors());
+//router.use(cors());
 
 //Doctor Signup
 router.post("/docSignup", async (req, res) => {
@@ -147,7 +147,7 @@ router.post("/sendRecommendation", async (req, res) => {
   const subject = req.body.subject;
   var message = req.body.message;
   var pdfLink = req.body.pdfLink;
-  const filename = req.body.filename;
+ 
 
   try {
     var stat = 0;

@@ -13,7 +13,9 @@ module.exports = {
         mastersTitle: Joi.string(),
         phdTitle: Joi.string(),
         researchPaperslink:Joi.string(),
-        contactInfo:Joi.string()
+        contactInfo:Joi.string(),
+        activated:Joi.boolean(),
+      activationToken:Joi.string().min(10)
     
     }
     return Joi.validate(request, updateSchema)
@@ -28,7 +30,9 @@ module.exports = {
       mastersTitle: Joi.string(),
       phdTitle: Joi.string(),
       researchPaperslink:Joi.string(),
-      contactInfo:Joi.string()
+      contactInfo:Joi.string(),
+      activated:Joi.boolean(),
+      activationToken:Joi.string()
     }
 
     return Joi.validate(request, createSchema)

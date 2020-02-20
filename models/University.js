@@ -23,16 +23,13 @@ const UniversitySchema = new Schema({
         type:String,
         required:true
     },
-    notificationList:{
-       type:[{
-           info:String,
-           required:false,
-           read:{
-               type:Boolean,
-               default:false,
-           required:false
-           }
-        }]
+    activated:{
+      type:Boolean,
+      default:false
+    },
+    activationToken:{
+      type:String,
+      default:null
     },
     contactInfo:{
       type:String,

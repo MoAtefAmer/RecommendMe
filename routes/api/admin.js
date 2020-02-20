@@ -6,6 +6,9 @@ var config = require("../../config/jwt");
 const Admin = require("../../models/Admin");
 const Doctor = require("../../models/Doctor");
 const University = require("../../models/University");
+var cors = require("cors");
+
+//router.use(cors());
 
 const validator = require("../../validations/AdminValidations");
 //var emailCheck = require("email-check");

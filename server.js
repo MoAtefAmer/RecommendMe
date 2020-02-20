@@ -5,6 +5,8 @@ const cors = require('cors')
 const admin = require('./routes/api/admin')
 const university=require('./routes/api/university')
 const doctor=require('./routes/api/doctor')
+const student=require('./routes/api/student')
+
 
 
 // DB Config
@@ -45,6 +47,8 @@ app.use(express.urlencoded({ extended: false }))
   app.use('/api/admin', admin)
   app.use('/api/university',university)
   app.use('/api/doctor',doctor)
+  app.use('/api/student',student)
+
 
   app.use((req, res) => {
     res.status(404).send({ err: 'We can not find what you are looking for' })
