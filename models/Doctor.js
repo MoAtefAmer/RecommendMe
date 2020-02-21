@@ -21,11 +21,11 @@ const DoctorSchema = new Schema({
     },
    firstName:{
        type:String,
-       required:true
+       required:false
    },
    lastName:{
        type:String,
-       required:true
+       required:false
    },
    mastersTitle:{
      type:String,
@@ -39,7 +39,7 @@ const DoctorSchema = new Schema({
    },
    currentJob:{
      type:String,
-     required:true
+     required:false
    },
    researchPaperslink:{
      type:Array,

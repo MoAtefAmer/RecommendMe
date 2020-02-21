@@ -5,9 +5,10 @@ const router = express.Router();
 var config = require("../../config/jwt");
 const University = require("../../models/University");
 const validator = require("../../validations/UniversityValidations");
+const mailer = require("nodemailer");
 var cors = require("cors");
 
-//router.use(cors());
+router.use(cors());
 
 //University Signup
 router.post("/uniSignup", async (req, res) => {
@@ -29,22 +30,67 @@ router.post("/uniSignup", async (req, res) => {
     websiteLink: websiteLink,
     Name: Name,
     image: image,
-    contactInfo: contactInfo
+    contactInfo: contactInfo,
+    activated:false
   });
 
-  const createUni = await University.create(newuni);
-  token = jwt.sign({ id: newuni._id }, config.secret, {
-    expiresIn: 86400 // expires in 24 hours
+  const createUniversity = await University.create(newuni);
+  const token = await jwt.sign({ id: newuni._id }, config.secret, {}); ///////
+  //console.log(createStudent);
+  await University.findByIdAndUpdate(createUniversity._id, {
+    "activationToken": token
   });
+  let transporter = mailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL,
+      pass: process.env.PASSWORD
+    },
+    tls: {
+      rejectUnauthorized: false
+    }
+  });
+  const url = `http://localhost:3000/api/university/activateAccount/` + token;
+
+  let mailOptions = {
+    from: '"RecommendMe" <recommendationsystemmailer@gmail.com>',
+    to: Name + "" + "" + "<" + uemail + ">",
+    subject: "Account activation email",
+    html: `Thank you for signing up with Recommend me. <br/> Please click here to activate your account: <a href="${url}">Activate Account</a>`
+  };
+  transporter.sendMail(mailOptions, function(error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log("Email sent: " + info.response);
+    }
+  });
+
   res.status(200).send({
     auth: true,
-    msg: "University account was created successfully",
-    token: token,
-    data: newuni
+    msg: "Account created! Please activate your account through your email",
+   
   });
 
-  res.json();
 });
+
+
+// Account activation 
+router.get("/activateAccount/:activationToken", async (req, res) => {
+  const activationToken = req.params.activationToken;
+
+  const university = await University.findOne({ "activationToken": activationToken });
+  if (university) {
+    await University.findByIdAndUpdate(university._id, {
+      "activated": true,
+      "activationToken": null
+    });
+    res.status(200).redirect("https://google.com");
+  } else {
+    res.status(400).send({ msg: "Link Expired" });
+  }
+});
+
 
 //University Login
 router.post("/uniLogin", async (req, res) => {
@@ -75,10 +121,14 @@ router.post("/uniLogin", async (req, res) => {
         .status(401)
         .send({ auth: false, msg: "Incorrect email or password" });
     }
-    var token = jwt.sign({ id: uni._id }, config.secret, {
-      expiresIn: 86400
-    });
-    res.status(200).send({ auth: true, token: token, id: uni._id });
+    if (!uni.activated) {
+      res.status(400).send({ msg: "Please activate your account" });
+    } else {
+      var token = jwt.sign({ id: uni._id }, config.secret, {
+        expiresIn: 86400
+      });
+      res.status(200).send({ auth: true, token: token, id: uni._id });
+    }
   });
 });
 

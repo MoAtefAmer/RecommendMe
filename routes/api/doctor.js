@@ -10,7 +10,7 @@ const validator = require("../../validations/DoctorValidations");
 const mailer = require("nodemailer");
 var cors = require("cors");
 
-//router.use(cors());
+router.use(cors());
 
 //Doctor Signup
 router.post("/docSignup", async (req, res) => {
@@ -35,7 +35,7 @@ router.post("/docSignup", async (req, res) => {
       .send({ error: isValidated.error.details[0].message });
   }
   const hashedPassword = bcrypt.hashSync(password, 10);
-  const newDoc = new Doctor({
+  const newdoc = new Doctor({
     email: email,
     password: hashedPassword,
     firstName: firstName,
@@ -46,15 +46,42 @@ router.post("/docSignup", async (req, res) => {
     researchPaperslink: researchPaperslink
   });
 
-  const createDoc = await Doctor.create(newDoc);
-  token = jwt.sign({ id: newDoc._id }, config.secret, {
-    expiresIn: 86400 // expires in 24 hours
+  const createDoctor = await Doctor.create(newdoc);
+  const token = await jwt.sign({ id: newdoc._id }, config.secret, {}); ///////
+  //console.log(createStudent);
+  await Doctor.findByIdAndUpdate(createDoctor._id, {
+    activationToken: token
   });
+  let transporter = mailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL,
+      pass: process.env.PASSWORD
+    },
+    tls: {
+      rejectUnauthorized: false
+    }
+  });
+  const url = `http://localhost:3000/api/doctor/activateAccount/` + token;
+
+  let mailOptions = {
+    from: '"RecommendMe" <recommendationsystemmailer@gmail.com>',
+    to: firstName + " "+lastName+ + " " + "<" + email + ">",
+    subject: "Account activation email",
+    html: `Thank you for signing up with Recommend me. <br/> Please click here to activate your account: <a href="${url}">Activate Account</a>`
+  };
+  transporter.sendMail(mailOptions, function(error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log("Email sent: " + info.response);
+    }
+  });
+
   res.status(200).send({
     auth: true,
-    msg: "Doctor account was created successfully",
-    token: token,
-    data: newDoc
+    msg: "Account created! Please activate your account through your email",
+
   });
 
   res.json();
@@ -89,11 +116,34 @@ router.post("/docLogin", async (req, res) => {
         .status(401)
         .send({ auth: false, msg: "Incorrect email or password" });
     }
-    var token = jwt.sign({ id: doc._id }, config.secret, {
-      expiresIn: 86400
-    });
-    res.status(200).send({ auth: true, token: token, id: doc._id });
+    if (!doc.activated) {
+      res.status(400).send({ msg: "Please activate your account" });
+    } else {
+      var token = jwt.sign({ id: doc._id }, config.secret, {
+        expiresIn: 86400
+      });
+      res.status(200).send({ auth: true, token: token, id: doc._id });
+    }
   });
+});
+
+
+//Delete account
+router.get("/deleteAccount/:activationToken", async (req, res) => {
+  const activationToken = req.params.activationToken;
+
+  const doctor = await Doctor.findOne({ "activationToken": activationToken });
+  if (doctor) {
+    await Doctor.findByIdAndDelete(doctor._id, {
+      activated: true,
+      activationToken: null
+    
+    });
+    return res.status(200).send({msg:"Account deleted!"})
+  }else{
+    return res.status(400).send({msg:"Link expired!"})
+  }
+
 });
 
 //Get Doctor's Info (Profile)
@@ -140,6 +190,22 @@ router.put("/editProfile", async (req, res) => {
   }
 });
 
+// Account activation 
+router.get("/activateAccount/:activationToken", async (req, res) => {
+  const activationToken = req.params.activationToken;
+
+  const doctor = await Doctor.findOne({ "activationToken": activationToken });
+  if (doctor) {
+    await Doctor.findByIdAndUpdate(doctor._id, {
+      "activated": true,
+      "activationToken": null
+    });
+    res.status(200).redirect("https://google.com");
+  } else {
+    res.status(400).send({ msg: "Link Expired" });
+  }
+});
+
 //Send recommendation
 router.post("/sendRecommendation", async (req, res) => {
   const receiverEmail = req.body.receiver;
@@ -147,7 +213,6 @@ router.post("/sendRecommendation", async (req, res) => {
   const subject = req.body.subject;
   var message = req.body.message;
   var pdfLink = req.body.pdfLink;
- 
 
   try {
     var stat = 0;

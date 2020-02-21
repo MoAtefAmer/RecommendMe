@@ -22,11 +22,11 @@ module.exports = {
   },
   createValidation: request => {
     const createSchema = {
-    firstName:Joi.string().required(),
+    firstName:Joi.string(),
       email: Joi.string().required(),
       password: Joi.string().min(8).max(30).required(),
-      lastName: Joi.string().required(),
-      currentJob:Joi.string().required(),
+      lastName: Joi.string(),
+      currentJob:Joi.string(),
       mastersTitle: Joi.string(),
       phdTitle: Joi.string(),
       researchPaperslink:Joi.string(),

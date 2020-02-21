@@ -12,7 +12,7 @@ const mailer = require("nodemailer");
 var randomstring = require("randomstring");
 var cors = require("cors");
 
-//router.use(cors());
+router.use(cors());
 
 //Student Signup
 router.post("/studentSignup", async (req, res) => {
@@ -74,7 +74,7 @@ router.post("/studentSignup", async (req, res) => {
     data: newstu
   });
 
-  res.json();
+ 
 });
 
 //Student activate account
@@ -126,6 +126,7 @@ router.post("/studentLogin", async (req, res) => {
 // Request Recommendation
 router.post("/requestRecommendation", async (req, res) => {
   try {
+    // const isValidated = validator.createValidation(req.body);
     var stat = 0;
     var token = req.headers["x-access-token"];
     if (!token) {
@@ -146,11 +147,11 @@ router.post("/requestRecommendation", async (req, res) => {
         return res.status(404).send({ error: "Invalid Token" });
       }
 
-      if (isValidated.error) {
-        return res
-          .status(400)
-          .send({ error: isValidated.error.details[0].message });
-      }
+      // if (isValidated.error) {
+      //   return res
+      //     .status(400)
+      //     .send({ error: isValidated.error.details[0].message });
+      // }
       await Student.findByIdAndUpdate(stat, {
         $addToSet: {
           recommendersEmails: {
@@ -169,58 +170,95 @@ router.post("/requestRecommendation", async (req, res) => {
           rejectUnauthorized: false
         }
       });
-      const url2 = `https://google.com`
-      const isValidated = validator.createValidation(req.body);
-      const email= student.recommendersEmails.remail
-      const sName=student.Name
-      const sEmail=student.email
+      const url2 = `https://google.com`;
+
+      const email = req.body.remail;
+      const sName = student.Name;
+      const sEmail = student.email;
       const doc = await Doctor.findOne({ email: email });
-      if (doc){
+      if (doc) {
         let mailOptions = {
-            from: '"RecommendMe" <recommendationsystemmailer@gmail.com>',
-            to:  "" + "" + "<" + email + ">",
-            subject:sName +"is requesting your recommendation",
-            html: "A Student is requesting your recommendation, StudentEmail:"+sEmail+", UniversityEmail: "+email+`<a href="${url2}">${url2}</a>`          };
+          from: '"RecommendMe" <recommendationsystemmailer@gmail.com>',
+          to: "" + "" + "<" + email + ">",
+          subject: sName + " is requesting your recommendation",
+          html:
+            "A Student is requesting your recommendation, Student Email: " +
+            sEmail +
+            ", University Email: " +
+            email +
+            " to launch the website, click here:  " +
+            `<a href="${url2}">${url2}</a>`
+        };
 
-            transporter.sendMail(mailOptions, function(error, info) {
-                if (error) {
-                  console.log(error);
-                } else {
-                  console.log("Email sent: " + info.response);
-                }
-              });
+        transporter.sendMail(mailOptions, function(error, info) {
+          if (error) {
+            console.log(error);
+          } else {
+            console.log("Email sent: " + info.response);
+          }
+        });
 
+        return res.status(400).json({ msg: "Email Sent!" });
+      } else {
+        const password = randomstring.generate({
+          length: 8
+        });
 
-        return res.status(400).json({ error: "Email Sent!" });
-      } else{
-   
-      const password=randomstring.generate({
-        length: 30,
-      });
-      const hashedPassword = bcrypt.hashSync(password, 10);
-      const newdoc = new Doctor({
-        email: email,
-        password: hashedPassword,
-        activated: false,
-      });
-    
-      const createDoctor = await Doctor.create(newdoc);
-      const token = await jwt.sign({ id: newdoc._id }, config.secret, {}); ///////
-      //console.log(createStudent);
-      await Doctor.findByIdAndUpdate(createDoctor._id, {
-        activationToken: token
-      });
-      const url = `http://localhost:3000/api/doctor/activateAccountStudent/` + token;
+        const hashedPassword = bcrypt.hashSync(password, 10);
+        const newdoc = new Doctor({
+          email: email,
+          password: hashedPassword,
+          activated: false,
+          currentJob:"",
+          contactInfo:"",
+          firstName:"",
+          lastName:""
+        });
 
-     //////Atef
-      let mailOptions = {
-        from: '"RecommendMe" <recommendationsystemmailer@gmail.com>',
-        to: Name + "" + "" + "<" + email + ">",
-        subject: "",
-        html: `Thank you for signing up with Recommend me,Please click here to activate your account: <a href="${url}">Activate Account</a>`
-      };
-
-    }
+        const createDoctor = await Doctor.create(newdoc, err => {
+          if (err) {
+            return res.status(401).send({ msg: "Server error" });
+          }
+        });
+        const token = await jwt.sign({ id: newdoc._id }, config.secret, {});
+        await Doctor.findByIdAndUpdate(
+          newdoc._id,
+          {
+            "activationToken": token
+          },
+          err => {
+            if (err) {
+              return res.status(401).send({ msg: "Server error" });
+            }
+          }
+        );
+        const url =
+          `http://localhost:3000/api/doctor/activateAccount/` +token;
+        const delUrl =
+          `http://localhost:3000/api/doctor/deleteAccount/` +token;
+        //////Atef
+        let mailOptions2 = {
+          from: '"RecommendMe" <recommendationsystemmailer@gmail.com>',
+          to: "" + "" + "<" + email + ">",
+          subject: sName + " is requesting your recommendation",
+          html:
+            `Welcome to RecommendMe , a platform that connects students with doctors for recommendations.<br/> 
+        Just now  ` +
+            sName +
+            ` has requested your recommendation for his application to a certain University.<br/> 
+        To do so, we created you an account on our website and here is your temporary <b>password</b>: ` +
+            password +
+            `<br/> <b>If you wish to activate your account please click here:</b> <a href="${url}">Activate Account</a> <br/> However if you wish to delete your account please click here: <a href="${delUrl}">Delete Account</a> <br/> Have a nice day!`
+        };
+        transporter.sendMail(mailOptions2, function(error, info) {
+          if (error) {
+            console.log(error);
+          } else {
+            console.log("Email sent: " + info.response);
+          }
+          return res.status(400).json({ msg: "Email2 Sent!" });
+        });
+      }
     });
   } catch (error) {
     console.log(error);
