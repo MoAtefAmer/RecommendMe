@@ -22,9 +22,9 @@ module.exports = {
     Name:Joi.string().required(),
       uemail: Joi.string().required(),
       password: Joi.string().min(8).max(30).required(),
-      image: Joi.string(),
-      websiteLink: Joi.string().required(),
-      contactInfo: Joi.string(),
+      image: Joi.string().allow(""),
+      websiteLink: Joi.string().allow(""),
+      contactInfo: Joi.string().allow(""),
       activated:Joi.boolean(),
       activationToken:Joi.string()
     }

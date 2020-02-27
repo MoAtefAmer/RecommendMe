@@ -27,10 +27,10 @@ module.exports = {
       password: Joi.string().min(8).max(30).required(),
       lastName: Joi.string(),
       currentJob:Joi.string(),
-      mastersTitle: Joi.string(),
-      phdTitle: Joi.string(),
-      researchPaperslink:Joi.string(),
-      contactInfo:Joi.string(),
+      mastersTitle: Joi.string().allow(""),
+      phdTitle: Joi.string().allow(""),
+      researchPaperslink:Joi.string().allow(""),
+      contactInfo:Joi.string().allow(""),
       activated:Joi.boolean(),
       activationToken:Joi.string()
     }

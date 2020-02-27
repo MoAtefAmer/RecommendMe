@@ -3,22 +3,19 @@ import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import TextField from "@material-ui/core/TextField";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
 import clsx from "clsx";
 import Link from "@material-ui/core/Link";
 import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
-import LockOutlinedIcon from "@material-ui/icons/School";
+import LockOutlinedIcon from "@material-ui/icons/LocationCity";
 import Typography from "@material-ui/core/Typography";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
-import Container from "@material-ui/core/Container";
-import Switch from "@material-ui/core/Switch";
-import { grey, lightBlue, green } from "@material-ui/core/colors";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import {TestContext} from "../../App"
-import MuiAlert from "@material-ui/lab/Alert";
+import { makeStyles } from "@material-ui/core/styles";
 import Snackbar from "@material-ui/core/Snackbar";
-
+import Container from "@material-ui/core/Container";
+import { grey, lightBlue, green } from "@material-ui/core/colors";
+import MuiAlert from "@material-ui/lab/Alert";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import { TestContext } from "../../App";
 
 function Copyright() {
   return (
@@ -50,7 +47,26 @@ const useStyles = makeStyles(theme => ({
   },
   paperContainer: {
     backgroundImage: `url(${Image})`
-},
+  },
+  note: {
+    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+    bottom: "10px",
+    color: "#c0c1c2",
+    display: "block",
+    fontWeight: "400",
+    fontSize: "13px",
+    lineHeight: "13px",
+    left: "0",
+    marginLeft: "20px",
+    position: "absolute",
+    width: "260px"
+  },
+  typo: {
+    paddingLeft: "25%",
+    marginBottom: "40px",
+    position: "relative",
+    width: "100%"
+  },
 
   buttonProgress: {
     color: green[500],
@@ -78,183 +94,165 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-
-const ViewSwitch = withStyles({
-  switchBase: {
-    color: grey[300],
-    "&$checked": {
-      color: green[700]
-    },
-    "&$checked + $track": {
-      backgroundColor: green[900]
-    }
-  },
-  checked: {},
-  track: {}
-})(Switch);
-
-export default function SignUp() {
+export default function UniversitySignUp() {
   const classes = useStyles();
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
+  const [Name, setName] = useState("");
+
+  const [uemail, setuEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [viewRecommendation, setViewRecommendation] = useState(false);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [image, setImage] = useState("");
+  const [websiteLink, setWebsiteLink] = useState("");
   const [open, setOpen] = React.useState(false);
+  const [contactInfo, setContactInfo] = useState("");
+  
 
   //Validations
-  const [firstNameError, setFirstNameError] = useState("");
-  const [firstNameErrorToggle, setFirstNameErrorToggle] = useState(false);
-  const [lastNameError, setLastNameError] = useState("");
-  const [lastNameErrorToggle, setLastNameErrorToggle] = useState(false);
+  const [nameError, setNameError] = useState("");
+  const [nameErrorToggle, setNameErrorToggle] = useState(false);
+
   const [emailError, setEmailError] = useState("");
   const [emailErrorToggle, setEmailErrorToggle] = useState(false);
   const [passwordError, setPasswordError] = useState("");
   const [passwordErrorToggle, setPasswordErrorToggle] = useState(false);
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
-  const [confirmPasswordErrorToggle, setConfirmPasswordErrorToggle] = useState(false);
+  const [confirmPasswordErrorToggle, setConfirmPasswordErrorToggle] = useState(
+    false
+  );
 
-//Test context
-const sss= useContext(TestContext)
-console.log(sss)
+  //Test context
+  const sss = useContext(TestContext);
+  ///console.log(sss);
 
   const buttonClassname = clsx({
     [classes.buttonSuccess]: success,
     [classes.normalForm]: !success
   });
 
-
-    //Snackbar Alert
-    function Alert(props) {
-      return <MuiAlert elevation={6} variant="filled" {...props} />;
-    }
-  
-    //Closing snackbar
-    const handleClose = (event, reason) => {
-      if (reason === "clickaway") {
-        return;
-      }
-  
-      setOpen(false);
-    };
-
   const validate = () => {
     let isError = false;
     const errors = {};
     let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
-    if (firstName.length <=0 ) {
+    if (Name.length <= 0) {
       isError = true;
-      errors.firstNameError = "Please fill in the field";
-      errors.firstNameErrorToggle=true;
-    }else{
-      setFirstNameErrorToggle(false)
-      setFirstNameError("")
+      errors.nameError = "Please fill in the field";
+      errors.nameErrorToggle = true;
+    } else {
+      setNameErrorToggle(false);
+      setNameError("");
     }
 
-    if (lastName.length <=0 ) {
+    if (!re.test(uemail)) {
       isError = true;
-      errors.lastNameError = "Please fill in the field";
-      errors.lastNameErrorToggle=true;
-    }else{
-      setLastNameErrorToggle(false)
-      setLastNameError("")
+      errors.emailError = "Please enter a valid email";
+      errors.emailErrorToggle = true;
+    } else {
+      setEmailErrorToggle(false);
+      setEmailError("");
     }
 
-    if(!(re.test(email))){
-      isError=true;
-      errors.emailError="Please enter a valid email"
-      errors.emailErrorToggle=true
-    }else{
-      setEmailErrorToggle(false)
-      setEmailError("")
-    }
-
-    if (password.length <8 ) {
+    if (password.length < 8) {
       isError = true;
       errors.passwordError = "Password must be 8 characters or more";
-      errors.passwordErrorToggle=true;
-    }else{
-      setPasswordErrorToggle(false)
-      setPasswordError("")
+      errors.passwordErrorToggle = true;
+    } else {
+      setPasswordErrorToggle(false);
+      setPasswordError("");
     }
 
-    if (confirmPassword.length <8 ) {
+    if (confirmPassword.length < 8) {
       isError = true;
       errors.confirmPasswordError = "Password must be 8 characters or more";
-      errors.confirmPasswordErrorToggle=true;
-    }else{
-      setConfirmPasswordErrorToggle(false)
-      setConfirmPasswordError("")
-    }
-    
-    if(!(password===confirmPassword)){
-      isError=true;
-      errors.passwordError = "Passwords do not match ";
-      errors.passwordErrorToggle=true;
-      errors.confirmPasswordError = "Passwords do not match";
-      errors.confirmPasswordErrorToggle=true;
+      errors.confirmPasswordErrorToggle = true;
+    } else {
+      setConfirmPasswordErrorToggle(false);
+      setConfirmPasswordError("");
     }
 
+    if (!(password === confirmPassword)) {
+      isError = true;
+      errors.passwordError = "Passwords do not match";
+      errors.passwordErrorToggle = true;
+      errors.confirmPasswordError = "Passwords do not match";
+      errors.confirmPasswordErrorToggle = true;
+    }
 
     if (isError) {
-      setFirstNameError(errors.firstNameError);
-      setFirstNameErrorToggle(errors.firstNameErrorToggle)
-      setLastNameError(errors.lastNameError);
-      setLastNameErrorToggle(errors.lastNameErrorToggle)
-      setEmailError(errors.emailError)
-      setEmailErrorToggle(errors.emailErrorToggle)
-      setPasswordError(errors.passwordError)
-      setPasswordErrorToggle(errors.passwordErrorToggle)
-      setConfirmPasswordError(errors.confirmPasswordError)
-      setConfirmPasswordErrorToggle(errors.confirmPasswordErrorToggle)
+      setNameError(errors.nameError);
+      setNameErrorToggle(errors.nameErrorToggle);
+      setEmailError(errors.emailError);
+      setEmailErrorToggle(errors.emailErrorToggle);
+      setPasswordError(errors.passwordError);
+      setPasswordErrorToggle(errors.passwordErrorToggle);
+      setConfirmPasswordError(errors.confirmPasswordError);
+      setConfirmPasswordErrorToggle(errors.confirmPasswordErrorToggle);
     }
 
     return isError;
   };
 
+  //Snackbar Alert
+  function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+  }
+
+  //Closing snackbar
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpen(false);
+  };
+
   const handleSignUp = e => {
     e.preventDefault();
-  
 
-   
     const err = validate();
 
-    if(!err){
+    if (!err) {
       if (!loading) {
         setLoading(true);
       }
-    fetch(`http://localhost:3000/api/student/studentSignup`, {
-      method: "POST",
-      body: JSON.stringify({
-        Name: firstName + "" + lastName,
-        email: email,
-        password: password,
-        viewRecommendation: viewRecommendation
-      }),
-      headers: {
-        "Content-Type": "application/json"
-      }
-    }).then(res => {
-      console.log(res.status);
-      if (res.status === 200) {
-        setLoading(false);
-        setSuccess(true);
-        setOpen(true);
-        setEmail("");
-        setPassword("");
-        setFirstName("");
-        setLastName("");
-        setTimeout(() => (document.location.href = "/login"), 4000);
-      } else {
-        setLoading(false);
-      }
-    });
+ 
+      
+      
+      fetch(`http://localhost:3000/api/university/uniSignup`, {
+        method: "POST",
+        body: JSON.stringify({
+          uemail: uemail,
+          password: password,
+          websiteLink: websiteLink,
+          Name: Name,
+
+          contactInfo: contactInfo
+        }),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      }).then(res => {
+        console.log(res.status);
+        if (res.status === 200) {
+          setLoading(false);
+          setSuccess(true);
+          setOpen(true);
+          setuEmail("");
+          setPassword("");
+          setName("");
+          setContactInfo("");
+
+          setContactInfo("");
+          setTimeout(() => (document.location.href = "/login"), 4000);
+        } else {
+          setLoading(false);
+        }
+      });
+  
+}
   };
-  }
   // console.log(firstName)
   // console.log(lastName)
   // console.log(email)
@@ -262,50 +260,68 @@ console.log(sss)
   //console.log(viewRecommendation);
   // console.log("loading:" + loading);
   // console.log("success:" + success);
- 
+
   return (
-    <Container  component="main" maxWidth="xs">
+    <Container component="main" maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper}>
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
         </Avatar>
-        <Typography component="h1" variant="h5">
-          Register as a Student
-        </Typography>
+
+        <h3 style={{ fontFamily: "Helvetica" }}>Register as a University</h3>
+
         <form className={classes.form} noValidate>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <TextField
-                autoComplete="fname"
-                name="firstName"
+                autoComplete="websiteLink"
+                name="websiteLink"
+                type="text"
                 variant="outlined"
-                required
-                helperText={firstNameError}
-                error={firstNameErrorToggle}
                 fullWidth
-                id="firstName"
-                label="First Name"
-                value={firstName}
+                placeholder="aa"
+                id="websiteLink"
+                label="University's Website"
+                value={websiteLink}
                 onChange={e => {
-                  setFirstName(e.target.value);
+                  setWebsiteLink(e.target.value);
                 }}
-                autoFocus
+               
               />
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
                 variant="outlined"
                 fullWidth
-                id="lastName"
-                helperText={lastNameError}
-                error={lastNameErrorToggle}
-                label="Last Name"
-                name="lastName"
-                autoComplete="lname"
-                value={lastName}
+                name="contact info"
+                label="Contact Information"
+                type="text"
+                id="contact info"
+                autoComplete="contact-info"
+                placeholder="Phone Number"
+                value={contactInfo}
                 onChange={e => {
-                  setLastName(e.target.value);
+                  setContactInfo(e.target.value);
+                }}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <TextField
+                variant="outlined"
+                type="text"
+                required
+                fullWidth
+                helperText={nameError}
+                error={nameErrorToggle}
+                id="name"
+                label="University Name"
+                name="name"
+                autoComplete="name"
+                value={Name}
+                onChange={e => {
+                  setName(e.target.value);
                 }}
               />
             </Grid>
@@ -318,15 +334,16 @@ console.log(sss)
                 helperText={emailError}
                 error={emailErrorToggle}
                 id="email"
-                label="Email Address"
+                label="University's Email Address"
                 name="email"
                 autoComplete="email"
-                value={email}
+                value={uemail}
                 onChange={e => {
-                  setEmail(e.target.value);
+                  setuEmail(e.target.value);
                 }}
               />
             </Grid>
+
             <Grid item xs={12}>
               <TextField
                 variant="outlined"
@@ -363,21 +380,8 @@ console.log(sss)
                 }}
               />
             </Grid>
-            <Grid item xs={12}>
-              <FormControlLabel
-                control={
-                  <ViewSwitch
-                    checked={viewRecommendation}
-                    color="primary"
-                    onChange={e => {
-                      setViewRecommendation(e.target.checked);
-                    }}
-                  />
-                }
-                label="I want to be able to view my recommendations after being submitted."
-              />
-            </Grid>
           </Grid>
+
           <div className={classes.wrapper}>
             <Button
               type="submit"
@@ -406,16 +410,14 @@ console.log(sss)
       <Box mt={5}>
         <Copyright />
       </Box>
-      <Container>
-        <Grid item alignItems={"baseline"}>
-          <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-            <Alert onClose={handleClose} severity="success">
-              Sign Up Complete!
-            </Alert>
-          </Snackbar>
-        </Grid>
-      </Container>
-     
+
+      <Grid item>
+        <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+          <Alert onClose={handleClose} severity="success">
+            Sign Up Complete!
+          </Alert>
+        </Snackbar>
+      </Grid>
     </Container>
   );
 }

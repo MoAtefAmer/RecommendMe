@@ -21,7 +21,7 @@ const UniversitySchema = new Schema({
     },
     websiteLink:{
         type:String,
-        required:true
+        required:false
     },
     activated:{
       type:Boolean,
