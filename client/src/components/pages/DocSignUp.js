@@ -20,10 +20,8 @@ import { TestContext } from "../../App";
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
-      {"Copyright © "}
-      Mohamed Atef {new Date().getFullYear()}
-      {"."}
-    </Typography>
+    Mohamed Atef {" © "} {new Date().getFullYear()}
+  </Typography>
   );
 }
 

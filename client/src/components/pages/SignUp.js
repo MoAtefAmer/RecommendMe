@@ -15,7 +15,7 @@ import Container from "@material-ui/core/Container";
 import Switch from "@material-ui/core/Switch";
 import { grey, lightBlue, green } from "@material-ui/core/colors";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import {TestContext} from "../../App"
+import { TestContext } from "../../App";
 import MuiAlert from "@material-ui/lab/Alert";
 import Snackbar from "@material-ui/core/Snackbar";
 
@@ -23,9 +23,7 @@ import Snackbar from "@material-ui/core/Snackbar";
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
-      {"Copyright © "}
-      Mohamed Atef {new Date().getFullYear()}
-      {"."}
+      Mohamed Atef {" © "} {new Date().getFullYear()}
     </Typography>
   );
 }
@@ -50,7 +48,7 @@ const useStyles = makeStyles(theme => ({
   },
   paperContainer: {
     backgroundImage: `url(${Image})`
-},
+  },
 
   buttonProgress: {
     color: green[500],
@@ -77,7 +75,6 @@ const useStyles = makeStyles(theme => ({
     position: "relative"
   }
 }));
-
 
 const ViewSwitch = withStyles({
   switchBase: {
@@ -115,102 +112,102 @@ export default function SignUp() {
   const [passwordError, setPasswordError] = useState("");
   const [passwordErrorToggle, setPasswordErrorToggle] = useState(false);
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
-  const [confirmPasswordErrorToggle, setConfirmPasswordErrorToggle] = useState(false);
+  const [confirmPasswordErrorToggle, setConfirmPasswordErrorToggle] = useState(
+    false
+  );
 
-//Test context
-const sss= useContext(TestContext)
-console.log(sss)
+  //Test context
+  const sss = useContext(TestContext);
+  console.log(sss);
 
   const buttonClassname = clsx({
     [classes.buttonSuccess]: success,
     [classes.normalForm]: !success
   });
 
+  //Snackbar Alert
+  function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+  }
 
-    //Snackbar Alert
-    function Alert(props) {
-      return <MuiAlert elevation={6} variant="filled" {...props} />;
+  //Closing snackbar
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
     }
-  
-    //Closing snackbar
-    const handleClose = (event, reason) => {
-      if (reason === "clickaway") {
-        return;
-      }
-  
-      setOpen(false);
-    };
+
+    setOpen(false);
+  };
 
   const validate = () => {
     let isError = false;
     const errors = {};
     let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
-    if (firstName.length <=0 ) {
+    if (firstName.length <= 0) {
       isError = true;
       errors.firstNameError = "Please fill in the field";
-      errors.firstNameErrorToggle=true;
-    }else{
-      setFirstNameErrorToggle(false)
-      setFirstNameError("")
+      errors.firstNameErrorToggle = true;
+    } else {
+      setFirstNameErrorToggle(false);
+      setFirstNameError("");
     }
 
-    if (lastName.length <=0 ) {
+    if (lastName.length <= 0) {
       isError = true;
       errors.lastNameError = "Please fill in the field";
-      errors.lastNameErrorToggle=true;
-    }else{
-      setLastNameErrorToggle(false)
-      setLastNameError("")
+      errors.lastNameErrorToggle = true;
+    } else {
+      setLastNameErrorToggle(false);
+      setLastNameError("");
     }
 
-    if(!(re.test(email))){
-      isError=true;
-      errors.emailError="Please enter a valid email"
-      errors.emailErrorToggle=true
-    }else{
-      setEmailErrorToggle(false)
-      setEmailError("")
+    if (!re.test(email)) {
+      isError = true;
+      errors.emailError = "Please enter a valid email";
+      errors.emailErrorToggle = true;
+    } else {
+      setEmailErrorToggle(false);
+      setEmailError("");
     }
 
-    if (password.length <8 ) {
+    if (password.length < 8) {
       isError = true;
       errors.passwordError = "Password must be 8 characters or more";
-      errors.passwordErrorToggle=true;
-    }else{
-      setPasswordErrorToggle(false)
-      setPasswordError("")
+      errors.passwordErrorToggle = true;
+    } else {
+      setPasswordErrorToggle(false);
+      setPasswordError("");
     }
 
-    if (confirmPassword.length <8 ) {
+    if (confirmPassword.length < 8) {
       isError = true;
       errors.confirmPasswordError = "Password must be 8 characters or more";
-      errors.confirmPasswordErrorToggle=true;
-    }else{
-      setConfirmPasswordErrorToggle(false)
-      setConfirmPasswordError("")
-    }
-    
-    if(!(password===confirmPassword)){
-      isError=true;
-      errors.passwordError = "Passwords do not match ";
-      errors.passwordErrorToggle=true;
-      errors.confirmPasswordError = "Passwords do not match";
-      errors.confirmPasswordErrorToggle=true;
+      errors.confirmPasswordErrorToggle = true;
+    } else {
+      setConfirmPasswordErrorToggle(false);
+      setConfirmPasswordError("");
     }
 
+    if (!(password === confirmPassword)) {
+      isError = true;
+      errors.passwordError = "Passwords do not match ";
+      errors.passwordErrorToggle = true;
+      errors.confirmPasswordError = "Passwords do not match";
+      errors.confirmPasswordErrorToggle = true;
+    }
 
     if (isError) {
       setFirstNameError(errors.firstNameError);
-      setFirstNameErrorToggle(errors.firstNameErrorToggle)
+      setFirstNameErrorToggle(errors.firstNameErrorToggle);
       setLastNameError(errors.lastNameError);
-      setLastNameErrorToggle(errors.lastNameErrorToggle)
-      setEmailError(errors.emailError)
-      setEmailErrorToggle(errors.emailErrorToggle)
-      setPasswordError(errors.passwordError)
-      setPasswordErrorToggle(errors.passwordErrorToggle)
-      setConfirmPasswordError(errors.confirmPasswordError)
-      setConfirmPasswordErrorToggle(errors.confirmPasswordErrorToggle)
+      setLastNameErrorToggle(errors.lastNameErrorToggle);
+      setEmailError(errors.emailError);
+      setEmailErrorToggle(errors.emailErrorToggle);
+      setPasswordError(errors.passwordError);
+      setPasswordErrorToggle(errors.passwordErrorToggle);
+      setConfirmPasswordError(errors.confirmPasswordError);
+      setConfirmPasswordErrorToggle(errors.confirmPasswordErrorToggle);
     }
 
     return isError;
@@ -218,43 +215,41 @@ console.log(sss)
 
   const handleSignUp = e => {
     e.preventDefault();
-  
 
-   
     const err = validate();
 
-    if(!err){
+    if (!err) {
       if (!loading) {
         setLoading(true);
       }
-    fetch(`http://localhost:3000/api/student/studentSignup`, {
-      method: "POST",
-      body: JSON.stringify({
-        Name: firstName + "" + lastName,
-        email: email,
-        password: password,
-        viewRecommendation: viewRecommendation
-      }),
-      headers: {
-        "Content-Type": "application/json"
-      }
-    }).then(res => {
-      console.log(res.status);
-      if (res.status === 200) {
-        setLoading(false);
-        setSuccess(true);
-        setOpen(true);
-        setEmail("");
-        setPassword("");
-        setFirstName("");
-        setLastName("");
-        setTimeout(() => (document.location.href = "/login"), 4000);
-      } else {
-        setLoading(false);
-      }
-    });
+      fetch(`http://localhost:3000/api/student/studentSignup`, {
+        method: "POST",
+        body: JSON.stringify({
+          Name: firstName + "" + lastName,
+          email: email,
+          password: password,
+          viewRecommendation: viewRecommendation
+        }),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      }).then(res => {
+        console.log(res.status);
+        if (res.status === 200) {
+          setLoading(false);
+          setSuccess(true);
+          setOpen(true);
+          setEmail("");
+          setPassword("");
+          setFirstName("");
+          setLastName("");
+          setTimeout(() => (document.location.href = "/login"), 4000);
+        } else {
+          setLoading(false);
+        }
+      });
+    }
   };
-  }
   // console.log(firstName)
   // console.log(lastName)
   // console.log(email)
@@ -262,9 +257,9 @@ console.log(sss)
   //console.log(viewRecommendation);
   // console.log("loading:" + loading);
   // console.log("success:" + success);
- 
+
   return (
-    <Container  component="main" maxWidth="xs">
+    <Container component="main" maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper}>
         <Avatar className={classes.avatar}>
@@ -415,7 +410,6 @@ console.log(sss)
           </Snackbar>
         </Grid>
       </Container>
-     
     </Container>
   );
 }

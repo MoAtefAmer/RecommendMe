@@ -9,6 +9,9 @@ const signupPageStyle = {
     color: "#FFFFFF",
     paddingBottom: "200px"
   },
+  avatar: {
+    backgroundColor: "rgba(0, 0, 0, 0.87)"
+  },
   cardHidden: {
     opacity: "0",
     transform: "translate3d(0, -60px, 0)"
