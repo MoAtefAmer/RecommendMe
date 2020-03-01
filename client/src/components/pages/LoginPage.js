@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
 import InputAdornment from "@material-ui/core/InputAdornment";
@@ -21,6 +21,7 @@ import CardHeader from "../Card/CardHeader.js";
 import CardFooter from "../Card/CardFooter.js";
 import CustomInput from "../CustomInput/CustomInput.js";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import TextField from "@material-ui/core/TextField";
 
 import styles from "../../assets/jss/material-kit-react/views/loginPage.js";
 
@@ -34,7 +35,43 @@ export default function LoginPage(props) {
     setCardAnimation("");
   }, 700);
   const classes = useStyles();
+  const [accountType, setAccountType] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
+  const handleLogin = e => {
+    e.preventDefault();
+    if (accountType) {
+      switch (accountType) {
+        case "Student":
+          fetch(`http://localhost:3000/api/student/studentLogin`, {
+            method: "POST",
+            body: JSON.stringify({
+              email: email,
+              password: password
+            }),
+            headers: {
+              "Content-Type": "application/json"
+            }
+          }).then(res => {
+            console.log(res.status);
+            if (res.status === 200) {
+              setEmail("");
+              setPassword("");
+
+              setTimeout(() => (document.location.href = "/"), 1000);
+            }
+          });
+          break;
+      }
+    } else {
+      console.log("Please select an account type");
+    }
+  };
+
+  //console.log(accountType);
+  console.log(email);
+  console.log(password);
   return (
     <div>
       <div
@@ -58,7 +95,7 @@ export default function LoginPage(props) {
                         placement={"left"}
                         overlay={
                           <Tooltip id={`tooltip-left`}>
-                            Tooltip on <strong>left</strong>.
+                            Log in as a <strong>Student</strong>.
                           </Tooltip>
                         }
                       >
@@ -67,41 +104,71 @@ export default function LoginPage(props) {
                           href="#pablo"
                           target="_blank"
                           color="transparent"
-                          onClick={e => e.preventDefault()}
+                          onClick={e => {
+                            e.preventDefault();
+                            setAccountType("Student");
+                          }}
                         >
                           <Avatar className={classes.avatar}>
                             <StudentIcon />
                           </Avatar>
                         </Button>
                       </OverlayTrigger>
-                      <Button
-                        justIcon
-                        href="#pablo"
-                        target="_blank"
-                        color="transparent"
-                        onClick={e => e.preventDefault()}
-                      >
-                        <Avatar className={classes.avatar}>
-                          <UniversityIcon />
-                        </Avatar>
-                      </Button>
 
-                      <Button
-                        justIcon
-                        href="#pablo"
-                        target="_blank"
-                        color="transparent"
-                        onClick={e => e.preventDefault()}
+                      <OverlayTrigger
+                        key={"bottom"}
+                        placement={"bottom"}
+                        overlay={
+                          <Tooltip id={`tooltip-bottom`}>
+                            Log in as a <strong>University</strong>
+                          </Tooltip>
+                        }
                       >
-                        <Avatar className={classes.avatar}>
-                          <DoctorIcon />
-                        </Avatar>
-                      </Button>
+                        <Button
+                          justIcon
+                          href="#pablo"
+                          target="_blank"
+                          color="transparent"
+                          onClick={e => {
+                            e.preventDefault();
+                            setAccountType("University");
+                          }}
+                        >
+                          <Avatar className={classes.avatar}>
+                            <UniversityIcon />
+                          </Avatar>
+                        </Button>
+                      </OverlayTrigger>
+
+                      <OverlayTrigger
+                        key={"right"}
+                        placement={"right"}
+                        overlay={
+                          <Tooltip id={`tooltip-right`}>
+                            Log in as a <strong>Professor</strong>
+                          </Tooltip>
+                        }
+                      >
+                        <Button
+                          justIcon
+                          href="#pablo"
+                          target="_blank"
+                          color="transparent"
+                          onClick={e => {
+                            e.preventDefault();
+                            setAccountType("Professor");
+                          }}
+                        >
+                          <Avatar className={classes.avatar}>
+                            <DoctorIcon />
+                          </Avatar>
+                        </Button>
+                      </OverlayTrigger>
                     </div>
                   </CardHeader>
 
                   <CardBody>
-                    <CustomInput
+                  <CustomInput
                       labelText="Email..."
                       id="email"
                       formControlProps={{
@@ -116,14 +183,17 @@ export default function LoginPage(props) {
                         )
                       }}
                     />
+
                     <CustomInput
                       labelText="Password"
                       id="pass"
+                      value={password}
                       formControlProps={{
                         fullWidth: true
                       }}
                       inputProps={{
                         type: "password",
+
                         endAdornment: (
                           <InputAdornment position="end">
                             <Icon className={classes.inputIconsColor}>
@@ -131,13 +201,19 @@ export default function LoginPage(props) {
                             </Icon>
                           </InputAdornment>
                         ),
+                        onChange: event => setPassword(event.target.value),
                         autoComplete: "off"
                       }}
                     />
                   </CardBody>
                   <CardFooter className={classes.cardFooter}>
-                    <Button simple color="primary" size="lg">
-                      Get started
+                    <Button
+                      simple
+                      color="primary"
+                      size="lg"
+                      onClick={handleLogin}
+                    >
+                      Login
                     </Button>
                   </CardFooter>
                 </form>
