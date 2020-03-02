@@ -1,2 +1,2 @@
 # RecommendMe
-A Platform that makes the "Recommendation Email" process between applying students ,Universities and Doctors(Recommenders) much more convenient. 
+A Platform that allows Universities to evaluate applying students through the application. Students connected to this platform can request recommendations from professors.The information provided is stored  within the database for Universites to review it.
