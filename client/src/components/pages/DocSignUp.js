@@ -295,7 +295,7 @@ export default function DocSignUp() {
           <LockOutlinedIcon />
         </Avatar>
 
-        <h3 style={{ fontFamily: "Helvetica" }}>Register as a Doctor</h3>
+        <h3 style={{ fontFamily: "Helvetica" }}>Register as a Professor</h3>
 
         <form className={classes.form} noValidate>
           <Grid container spacing={2}>
@@ -502,7 +502,7 @@ export default function DocSignUp() {
       </Box>
 
       <Container>
-        <Grid item alignItems={"baseline"}>
+        <Grid item >
           <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
             <Alert onClose={handleClose} severity="success">
               Sign Up Complete!

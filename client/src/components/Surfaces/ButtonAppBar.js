@@ -8,6 +8,9 @@ import Explore from "@material-ui/icons/Explore";
 import Button from "../CustomButtons/Button";
 import { grey } from "@material-ui/core/colors";
 import styles from "../../assets/jss/material-kit-react/components/headerStyle";
+import { Icon, InlineIcon } from "@iconify/react";
+import logoutIcon from "@iconify/icons-mdi/logout";
+import loginIcon from "@iconify/icons-mdi/login";
 const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1
@@ -25,10 +28,15 @@ const useStyles = makeStyles(theme => ({
 }));
 //const useStyles = makeStyles(styles);
 
-
-
 export default function DenseAppBar() {
   const classes = useStyles();
+
+  const handleLogout = e => {
+    e.preventDefault();
+    sessionStorage.setItem("token", "");
+    sessionStorage.setItem("auth", "");
+    document.location.href = "/login";
+  };
 
   return (
     <div id="navbar" className={classes.root}>
@@ -45,14 +53,38 @@ export default function DenseAppBar() {
 
           <div className={classes.title}></div>
           <Button
-            href="#pablo"
             className={classes.navLink}
             onClick={e => e.preventDefault()}
             color="transparent"
-          > <Explore className={classes.icons} />
+          >
+            {" "}
+            <Explore className={classes.icons} />
             Discover
           </Button>
-          
+
+          {sessionStorage.getItem("token") !== "" ? (
+            <Button
+              className={classes.navLink}
+              onClick={handleLogout}
+              color="transparent"
+            >
+              {" "}
+              <Icon icon={logoutIcon} />
+              LogOut
+            </Button>
+          ) : (
+            <Button
+              className={classes.navLink}
+              onClick={e => {
+                document.location.href = "/login";
+              }}
+              color="transparent"
+            >
+              {" "}
+              <Icon icon={loginIcon} />
+              LogIn
+            </Button>
+          )}
         </Toolbar>
       </AppBar>
     </div>
