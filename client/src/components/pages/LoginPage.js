@@ -27,6 +27,7 @@ import Grid from "@material-ui/core/Grid";
 import MuiAlert from "@material-ui/lab/Alert";
 import { TestContext } from "../../App";
 
+
 import styles from "../../assets/jss/material-kit-react/views/loginPage.js";
 
 import image from "../Images/studentSignup.jpg";
@@ -448,6 +449,7 @@ export default function LoginPage(props) {
             </Grid>
           </GridContainer>
         </div>
+       
         <Footer whiteFont />
       </div>
     </div>

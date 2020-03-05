@@ -1,16 +1,15 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
-import IconButton from "@material-ui/core/IconButton";
-import MenuIcon from "@material-ui/icons/Menu";
 import Explore from "@material-ui/icons/Explore";
 import Button from "../CustomButtons/Button";
 import { grey } from "@material-ui/core/colors";
 import styles from "../../assets/jss/material-kit-react/components/headerStyle";
-import { Icon, InlineIcon } from "@iconify/react";
+import { Icon} from "@iconify/react";
 import logoutIcon from "@iconify/icons-mdi/logout";
 import loginIcon from "@iconify/icons-mdi/login";
+import MenuDrawer from "./Drawer";
 const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1
@@ -28,11 +27,13 @@ const useStyles = makeStyles(theme => ({
 }));
 //const useStyles = makeStyles(styles);
 
+export var MenuButtonContext = React.createContext();
+
 export default function DenseAppBar() {
   const classes = useStyles();
 
-  const handleLogout = e => {
-    e.preventDefault();
+  const handleLogout = () => {
+    
     sessionStorage.setItem("token", "");
     sessionStorage.setItem("auth", "");
     document.location.href = "/login";
@@ -42,15 +43,14 @@ export default function DenseAppBar() {
     <div id="navbar" className={classes.root}>
       <AppBar position="static" style={{ background: "#212121" }}>
         <Toolbar variant="dense">
-          <IconButton
-            edge="start"
-            className={classes.menuButton}
-            color="inherit"
-            aria-label="menu"
+          <MenuButtonContext.Provider
+            value={{
+              foo: "test",
+              handleLogout:handleLogout
+            }}
           >
-            <MenuIcon />
-          </IconButton>
-
+            <MenuDrawer />
+          </MenuButtonContext.Provider>
           <div className={classes.title}></div>
           <Button
             className={classes.navLink}

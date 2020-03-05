@@ -6,6 +6,7 @@ import DocSignUp from "./components/pages/DocSignUp";
 import UniSignup from "./components/pages/UniversitySignUp";
 import ButtonAppBar from "./components/Surfaces/ButtonAppBar";
 import LoginPage from "./components/pages/LoginPage";
+import RequestRecommendation from "./components/pages/Student/RequestRecommendation"
 
 export var TestContext = React.createContext();
 export class App extends React.Component {
@@ -99,6 +100,22 @@ export class App extends React.Component {
                 </>
               )}
             />
+                 <Route
+              exact
+              path="/requestRecommendation"
+              render={() => (
+                <>
+                {sessionStorage.getItem("token") !== "" && sessionStorage.getItem("auth")==="Student" ? (
+                    <>
+                <RequestRecommendation/>
+                    </>
+                  ) : (
+                    (document.location.href = "/")
+                  )}
+                </>
+              )}
+            />
+
           </React.Fragment>
         </Router>
       </div>
