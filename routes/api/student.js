@@ -118,7 +118,7 @@ router.post("/studentLogin", async (req, res) => {
       var token = jwt.sign({ id: stu._id }, config.secret, {
         expiresIn: 86400
       });
-      res.status(200).send({ auth: true, token: token, id: stu._id });
+      res.status(200).send({ auth: "Student", token: token, id: stu._id });
     }
   });
 });

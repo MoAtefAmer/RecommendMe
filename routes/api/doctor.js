@@ -122,7 +122,7 @@ router.post("/docLogin", async (req, res) => {
       var token = jwt.sign({ id: doc._id }, config.secret, {
         expiresIn: 86400
       });
-      res.status(200).send({ auth: true, token: token, id: doc._id });
+      res.status(200).send({ auth:"Professor", token: token, id: doc._id });
     }
   });
 });

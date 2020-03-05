@@ -104,6 +104,7 @@ router.post("/uniLogin", async (req, res) => {
         return res
           .status(401)
           .send({ auth: false, msg: "Please enter your password" });
+          
       } else {
         return res
           .status(401)
@@ -127,7 +128,7 @@ router.post("/uniLogin", async (req, res) => {
       var token = jwt.sign({ id: uni._id }, config.secret, {
         expiresIn: 86400
       });
-      res.status(200).send({ auth: true, token: token, id: uni._id });
+      res.status(200).send({ auth: "University", token: token, id: uni._id });
     }
   });
 });

@@ -2,10 +2,10 @@ import React from "react";
 import "./App.css";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import SignUp from "./components/pages/SignUp";
-import DocSignUp from "./components/pages/DocSignUp"
-import UniSignup from "./components/pages/UniversitySignUp"
+import DocSignUp from "./components/pages/DocSignUp";
+import UniSignup from "./components/pages/UniversitySignUp";
 import ButtonAppBar from "./components/Surfaces/ButtonAppBar";
-import LoginPage from "./components/pages/LoginPage"
+import LoginPage from "./components/pages/LoginPage";
 
 export var TestContext = React.createContext();
 export class App extends React.Component {
@@ -13,6 +13,8 @@ export class App extends React.Component {
     super(props);
     this.state = {};
   }
+
+ 
 
   render() {
     return (
@@ -24,13 +26,19 @@ export class App extends React.Component {
               exact
               path="/studentSignup"
               render={() => (
-                <TestContext.Provider
-                  value={{
-                    foo: "test"
-                  }}
-                >
-                  <SignUp />
-                </TestContext.Provider>
+                <>
+                {sessionStorage.getItem("token") !== "" ? (
+                    (document.location.href = "/")
+                  ) : (
+                    <TestContext.Provider
+                    value={{
+                      foo: "test"
+                    }}
+                  >
+                    <SignUp />
+                  </TestContext.Provider>
+                  )}
+                </>
               )}
             />
 
@@ -38,42 +46,59 @@ export class App extends React.Component {
               exact
               path="/doctorSignup"
               render={() => (
-                <TestContext.Provider
-                  value={{
-                    foo: "test"
-                  }}
-                >
-                  <DocSignUp />
-                </TestContext.Provider>
+                <>
+                {sessionStorage.getItem("token") !== "" ? (
+                    (document.location.href = "/")
+                  ) : (
+                    <TestContext.Provider
+                    value={{
+                      foo: "test"
+                    }}
+                  >
+                    <DocSignUp />
+                  </TestContext.Provider>
+                  )}
+                </>
               )}
             />
-              <Route
+            <Route
               exact
               path="/universitySignup"
               render={() => (
-                <TestContext.Provider
-                  value={{
-                    foo: "test"
-                  }}
-                >
-                  <UniSignup />
-                </TestContext.Provider>
+                <>
+                {sessionStorage.getItem("token") !== "" ? (
+                    (document.location.href = "/")
+                  ) : (
+                    <TestContext.Provider
+                    value={{
+                      foo: "test"
+                    }}
+                  >
+                    <UniSignup />
+                  </TestContext.Provider>
+                  )}
+                </>
               )}
             />
-   <Route
+            <Route
               exact
               path="/login"
               render={() => (
-                <TestContext.Provider
-                  value={{
-                    foo: "test"
-                  }}
-                >
-                  <LoginPage />
-                </TestContext.Provider>
+                <>
+                {sessionStorage.getItem("token") !== "" ? (
+                    (document.location.href = "/")
+                  ) : (
+                    <TestContext.Provider
+                    value={{
+                      foo: "test"
+                    }}
+                  >
+                    <LoginPage />
+                  </TestContext.Provider>
+                  )}
+                </>
               )}
             />
-
           </React.Fragment>
         </Router>
       </div>

@@ -231,7 +231,8 @@ export default function SignUp() {
           viewRecommendation: viewRecommendation
         }),
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Headers": "*"
         }
       }).then(res => {
         console.log(res.status);
@@ -402,7 +403,7 @@ export default function SignUp() {
         <Copyright />
       </Box>
       <Container>
-        <Grid item alignItems={"baseline"}>
+        <Grid item >
           <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
             <Alert onClose={handleClose} severity="success">
               Sign Up Complete!
