@@ -159,6 +159,21 @@ router.get("/viewProfile", async (req, res) => {
   }
 });
 
+
+//Get a List of All Doctors
+router.get("/getDocEmails", async (req, res) => {
+
+  const docList = await Doctor.find({},{email:1,_id:0})
+
+  if (!docList) {
+    return res.status(404).send({ error: "No Professors Found" });
+  } else {
+    
+    res.json({docList });
+  }
+});
+
+
 //Edit My Profile as a Doctor
 router.put("/editProfile", async (req, res) => {
   try {

@@ -34,6 +34,7 @@ export default function DenseAppBar() {
 
   const handleLogout = () => {
     
+    sessionStorage.setItem("email","")
     sessionStorage.setItem("token", "");
     sessionStorage.setItem("auth", "");
     document.location.href = "/login";

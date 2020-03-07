@@ -126,7 +126,7 @@ export default function DocSignUp() {
 
   //Test context
   const sss = useContext(TestContext);
-  console.log(sss);
+  //console.log(sss);
 
   const buttonClassname = clsx({
     [classes.buttonSuccess]: success,

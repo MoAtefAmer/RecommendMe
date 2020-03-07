@@ -1,4 +1,4 @@
-import React, { useState,useContext } from "react";
+import React, { useState, useContext } from "react";
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
 import InputAdornment from "@material-ui/core/InputAdornment";
@@ -32,6 +32,7 @@ import styles from "../../assets/jss/material-kit-react/views/loginPage.js";
 
 import image from "../Images/studentSignup.jpg";
 
+
 export default function LoginPage(props) {
   //The State
   const [cardAnimaton, setCardAnimation] = React.useState("cardHidden");
@@ -46,10 +47,9 @@ export default function LoginPage(props) {
   const [open, setOpen] = React.useState(false);
   const [snackbarErrorMessage, setSnackbarErrorMessage] = useState("");
   const [severity, setSeverity] = useState("");
-//Test Context
+  //Test Context
   const sss = useContext(TestContext);
   // console.log(sss);
-
 
   const useStyles = makeStyles(styles);
   var useStyles2 = makeStyles(theme => ({
@@ -114,7 +114,7 @@ export default function LoginPage(props) {
     if (isError) {
       setEmailErrorToggle(errors.emailErrorToggle);
       setPasswordErrorToggle(errors.passwordErrorToggle);
-      if(errors.emailErrorToggle || errors.passwordErrorToggle){
+      if (errors.emailErrorToggle || errors.passwordErrorToggle) {
         setSeverity("error");
         setSnackbarErrorMessage("Please enter your username and password");
         setOpen(true);
@@ -166,10 +166,11 @@ export default function LoginPage(props) {
                 }
                 if (res.status === 200) {
                   if (data.auth === accountType) {
-                    setEmail("");
-                    setPassword("");
+                    sessionStorage.setItem("email",email)
                     sessionStorage.setItem("token", data.token);
                     sessionStorage.setItem("auth", data.auth);
+                    setEmail("");
+                    setPassword("");
                     setSeverity("success");
                     setSnackbarErrorMessage("Login Successful");
                     setOpen(true);
@@ -208,6 +209,7 @@ export default function LoginPage(props) {
 
                 if (res.status === 200) {
                   if (data.auth === accountType) {
+                    sessionStorage.setItem("email",email)
                     setEmail("");
                     setPassword("");
                     sessionStorage.setItem("token", data.token);
@@ -249,6 +251,7 @@ export default function LoginPage(props) {
                 }
                 if (res.status === 200) {
                   if (data.auth === accountType) {
+                    sessionStorage.setItem("email",email)
                     setEmail("");
                     setPassword("");
                     sessionStorage.setItem("token", data.token);
@@ -283,6 +286,8 @@ export default function LoginPage(props) {
   };
 
   //console.log(accountType);
+
+
 
   return (
     <div>
@@ -449,7 +454,7 @@ export default function LoginPage(props) {
             </Grid>
           </GridContainer>
         </div>
-       
+
         <Footer whiteFont />
       </div>
     </div>

@@ -107,7 +107,9 @@ export class App extends React.Component {
                 <>
                 {sessionStorage.getItem("token") !== "" && sessionStorage.getItem("auth")==="Student" ? (
                     <>
+                  
                 <RequestRecommendation/>
+               
                     </>
                   ) : (
                     (document.location.href = "/")

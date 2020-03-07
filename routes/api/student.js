@@ -184,11 +184,13 @@ router.post("/requestRecommendation", async (req, res) => {
           html:
             "A Student is requesting your recommendation, Student Email: " +
             sEmail +
-            ", University Email: " +
-            email +
+            ", University Email(s): " +
+            req.body.uemail +
             " to launch the website, click here:  " +
             `<a href="${url2}">${url2}</a>`
         };
+        
+      await  Doctor.findByIdAndUpdate(doc._id,{$addToSet:{ notifications:{info:sName+" is requesting your recommendation. University Email(s): "+req.body.uemail }} })
 
         transporter.sendMail(mailOptions, function(error, info) {
           if (error) {
@@ -198,7 +200,7 @@ router.post("/requestRecommendation", async (req, res) => {
           }
         });
 
-        return res.status(400).json({ msg: "Email Sent!" });
+        return res.status(200).json({ msg: "Email Sent!" });
       } else {
         const password = randomstring.generate({
           length: 8
@@ -256,7 +258,7 @@ router.post("/requestRecommendation", async (req, res) => {
           } else {
             console.log("Email sent: " + info.response);
           }
-          return res.status(400).json({ msg: "Email2 Sent!" });
+          return res.status(200).json({ msg: "Email2 Sent!" });
         });
       }
     });
