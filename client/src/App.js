@@ -6,7 +6,8 @@ import DocSignUp from "./components/pages/DocSignUp";
 import UniSignup from "./components/pages/UniversitySignUp";
 import ButtonAppBar from "./components/Surfaces/ButtonAppBar";
 import LoginPage from "./components/pages/LoginPage";
-import RequestRecommendation from "./components/pages/Student/RequestRecommendation"
+import RequestRecommendation from "./components/pages/Student/RequestRecommendation";
+import CreateRecommendation from "./components/pages/Professor/CreateRecommendation";
 
 export var TestContext = React.createContext();
 export class App extends React.Component {
@@ -14,8 +15,6 @@ export class App extends React.Component {
     super(props);
     this.state = {};
   }
-
- 
 
   render() {
     return (
@@ -28,16 +27,16 @@ export class App extends React.Component {
               path="/studentSignup"
               render={() => (
                 <>
-                {sessionStorage.getItem("token") !== "" ? (
+                  {sessionStorage.getItem("token") !== "" ? (
                     (document.location.href = "/")
                   ) : (
                     <TestContext.Provider
-                    value={{
-                      foo: "test"
-                    }}
-                  >
-                    <SignUp />
-                  </TestContext.Provider>
+                      value={{
+                        foo: "test"
+                      }}
+                    >
+                      <SignUp />
+                    </TestContext.Provider>
                   )}
                 </>
               )}
@@ -48,16 +47,16 @@ export class App extends React.Component {
               path="/doctorSignup"
               render={() => (
                 <>
-                {sessionStorage.getItem("token") !== "" ? (
+                  {sessionStorage.getItem("token") !== "" ? (
                     (document.location.href = "/")
                   ) : (
                     <TestContext.Provider
-                    value={{
-                      foo: "test"
-                    }}
-                  >
-                    <DocSignUp />
-                  </TestContext.Provider>
+                      value={{
+                        foo: "test"
+                      }}
+                    >
+                      <DocSignUp />
+                    </TestContext.Provider>
                   )}
                 </>
               )}
@@ -67,16 +66,16 @@ export class App extends React.Component {
               path="/universitySignup"
               render={() => (
                 <>
-                {sessionStorage.getItem("token") !== "" ? (
+                  {sessionStorage.getItem("token") !== "" ? (
                     (document.location.href = "/")
                   ) : (
                     <TestContext.Provider
-                    value={{
-                      foo: "test"
-                    }}
-                  >
-                    <UniSignup />
-                  </TestContext.Provider>
+                      value={{
+                        foo: "test"
+                      }}
+                    >
+                      <UniSignup />
+                    </TestContext.Provider>
                   )}
                 </>
               )}
@@ -86,30 +85,29 @@ export class App extends React.Component {
               path="/login"
               render={() => (
                 <>
-                {sessionStorage.getItem("token") !== "" ? (
+                  {sessionStorage.getItem("token") !== "" ? (
                     (document.location.href = "/")
                   ) : (
                     <TestContext.Provider
-                    value={{
-                      foo: "test"
-                    }}
-                  >
-                    <LoginPage />
-                  </TestContext.Provider>
+                      value={{
+                        foo: "test"
+                      }}
+                    >
+                      <LoginPage />
+                    </TestContext.Provider>
                   )}
                 </>
               )}
             />
-                 <Route
+            <Route
               exact
               path="/requestRecommendation"
               render={() => (
                 <>
-                {sessionStorage.getItem("token") !== "" && sessionStorage.getItem("auth")==="Student" ? (
+                  {sessionStorage.getItem("token") !== "" &&
+                  sessionStorage.getItem("auth") === "Student" ? (
                     <>
-                  
-                <RequestRecommendation/>
-               
+                      <RequestRecommendation />
                     </>
                   ) : (
                     (document.location.href = "/")
@@ -117,7 +115,22 @@ export class App extends React.Component {
                 </>
               )}
             />
-
+            <Route
+              exact
+              path="/createRecommendation"
+              render={() => (
+                <>
+                  {sessionStorage.getItem("token") !== "" &&
+                  sessionStorage.getItem("auth") === "Professor" ? (
+                    <>
+                      <CreateRecommendation />
+                    </>
+                  ) : (
+                    (document.location.href = "/")
+                  )}
+                </>
+              )}
+            />
           </React.Fragment>
         </Router>
       </div>

@@ -17,7 +17,8 @@ import logoutIcon from "@iconify/icons-mdi/logout";
 import loginIcon from "@iconify/icons-mdi/login";
 import DrawerButtonItem from "./DrawerButtonItem";
 
-import {IoIosCreate,IoIosUnlock,IoIosLogOut ,IoIosLogIn} from "react-icons/io";
+import {IoIosCreate,IoIosUnlock,IoIosLogOut ,IoIosLogIn,I} from "react-icons/io";
+import { MdLibraryBooks,MdLibraryAdd } from "react-icons/md";
 
 const useStyles = makeStyles({
   list: {
@@ -120,9 +121,10 @@ export default function TemporaryDrawer() {
           <>
             <DrawerContext.Provider
               value={{
-                key: "Prof",
-                primary: "Prof",
-                onClick: "rr"
+                key: "Create Recommendation",
+                primary: "Create Recommendation",
+                onClick: "cr",
+                icon:<MdLibraryAdd style={{"fontSize":"25px"}}/>
               }}
             >
               <DrawerButtonItem />
@@ -130,9 +132,20 @@ export default function TemporaryDrawer() {
 
             <DrawerContext.Provider
               value={{
-                key: "Prof2",
-                primary: "Prof2",
-                onClick: "cp"
+                key: "View My Recommendations",
+                primary: "View My Recommendations",
+                onClick: "vr",
+                icon:<MdLibraryBooks style={{"fontSize":"25px"}}/>
+              }}
+            >
+              <DrawerButtonItem />
+            </DrawerContext.Provider>
+            <DrawerContext.Provider
+              value={{
+                key: "Change Password",
+                primary: "Change Password",
+                onClick: "changePassword",
+                icon:<IoIosUnlock style={{"fontSize":"25px"}}/>
               }}
             >
               <DrawerButtonItem />

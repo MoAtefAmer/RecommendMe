@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
 import InputAdornment from "@material-ui/core/InputAdornment";
@@ -25,12 +25,14 @@ import clsx from "clsx";
 import Snackbar from "@material-ui/core/Snackbar";
 import Grid from "@material-ui/core/Grid";
 import MuiAlert from "@material-ui/lab/Alert";
-import { TestContext } from "../../App";
+
 
 
 import styles from "../../assets/jss/material-kit-react/views/loginPage.js";
 
 import image from "../Images/studentSignup.jpg";
+
+export var LoginContext = React.createContext()
 
 
 export default function LoginPage(props) {
@@ -48,7 +50,7 @@ export default function LoginPage(props) {
   const [snackbarErrorMessage, setSnackbarErrorMessage] = useState("");
   const [severity, setSeverity] = useState("");
   //Test Context
-  const sss = useContext(TestContext);
+ 
   // console.log(sss);
 
   const useStyles = makeStyles(styles);
@@ -174,6 +176,7 @@ export default function LoginPage(props) {
                     setSeverity("success");
                     setSnackbarErrorMessage("Login Successful");
                     setOpen(true);
+              
                     setTimeout(() => (document.location.href = "/"), 3000);
                   }
                 }
@@ -217,6 +220,8 @@ export default function LoginPage(props) {
                     setSeverity("success");
                     setSnackbarErrorMessage("Login Successful");
                     setOpen(true);
+
+                 
                     setTimeout(() => (document.location.href = "/"), 3000);
                   }
                 }
@@ -259,7 +264,7 @@ export default function LoginPage(props) {
                     setSeverity("success");
                     setSnackbarErrorMessage("Login Successful");
                     setOpen(true);
-                    setTimeout(() => (document.location.href = "/"), 3000);
+                    (document.location.href = "/")
                   }
                 }
                 if (res.status === 401) {
@@ -286,6 +291,8 @@ export default function LoginPage(props) {
   };
 
   //console.log(accountType);
+
+
 
 
 
@@ -331,6 +338,7 @@ export default function LoginPage(props) {
                           </Avatar>
                         </Button>
                       </OverlayTrigger>
+
 
                       <OverlayTrigger
                         key={"bottom"}
@@ -383,7 +391,7 @@ export default function LoginPage(props) {
                       </OverlayTrigger>
                     </div>
                   </CardHeader>
-
+            
                   <CardBody>
                     <CustomInput
                       labelText="Email..."
@@ -458,5 +466,7 @@ export default function LoginPage(props) {
         <Footer whiteFont />
       </div>
     </div>
+    
   );
-}
+  }
+

@@ -19,6 +19,15 @@ const handleOnClick= ()=>{
         case "cp":
             document.location.href="/changePassword";    
             break;
+        case "cr":
+          document.location.href="/createRecommendation";
+          break;
+        case "vr":
+          document.location.href="/viewRecommendations";
+          break;
+        case "changePassword":
+          document.location.href="/changePassword";
+          break;        
             default:console.log("default")
             break;
     }

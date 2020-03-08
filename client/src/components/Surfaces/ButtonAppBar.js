@@ -10,6 +10,9 @@ import { Icon} from "@iconify/react";
 import logoutIcon from "@iconify/icons-mdi/logout";
 import loginIcon from "@iconify/icons-mdi/login";
 import MenuDrawer from "./Drawer";
+import {Notifications} from '@material-ui/icons';
+
+
 const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1
@@ -62,6 +65,19 @@ export default function DenseAppBar() {
             <Explore className={classes.icons} />
             Discover
           </Button>
+
+
+{sessionStorage.getItem("auth")==="Professor"? ( <Button
+            className={classes.navLink}
+            onClick={e => e.preventDefault()}
+            color="transparent"
+          >
+            {" "}
+            <Notifications className={classes.icons} />
+           Notifications
+          </Button>):(<></>)}
+         
+
 
           {sessionStorage.getItem("token") !== "" ? (
             <Button
