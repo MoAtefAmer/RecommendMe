@@ -13,8 +13,6 @@ import { MenuButtonContext } from "./ButtonAppBar";
 import StudentIcon from "@material-ui/icons/School";
 import DoctorIcon from "@material-ui/icons/Group";
 import UniversityIcon from "@material-ui/icons/LocationCity";
-import logoutIcon from "@iconify/icons-mdi/logout";
-import loginIcon from "@iconify/icons-mdi/login";
 import DrawerButtonItem from "./DrawerButtonItem";
 
 import {IoIosCreate,IoIosUnlock,IoIosLogOut ,IoIosLogIn,I} from "react-icons/io";

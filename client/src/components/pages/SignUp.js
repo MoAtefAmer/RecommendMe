@@ -117,8 +117,8 @@ export default function SignUp() {
   );
 
   //Test context
-  const sss = useContext(TestContext);
-  console.log(sss);
+  // const sss = useContext(TestContext);
+  // console.log(sss);
 
   const buttonClassname = clsx({
     [classes.buttonSuccess]: success,

@@ -6,12 +6,11 @@ import Explore from "@material-ui/icons/Explore";
 import Button from "../CustomButtons/Button";
 import { grey } from "@material-ui/core/colors";
 import styles from "../../assets/jss/material-kit-react/components/headerStyle";
-import { Icon} from "@iconify/react";
+import { Icon } from "@iconify/react";
 import logoutIcon from "@iconify/icons-mdi/logout";
 import loginIcon from "@iconify/icons-mdi/login";
 import MenuDrawer from "./Drawer";
-import {Notifications} from '@material-ui/icons';
-
+import { Notifications } from "@material-ui/icons";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -36,10 +35,12 @@ export default function DenseAppBar() {
   const classes = useStyles();
 
   const handleLogout = () => {
-    
-    sessionStorage.setItem("email","")
+    sessionStorage.setItem("email", "");
     sessionStorage.setItem("token", "");
     sessionStorage.setItem("auth", "");
+    sessionStorage.setItem("firstName", "");
+    sessionStorage.setItem("lastName", "");
+    sessionStorage.setItem("currentJob", "");
     document.location.href = "/login";
   };
 
@@ -50,7 +51,7 @@ export default function DenseAppBar() {
           <MenuButtonContext.Provider
             value={{
               foo: "test",
-              handleLogout:handleLogout
+              handleLogout: handleLogout
             }}
           >
             <MenuDrawer />
@@ -60,30 +61,35 @@ export default function DenseAppBar() {
             className={classes.navLink}
             onClick={e => e.preventDefault()}
             color="transparent"
+            size="sm"
           >
             {" "}
             <Explore className={classes.icons} />
             Discover
           </Button>
 
-
-{sessionStorage.getItem("auth")==="Professor"? ( <Button
-            className={classes.navLink}
-            onClick={e => e.preventDefault()}
-            color="transparent"
-          >
-            {" "}
-            <Notifications className={classes.icons} />
-           Notifications
-          </Button>):(<></>)}
-         
-
+          {sessionStorage.getItem("auth") === "Professor" ? (
+            <Button
+              className={classes.navLink}
+              onClick={e => e.preventDefault()}
+              color="transparent"
+              size="sm"
+            >
+              {" "}
+              <Notifications className={classes.icons} />
+              Notifications
+            </Button>
+            // console.log('t')
+          ) : (
+         console.log('t')
+          )}
 
           {sessionStorage.getItem("token") !== "" ? (
             <Button
               className={classes.navLink}
               onClick={handleLogout}
               color="transparent"
+              size="sm"
             >
               {" "}
               <Icon icon={logoutIcon} />

@@ -8,15 +8,8 @@ import {
   Button,
   Container,
   CircularProgress,
-  Box,
-  FormControlLabel,
-  Link,
   Switch,
-  Avatar,
-  IconButton,
-  InputAdornment,
-  FormControl,
-  Input
+
 } from "@material-ui/core";
 import { Info } from "@material-ui/icons";
 import MuiAlert from "@material-ui/lab/Alert";

@@ -215,6 +215,9 @@ export default function LoginPage(props) {
                     sessionStorage.setItem("email",email)
                     setEmail("");
                     setPassword("");
+                    sessionStorage.setItem("firstName",data.data.firstName)
+                    sessionStorage.setItem("lastName",data.data.lastName)
+                    sessionStorage.setItem("currentJob",data.data.currentJob)
                     sessionStorage.setItem("token", data.token);
                     sessionStorage.setItem("auth", data.auth);
                     setSeverity("success");
@@ -325,8 +328,7 @@ export default function LoginPage(props) {
                       >
                         <Button
                           justIcon
-                          href="#pablo"
-                          target="_blank"
+                       
                           color="transparent"
                           onClick={e => {
                             e.preventDefault();
@@ -351,8 +353,7 @@ export default function LoginPage(props) {
                       >
                         <Button
                           justIcon
-                          href="#pablo"
-                          target="_blank"
+                        
                           color="transparent"
                           onClick={e => {
                             e.preventDefault();
@@ -376,8 +377,6 @@ export default function LoginPage(props) {
                       >
                         <Button
                           justIcon
-                          href="#pablo"
-                          target="_blank"
                           color="transparent"
                           onClick={e => {
                             e.preventDefault();
