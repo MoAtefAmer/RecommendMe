@@ -14,13 +14,14 @@ import { Notifications } from "@material-ui/icons";
 
 const useStyles = makeStyles(theme => ({
   root: {
-    flexGrow: 1
+    flexGrow: 1,
+    
   },
   menuButton: {
     marginRight: theme.spacing(2)
   },
   title: {
-    flexGrow: 1
+    flexGrow: 1,  
   },
   navbarColor: {
     color: grey[900]
@@ -47,7 +48,7 @@ export default function DenseAppBar() {
   return (
     <div id="navbar" className={classes.root}>
       <AppBar position="static" style={{ background: "#212121" }}>
-        <Toolbar variant="dense">
+        <Toolbar variant="dense" >
           <MenuButtonContext.Provider
             value={{
               foo: "test",

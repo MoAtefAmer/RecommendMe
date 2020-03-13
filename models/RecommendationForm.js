@@ -142,10 +142,7 @@ const RecommendationFormSchema = new Schema({
       message: "{VALUE} is not an integer value"
     }
   },
-  otherlanguages: {
-    type: String,
-    required: false
-  },
+ 
   remarks: {
     type: String,
     required: false

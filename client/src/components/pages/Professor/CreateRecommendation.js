@@ -18,9 +18,10 @@ import {
   CardActionArea,
   CardContent
 } from "@material-ui/core";
-import { grey, lightBlue, green, purple } from "@material-ui/core/colors";
+import { grey, blue, green, purple } from "@material-ui/core/colors";
 import QuestionCard from "./QuestionCard";
-import TestIcon from "@material-ui/icons/Group";
+import { FormControl } from "react-bootstrap";
+import { CloudUpload } from "@material-ui/icons";
 
 function Copyright() {
   return (
@@ -97,13 +98,25 @@ const useStyles = makeStyles(theme => ({
 
   CardMaster2: {
     backgroundColor: "black"
-  }
+  },
+  input: {
+    display: 'none',
+  },
 }));
 
 const ColorButton = withStyles(theme => ({
   root: {
     color: theme.palette.getContrastText(purple[500]),
-    background: "linear-gradient(60deg, #ab47bc, #8e24aa)"
+    background: "linear-gradient(60deg, #ab47bc, #8e24aa)",
+    margin: theme.spacing(1)
+  }
+}))(Button);
+
+const BackButton = withStyles(theme => ({
+  root: {
+    color: theme.palette.getContrastText(blue[500]),
+    background: "linear-gradient(60deg, #1e88e5, #1565c0)",
+    margin: theme.spacing(1)
   }
 }))(Button);
 
@@ -112,21 +125,28 @@ export var CardContext = React.createContext();
 export default function CreateRecommendation() {
   const classes = useStyles();
   const [value, setValue] = useState(1);
+  const [cardIcon, setCardIcon] = useState("");
 
-  const [cardsArray, setCardsArray] = useState([
-    { question: "Analytical Skills", id: 0 },
-    { question: "C Skills", id: 1 },
-    { question: "V Skills", id: 2 }
+  const [cardsArray] = useState([
+    { question: "Analytical Skills", id: 0, icon: "analytics" },
+    { question: "Communication Skills", id: 1, icon: "communication" },
+    { question: "Technical Knowledge", id: 2, icon: "technical" },
+    { question: "Research Skills", id: 3, icon: "research" },
+    { question: "Problem Solving Skills", id: 4, icon: "solving" },
+    { question: "Adaptation Skills", id: 5, icon: "adaptation" },
+    { question: "Punctuality", id: 6, icon: "punctuality" },
+    { question: "English Language Level", id: 7, icon: "english" },
+    { question: "Stress Handling", id: 8, icon: "stress" },
+    { question: "GPA", id: 9, icon: "gpa" }
   ]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
-
   return (
     <div className={classes.root}>
-      <AppBar position="static" color="default">
+      <AppBar position="sticky" color="default">
         <Tabs
           value={value}
           onChange={handleChange}
@@ -140,7 +160,6 @@ export default function CreateRecommendation() {
           <Tab label="General Information" {...a11yProps(0)} />
           <Tab label="Student Evaluation" {...a11yProps(1)} />
           <Tab label="Upload PDF" {...a11yProps(2)} />
-        
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>
@@ -316,29 +335,104 @@ export default function CreateRecommendation() {
               <CardContext.Provider
                 key={i}
                 value={{
-                  element: cardsArray.filter(element => element.id===i)
+                  element: cardsArray.filter(element => element.id === i)
                 }}
               >
                 <QuestionCard />
               </CardContext.Provider>
             ))}
+
+            <Grid item xs={12} sm={4}></Grid>
+
+            <Grid item xs={12} sm={4}>
+              <div
+                style={{
+                  textAlign: "right",
+                  paddingTop: "5%",
+                  marginTop: "25%"
+                }}
+              >
+                <BackButton
+                  variant="contained"
+                  onClick={e => {
+                    setValue(0);
+                  }}
+                >
+                  {" "}
+                  Back
+                </BackButton>
+                <ColorButton
+                  variant="contained"
+                  onClick={e => {
+                    setValue(2);
+                  }}
+                >
+                  {" "}
+                  Next
+                </ColorButton>
+              </div>
+            </Grid>
           </Grid>
         </Container>
       </TabPanel>
       <TabPanel value={value} index={2}>
-        Item Three
-      </TabPanel>
-      <TabPanel value={value} index={3}>
-        Item Four
-      </TabPanel>
-      <TabPanel value={value} index={4}>
-        Item Five
-      </TabPanel>
-      <TabPanel value={value} index={5}>
-        Item Six
-      </TabPanel>
-      <TabPanel value={value} index={6}>
-        Item Seven
+        <Container maxWidth="lg" style={{ flexGrow: 1 }}>
+          <Paper elevation={3} style={{ height: "auto" }}>
+            <form className={classes.form}>
+              <div>
+                <div style={{ textAlign: "Left" }}>
+                  <p style={{ fontSize: "1.5625rem", lineHeight: "1.4em" }}>
+                    Remarks
+                  </p>
+                </div>
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={5}>
+                    <FormControl
+                      as="textarea"
+                      aria-label="With textarea"
+                      rows="3"
+                    />
+                  </Grid>
+                </Grid>
+              </div>
+              <br/>
+              <div>
+            
+              <div style={{ textAlign: "Left" }}>
+                  <p style={{ fontSize: "1.5625rem", lineHeight: "1.4em" }}>
+                    Upload Recommendation Letter
+                  </p>
+                </div>
+                <Grid item xs={12} sm={4}>
+                <input
+        accept="image/*"
+        className={classes.input}
+        id="contained-button-file"
+        multiple
+        type="file"
+      />
+      <label htmlFor="contained-button-file">
+        <Button variant="contained" color="primary" component="span">
+        <CloudUpload style={{fontSize:"30px",marginRight:"10px"}}/>{"  "}
+          Upload
+        </Button>
+      </label>
+                </Grid>
+              </div>
+              <div style={{ textAlign: "right", paddingTop: "5%" }}>
+                <ColorButton
+                  variant="contained"
+                  onClick={e => {
+                    setValue(1);
+                  }}
+                >
+                  {" "}
+                  Next
+                </ColorButton>
+              </div>
+            </form>
+          </Paper>
+        </Container>
       </TabPanel>
     </div>
   );

@@ -15,7 +15,7 @@ import DoctorIcon from "@material-ui/icons/Group";
 import UniversityIcon from "@material-ui/icons/LocationCity";
 import DrawerButtonItem from "./DrawerButtonItem";
 
-import {IoIosCreate,IoIosUnlock,IoIosLogOut ,IoIosLogIn,I} from "react-icons/io";
+import {IoIosCreate,IoIosUnlock,IoIosLogOut ,IoIosLogIn} from "react-icons/io";
 import { MdLibraryBooks,MdLibraryAdd } from "react-icons/md";
 
 const useStyles = makeStyles({
