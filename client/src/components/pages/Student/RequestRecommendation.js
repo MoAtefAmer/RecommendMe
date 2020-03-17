@@ -21,6 +21,8 @@ import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { TestContext } from "../../../App";
 import clsx from "clsx";
 import { IoIosCreate } from "react-icons/io";
+import {Spring} from 'react-spring/renderprops';
+
 
 function Copyright() {
   return (
@@ -299,7 +301,17 @@ console.log(typeof universityEmail)
 
   return (
     <Container component="main" maxWidth="xs">
-          <Card
+
+
+
+      <Spring
+  from={{ opacity: 0,transform: 'translate3d(0,-100%,0)'}}
+  to={{ opacity: 1,transform: 'translate3d(0px,0,0)' }}
+  
+  >
+  {props => <div style={props}>
+    
+  <Card
           raised
           style={{marginTop:"20%"}}
           >
@@ -450,7 +462,11 @@ console.log(typeof universityEmail)
         </form>
       </div>
       </Card>
-     
+    
+    
+    </div>}
+</Spring>
+         
       <Container>
         <Grid item>
           <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>

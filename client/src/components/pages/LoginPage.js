@@ -25,7 +25,7 @@ import clsx from "clsx";
 import Snackbar from "@material-ui/core/Snackbar";
 import Grid from "@material-ui/core/Grid";
 import MuiAlert from "@material-ui/lab/Alert";
-
+import {Spring} from "react-spring/renderprops"
 
 
 import styles from "../../assets/jss/material-kit-react/views/loginPage.js";
@@ -448,7 +448,9 @@ export default function LoginPage(props) {
                 </form>
               </Card>
             </GridItem>
-            <Grid item>
+
+
+  <Grid item>
               <Snackbar
                 open={open}
                 autoHideDuration={6000}
@@ -459,6 +461,10 @@ export default function LoginPage(props) {
                 </Alert>
               </Snackbar>
             </Grid>
+    
+    
+
+         
           </GridContainer>
         </div>
 

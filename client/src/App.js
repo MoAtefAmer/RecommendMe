@@ -85,9 +85,8 @@ export class App extends React.Component {
               path="/login"
               render={() => (
                 <>
-                  {sessionStorage.getItem("token") !== "" ? (
-                    (document.location.href = "/")
-                  ) : (
+                  {sessionStorage.getItem("token") === "" ||
+                  sessionStorage.getItem("token") === null ? (
                     <TestContext.Provider
                       value={{
                         foo: "test"
@@ -95,6 +94,8 @@ export class App extends React.Component {
                     >
                       <LoginPage />
                     </TestContext.Provider>
+                  ) : (
+                    (document.location.href = "/")
                   )}
                 </>
               )}

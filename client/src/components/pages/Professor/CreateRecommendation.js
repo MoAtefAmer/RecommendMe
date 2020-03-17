@@ -14,13 +14,10 @@ import {
   Grid,
   TextField,
   Button,
-  Card,
-  CardActionArea,
-  CardContent,
+  Backdrop,
   CircularProgress,
   Chip,
-  Snackbar,
-
+  Snackbar
 } from "@material-ui/core";
 import { grey, blue, green, purple } from "@material-ui/core/colors";
 import MuiAlert from "@material-ui/lab/Alert";
@@ -29,7 +26,8 @@ import { FormControl } from "react-bootstrap";
 import { CloudUpload } from "@material-ui/icons";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { storage } from "../../../firebase";
-import { FaFolderOpen,FaFolderPlus } from "react-icons/fa";
+import { FaFolderOpen, FaFolderPlus } from "react-icons/fa";
+import { Spring } from "react-spring/renderprops";
 
 function Copyright() {
   return (
@@ -68,11 +66,10 @@ function a11yProps(index) {
   };
 }
 
-
-  //Snackbar Alert
-  function Alert(props) {
-    return <MuiAlert elevation={6} variant="filled" {...props} />;
-  }
+//Snackbar Alert
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -200,7 +197,8 @@ export default function CreateRecommendation() {
   const [isFileUploaded, setIsFileUploaded] = useState(true);
   const [fileSelectedText, setFileSelectedText] = useState("No File Selected");
   const [open, setOpen] = useState(false);
-  const [pdfLink,setPdfLink]=useState("")
+  const [pdfLink, setPdfLink] = useState("");
+  const [backdrop, setBackdrop] = useState(false);
 
   const SliderCallback = (count, i) => {
     switch (i) {
@@ -344,8 +342,6 @@ export default function CreateRecommendation() {
     setOpen(false);
   };
 
-
-
   const validate = () => {
     let isError = false;
     const errors = {};
@@ -433,7 +429,7 @@ export default function CreateRecommendation() {
     { question: "GPA", id: 9, icon: "gpa" }
   ]);
 
- console.log("OUTSIDEL "+sessionStorage.getItem("firebase"))
+  console.log("OUTSIDEL " + sessionStorage.getItem("firebase"));
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -450,13 +446,14 @@ export default function CreateRecommendation() {
 
       if (file != null) {
         setIsFileUploaded(false);
-      handleUpload()
-      // setPdfLink(sessionStorage.getItem("firebase"))
-      // console.log(sessionStorage.getItem("firebase"))
+        handleUpload();
+        // setPdfLink(sessionStorage.getItem("firebase"))
+        // console.log(sessionStorage.getItem("firebase"))
       }
       if (isFileUploaded === true) {
         // setPdfLink(sessionStorage.getItem("firebase")+"")
         // console.log(pdfLink)
+        setChooseFileLoading(true)
         fetch(`http://localhost:3000/api/doctor/sendRecommendation`, {
           method: "POST",
           body: JSON.stringify({
@@ -493,9 +490,8 @@ export default function CreateRecommendation() {
             adaptationSkills: value5,
             grades: value9,
             englishSkills: value7,
-            pdfLink:sessionStorage.getItem("firebase"),
-            remarks:remarks,
-          
+            pdfLink: sessionStorage.getItem("firebase"),
+            remarks: remarks
           }),
           headers: {
             "Content-Type": "application/json",
@@ -509,16 +505,19 @@ export default function CreateRecommendation() {
             //sessionStorage.setItem("firebase","")
             console.log("yearh");
             setOpen(true);
+            setBackdrop(false);
             // setEmail("");
             // setPassword("");
             // setFirstName("");
             // setLastName("");
             setTimeout(() => {
-              sessionStorage.setItem("firebase","")
-              document.location.href = "/createRecommendation"}, 4000);
+              sessionStorage.setItem("firebase", "");
+              document.location.href = "/createRecommendation";
+            }, 4000);
           } else {
             // setLoading(false);
             console.log("send error");
+            setBackdrop(false);
           }
         });
       }
@@ -528,8 +527,6 @@ export default function CreateRecommendation() {
   };
 
   const handleUpload = () => {
-   
-
     const uploadTask = storage.ref(`recommendationPdfs/${file.name}`).put(file);
     uploadTask.on(
       "state_changed",
@@ -547,15 +544,13 @@ export default function CreateRecommendation() {
           .child(file.name)
           .getDownloadURL()
           .then(url => {
-            sessionStorage.setItem("firebase",url);
+            sessionStorage.setItem("firebase", url);
             console.log(sessionStorage.getItem("firebase"));
             setTimeout(() => setIsFileUploaded(true), 3000);
           });
       }
     );
-  
   };
-
 
   return (
     <div className={classes.root}>
@@ -579,421 +574,475 @@ export default function CreateRecommendation() {
         <CssBaseline />
 
         <Container maxWidth="lg" style={{ flexGrow: 1 }}>
-          <Paper elevation={3} style={{ height: "auto" }}>
-            <form className={classes.form}>
-              <div>
-                <div style={{ textAlign: "center" }}>
-                  <p style={{ fontSize: "1.5625rem", lineHeight: "1.4em" }}>
-                    Student Information
-                  </p>
-                </div>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={4}>
-                    <TextField
-                      name="Student Name"
-                      variant="outlined"
-                      required
-                      fullWidth
-                      id="StudentName"
-                      label="Student Name"
-                      value={studentName}
-                      error={studentNameErrorToggle}
-                      helperText={studentNameError}
-                      onChange={e => {
-                        setStudentName(e.target.value);
-                      }}
-                      autoFocus
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={4}>
-                    <Autocomplete
-                      id="combo-box-demo"
-                      clearOnEscape
-                      options={studentsEmailList.map(option => option.email)}
-                      style={{ width: "100%" }}
-                      freeSolo
-                      value={studentEmail}
-                      onChange={(e, value) => {
-                        if (value !== null) {
-                          console.log(value);
-                          setStudentEmail(value);
-                        } else {
-                          setStudentEmail("");
-                        }
-                      }}
-                      renderInput={params => (
-                        <TextField
-                          {...params}
-                          label="Student Email"
-                          variant="outlined"
-                          required
-                          error={studentEmailErrorToggle}
-                          helperText={studentEmailError}
-                          value={studentEmail}
-                          onChange={e => {
-                            setStudentEmail(e.target.value);
+          <Spring
+            from={{ opacity: 0, transform: "translate3d(-100%,0,0)" }}
+            to={{ opacity: 1, transform: "translate3d(0,0,0)" }}
+          >
+            {props => (
+              <div style={props}>
+                <Paper elevation={3} style={{ height: "auto" }}>
+                  <form className={classes.form}>
+                    <div>
+                      <div style={{ textAlign: "center" }}>
+                        <p
+                          style={{ fontSize: "1.5625rem", lineHeight: "1.4em" }}
+                        >
+                          Student Information
+                        </p>
+                      </div>
+                      <Grid container spacing={2}>
+                        <Grid item xs={12} sm={4}>
+                          <TextField
+                            name="Student Name"
+                            variant="outlined"
+                            required
+                            fullWidth
+                            id="StudentName"
+                            label="Student Name"
+                            value={studentName}
+                            error={studentNameErrorToggle}
+                            helperText={studentNameError}
+                            onChange={e => {
+                              setStudentName(e.target.value);
+                            }}
+                            autoFocus
+                          />
+                        </Grid>
+                        <Grid item xs={12} sm={4}>
+                          <Autocomplete
+                            id="combo-box-demo"
+                            clearOnEscape
+                            options={studentsEmailList.map(
+                              option => option.email
+                            )}
+                            style={{ width: "100%" }}
+                            freeSolo
+                            value={studentEmail}
+                            onChange={(e, value) => {
+                              if (value !== null) {
+                                console.log(value);
+                                setStudentEmail(value);
+                              } else {
+                                setStudentEmail("");
+                              }
+                            }}
+                            renderInput={params => (
+                              <TextField
+                                {...params}
+                                label="Student Email"
+                                variant="outlined"
+                                required
+                                error={studentEmailErrorToggle}
+                                helperText={studentEmailError}
+                                value={studentEmail}
+                                onChange={e => {
+                                  setStudentEmail(e.target.value);
+                                }}
+                              />
+                            )}
+                          />
+                        </Grid>
+                        <Grid item xs={12} sm={4}>
+                          <TextField
+                            autoComplete="Major"
+                            name="Major"
+                            variant="outlined"
+                            required
+                            fullWidth
+                            id="Major"
+                            value={studentMajor}
+                            error={studentMajorErrorToggle}
+                            helperText={studentMajorError}
+                            label="Major"
+                            onChange={e => {
+                              setStudentMajor(e.target.value);
+                            }}
+                            autoFocus
+                          />
+                        </Grid>
+                      </Grid>
+                    </div>
+                    <div>
+                      <div style={{ textAlign: "center" }}>
+                        <p
+                          style={{
+                            fontSize: "1.5625rem",
+                            lineHeight: "1.4em",
+                            paddingTop: "4%"
                           }}
-                        />
-                      )}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={4}>
-                    <TextField
-                      autoComplete="Major"
-                      name="Major"
-                      variant="outlined"
-                      required
-                      fullWidth
-                      id="Major"
-                      value={studentMajor}
-                      error={studentMajorErrorToggle}
-                      helperText={studentMajorError}
-                      label="Major"
-                      onChange={e => {
-                        setStudentMajor(e.target.value);
-                      }}
-                      autoFocus
-                    />
-                  </Grid>
-                </Grid>
-              </div>
-              <div>
-                <div style={{ textAlign: "center" }}>
-                  <p
-                    style={{
-                      fontSize: "1.5625rem",
-                      lineHeight: "1.4em",
-                      paddingTop: "4%"
-                    }}
-                  >
-                    University Information
-                  </p>
-                </div>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={4}>
-                    <Autocomplete
-                      id="combo-box-demo"
-                      clearOnEscape
-                      options={universityEmailList.map(option => option.Name)}
-                      style={{ width: "100%" }}
-                      freeSolo
-                      required
-                      value={universityName}
-                      onChange={(e, value) => {
-                        if (value !== null) {
-                          setUniversityName(value);
-                        } else {
-                          setUniversityName("");
-                        }
-                      }}
-                      renderInput={params => (
-                        <TextField
-                          {...params}
-                          label="University Name"
-                          variant="outlined"
-                          required
-                          error={universityNameErrorToggle}
-                          helperText={universityNameError}
-                          value={universityName}
-                          onChange={e => {
-                            setUniversityName(e.target.value);
+                        >
+                          University Information
+                        </p>
+                      </div>
+                      <Grid container spacing={2}>
+                        <Grid item xs={12} sm={4}>
+                          <Autocomplete
+                            id="combo-box-demo"
+                            clearOnEscape
+                            options={universityEmailList.map(
+                              option => option.Name
+                            )}
+                            style={{ width: "100%" }}
+                            freeSolo
+                            required
+                            value={universityName}
+                            onChange={(e, value) => {
+                              if (value !== null) {
+                                setUniversityName(value);
+                              } else {
+                                setUniversityName("");
+                              }
+                            }}
+                            renderInput={params => (
+                              <TextField
+                                {...params}
+                                label="University Name"
+                                variant="outlined"
+                                required
+                                error={universityNameErrorToggle}
+                                helperText={universityNameError}
+                                value={universityName}
+                                onChange={e => {
+                                  setUniversityName(e.target.value);
+                                }}
+                              />
+                            )}
+                          />
+                        </Grid>
+                        <Grid item xs={12} sm={4}>
+                          <Autocomplete
+                            id="combo-box-demo"
+                            clearOnEscape
+                            options={universityEmailList.map(
+                              option => option.uemail
+                            )}
+                            style={{ width: "100%" }}
+                            freeSolo
+                            required
+                            value={universityEmail}
+                            onChange={(e, value) => {
+                              if (value !== null) {
+                                console.log(value);
+                                setUniversityEmail(value);
+                              } else {
+                                setUniversityEmail("");
+                              }
+                            }}
+                            renderInput={params => (
+                              <TextField
+                                {...params}
+                                label="University Email"
+                                variant="outlined"
+                                required
+                                error={universityEmailErrorToggle}
+                                helperText={universityEmailError}
+                                value={universityEmail}
+                                onChange={e => {
+                                  setUniversityEmail(e.target.value);
+                                }}
+                              />
+                            )}
+                          />
+                        </Grid>
+                        <Grid item xs={12} sm={4}>
+                          <TextField
+                            name="University Link"
+                            variant="outlined"
+                            fullWidth
+                            id="University Link"
+                            label="University Website Link"
+                            value={universityWebsiteLink}
+                            onChange={e => {
+                              setUniversityWebsiteLink(e.target.value);
+                            }}
+                            autoFocus
+                          />
+                        </Grid>
+                      </Grid>
+                    </div>
+                    <div>
+                      <div style={{ textAlign: "center" }}>
+                        <p
+                          style={{
+                            fontSize: "1.5625rem",
+                            lineHeight: "1.4em",
+                            paddingTop: "4%"
                           }}
-                        />
-                      )}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={4}>
-                    <Autocomplete
-                      id="combo-box-demo"
-                      clearOnEscape
-                      options={universityEmailList.map(option => option.uemail)}
-                      style={{ width: "100%" }}
-                      freeSolo
-                      required
-                      value={universityEmail}
-                      onChange={(e, value) => {
-                        if (value !== null) {
-                          console.log(value);
-                          setUniversityEmail(value);
-                        } else {
-                          setUniversityEmail("");
-                        }
-                      }}
-                      renderInput={params => (
-                        <TextField
-                          {...params}
-                          label="University Email"
-                          variant="outlined"
-                          required
-                          error={universityEmailErrorToggle}
-                          helperText={universityEmailError}
-                          value={universityEmail}
-                          onChange={e => {
-                            setUniversityEmail(e.target.value);
-                          }}
-                        />
-                      )}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={4}>
-                    <TextField
-                      name="University Link"
-                      variant="outlined"
-                      fullWidth
-                      id="University Link"
-                      label="University Website Link"
-                      value={universityWebsiteLink}
-                      onChange={e => {
-                        setUniversityWebsiteLink(e.target.value);
-                      }}
-                      autoFocus
-                    />
-                  </Grid>
-                </Grid>
+                        >
+                          My Information
+                        </p>
+                      </div>
+                      <Grid container spacing={2}>
+                        <Grid item xs={12} sm={4}>
+                          <TextField
+                            name="Name"
+                            variant="standard"
+                            fullWidth
+                            id="Name"
+                            label="Name"
+                            value={
+                              sessionStorage.getItem("firstName") +
+                              " " +
+                              sessionStorage.getItem("lastName")
+                            }
+                            autoFocus
+                            disabled
+                          />
+                        </Grid>
+                        <Grid item xs={12} sm={4}>
+                          <TextField
+                            name="Email"
+                            variant="standard"
+                            required
+                            fullWidth
+                            id="Email"
+                            label="Email"
+                            value={sessionStorage.getItem("email")}
+                            autoFocus
+                            disabled
+                          />
+                        </Grid>
+                        <Grid item xs={12} sm={4}>
+                          <TextField
+                            name="Current Job"
+                            variant="standard"
+                            fullWidth
+                            id="CurrentJob"
+                            label="Current Job"
+                            autoFocus
+                            disabled
+                            value={sessionStorage.getItem("currentJob")}
+                          />
+                        </Grid>
+                      </Grid>
+                    </div>
+                    <div style={{ textAlign: "right", paddingTop: "5%" }}>
+                      <ColorButton
+                        variant="contained"
+                        onClick={e => {
+                          setValue(1);
+                        }}
+                      >
+                        {" "}
+                        Next
+                      </ColorButton>
+                    </div>
+                  </form>
+                </Paper>
               </div>
-              <div>
-                <div style={{ textAlign: "center" }}>
-                  <p
-                    style={{
-                      fontSize: "1.5625rem",
-                      lineHeight: "1.4em",
-                      paddingTop: "4%"
-                    }}
-                  >
-                    My Information
-                  </p>
-                </div>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={4}>
-                    <TextField
-                      name="Name"
-                      variant="standard"
-                      fullWidth
-                      id="Name"
-                      label="Name"
-                      value={
-                        sessionStorage.getItem("firstName") +
-                        " " +
-                        sessionStorage.getItem("lastName")
-                      }
-                      autoFocus
-                      disabled
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={4}>
-                    <TextField
-                      name="Email"
-                      variant="standard"
-                      required
-                      fullWidth
-                      id="Email"
-                      label="Email"
-                      value={sessionStorage.getItem("email")}
-                      autoFocus
-                      disabled
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={4}>
-                    <TextField
-                      name="Current Job"
-                      variant="standard"
-                      fullWidth
-                      id="CurrentJob"
-                      label="Current Job"
-                      autoFocus
-                      disabled
-                      value={sessionStorage.getItem("currentJob")}
-                    />
-                  </Grid>
-                </Grid>
-              </div>
-              <div style={{ textAlign: "right", paddingTop: "5%" }}>
-                <ColorButton
-                  variant="contained"
-                  onClick={e => {
-                    setValue(1);
-                  }}
-                >
-                  {" "}
-                  Next
-                </ColorButton>
-              </div>
-            </form>
-          </Paper>
+            )}
+          </Spring>
         </Container>
       </TabPanel>
       {/* //Atef */}
       <TabPanel className={classes.tabBackgroundColor} value={value} index={1}>
         <Container maxWidth="lg" style={{ flexGrow: 1 }}>
-          <Grid container spacing={2}>
-            {cardsArray.map((card, i) => (
-              <CardContext.Provider
-                key={i}
-                value={{
-                  element: cardsArray.filter(element => element.id === i),
-                  callback: SliderCallback,
-                  index: i,
-                  valueArray: testArray[i]
-                }}
-              >
-                <QuestionCard />
-              </CardContext.Provider>
-            ))}
+          <Spring
+            from={{ opacity: 0, transform: "translate3d(-100%,0,0)" }}
+            to={{ opacity: 1, transform: "translate3d(0,0,0)" }}
+          >
+            {props => (
+              <div style={props}>
+                <Grid container spacing={2}>
+                  {cardsArray.map((card, i) => (
+                    <CardContext.Provider
+                      key={i}
+                      value={{
+                        element: cardsArray.filter(element => element.id === i),
+                        callback: SliderCallback,
+                        index: i,
+                        valueArray: testArray[i]
+                      }}
+                    >
+                      <QuestionCard />
+                    </CardContext.Provider>
+                  ))}
 
-            <Grid item xs={12} sm={4}></Grid>
+                  <Grid item xs={12} sm={4}></Grid>
 
-            <Grid item xs={12} sm={4}>
-              <div
-                style={{
-                  textAlign: "right",
-                  paddingTop: "5%",
-                  marginTop: "25%"
-                }}
-              >
-                <BackButton
-                  variant="contained"
-                  onClick={e => {
-                    setValue(0);
-                  }}
-                >
-                  {" "}
-                  Back
-                </BackButton>
-                <ColorButton
-                  variant="contained"
-                  onClick={e => {
-                    setValue(2);
-                  }}
-                >
-                  {" "}
-                  Next
-                </ColorButton>
+                  <Grid item xs={12} sm={4}>
+                    <div
+                      style={{
+                        textAlign: "right",
+                        paddingTop: "5%",
+                        marginTop: "25%"
+                      }}
+                    >
+                      <BackButton
+                        variant="contained"
+                        onClick={e => {
+                          setValue(0);
+                        }}
+                      >
+                        {" "}
+                        Back
+                      </BackButton>
+                      <ColorButton
+                        variant="contained"
+                        onClick={e => {
+                          setValue(2);
+                        }}
+                      >
+                        {" "}
+                        Next
+                      </ColorButton>
+                    </div>
+                  </Grid>
+                </Grid>
               </div>
-            </Grid>
-          </Grid>
+            )}
+          </Spring>
         </Container>
       </TabPanel>
       <TabPanel value={value} index={2}>
         <Container maxWidth="sm" style={{ flexGrow: 1 }}>
-          <Paper elevation={3} style={{ height: "auto" }}>
-            <form className={classes.form}>
-              <div>
-                <div style={{ textAlign: "Left" }}>
-                  <p style={{ fontSize: "1.5625rem", lineHeight: "1.4em" }}>
-                    Remarks
-                  </p>
-                </div>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={12}>
-                    <FormControl
-                      as="textarea"
-                      aria-label="With textarea"
-                      rows="3"
-                      
-                      onChange={e => {
-                        setRemarks(e.target.value);
-                      }}
-                    />
-                  </Grid>
-                </Grid>
-              </div>
-              <br />
-              <div>
-                <div style={{ textAlign: "Left" }}>
-                  <p style={{ fontSize: "1.5625rem", lineHeight: "1.4em" }}>
-                    Upload Recommendation Letter
-                  </p>
-                </div>
-                <Grid item xs={12} sm={4}>
-                  <input
-                    accept="image/*"
-                    className={classes.input}
-                    id="contained-button-file"
-                    multiple
-                    type="file"
-                    onChange={e => {
-                    
-                      setFile(e.target.files[0]);
-                      if(e.target.files[0]!=null)
-                     setFileSelectedText(e.target.files[0].name);
-                    }}
-                  />
-                  <label htmlFor="contained-button-file">
-                    <Chip
-                      variant="outlined"
-                      label={fileSelectedText}
-                      color="primary"
-                      icon={
-                        fileSelectedText === "No File Selected" ? (
-                          <FaFolderOpen style={{ fontSize: "25px" }} />
-                        ) : (
-                          <FaFolderPlus style={{ fontSize: "25px" }} />
-                        )
-                      }
-                    />
+          <Spring
+            from={{ opacity: 0, transform: "translate3d(-100%,0,0)" }}
+            to={{ opacity: 1, transform: "translate3d(0,0,0)" }}
+          >
+            {props => (
+              <div style={props}>
+                <Paper elevation={3} style={{ height: "auto" }}>
+                  <form className={classes.form}>
+                    <div>
+                      <div style={{ textAlign: "Left" }}>
+                        <p
+                          style={{ fontSize: "1.5625rem", lineHeight: "1.4em" }}
+                        >
+                          Remarks
+                        </p>
+                      </div>
+                      <Grid container spacing={2}>
+                        <Grid item xs={12} sm={12}>
+                          <FormControl
+                            as="textarea"
+                            aria-label="With textarea"
+                            rows="3"
+                            onChange={e => {
+                              setRemarks(e.target.value);
+                            }}
+                          />
+                        </Grid>
+                      </Grid>
+                    </div>
                     <br />
-                    <br />
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      component="span"
-                      disabled={chooseFileLoading}
-                    >
-                      <CloudUpload
-                        style={{ fontSize: "30px", marginRight: "10px" }}
-                      />
-                      {"  "}
-                      Choose File
-                      {loading && (
-                        <CircularProgress
-                          size={24}
-                          className={classes.buttonProgress}
+                    <div>
+                      <div style={{ textAlign: "Left" }}>
+                        <p
+                          style={{ fontSize: "1.5625rem", lineHeight: "1.4em" }}
+                        >
+                          Upload Recommendation Letter
+                        </p>
+                      </div>
+                      <Grid item xs={12} sm={4}>
+                        <input
+                          accept="image/*"
+                          className={classes.input}
+                          id="contained-button-file"
+                          multiple
+                          type="file"
+                          onChange={e => {
+                            setFile(e.target.files[0]);
+                            if (e.target.files[0] != null)
+                              setFileSelectedText(e.target.files[0].name);
+                          }}
                         />
-                      )}
-                    </Button>
-                  </label>
-                </Grid>
+                        <label htmlFor="contained-button-file">
+                          <Chip
+                            variant="outlined"
+                            label={fileSelectedText}
+                            color="primary"
+                            icon={
+                              fileSelectedText === "No File Selected" ? (
+                                <FaFolderOpen style={{ fontSize: "25px" }} />
+                              ) : (
+                                <FaFolderPlus style={{ fontSize: "25px" }} />
+                              )
+                            }
+                          />
+                          <br />
+                          <br />
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            component="span"
+                            disabled={chooseFileLoading}
+                          >
+                            <CloudUpload
+                              style={{ fontSize: "30px", marginRight: "10px" }}
+                            />
+                            {"  "}
+                            Choose File
+                            {loading && (
+                              <CircularProgress
+                                size={24}
+                                className={classes.buttonProgress}
+                              />
+                            )}
+                          </Button>
+                        </label>
+                      </Grid>
+                    </div>
+                    <div style={{ textAlign: "right", paddingTop: "5%" }}>
+                      <div className={classes.wrapper}>
+                        <BackButton
+                          variant="contained"
+                          onClick={e => {
+                            setValue(1);
+                          }}
+                        >
+                          {" "}
+                          Back
+                        </BackButton>
+                        <Button
+                          variant="contained"
+                          color="secondary"
+                          onClick={handleSubmitRequest}
+                          disabled={loading}
+                        >
+                          {" "}
+                          Submit
+                        </Button>
+                        {loading && (
+                          <CircularProgress
+                            size={24}
+                            className={classes.buttonProgress}
+                          />
+                        )}
+                      </div>
+                    </div>
+                  </form>
+                </Paper>
               </div>
-              <div style={{ textAlign: "right", paddingTop: "5%" }}>
-                <div className={classes.wrapper}>
-                  <BackButton
-                    variant="contained"
-                    onClick={e => {
-                      setValue(1);
-                    }}
-                  >
-                    {" "}
-                    Back
-                  </BackButton>
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    onClick={handleSubmitRequest}
-                    disabled={loading}
-                  >
-                    {" "}
-                    Submit
-                  </Button>
-                  {loading && (
-                    <CircularProgress
-                      size={24}
-                      className={classes.buttonProgress}
-                    />
-                  )}
-                </div>
-              </div>
-            </form>
-          </Paper>
+            )}
+          </Spring>
         </Container>
-        <Container>
-        <Grid item >
-          <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-            <Alert onClose={handleClose} severity="success">
-             Recommendation Posted
-            </Alert>
-          </Snackbar>
-        </Grid>
-      </Container>
+
+        <Spring
+          from={{ opacity: 0, transform: "translate3d(0,100%,0)" }}
+          to={{ opacity: 1, transform: "translate3d(0,0,0)" }}
+        >
+          {props => (
+            <div style={props}>
+              <br />
+              <br />
+              <br />
+              <Container>
+                <Grid item>
+                  <Snackbar
+                    open={open}
+                    autoHideDuration={6000}
+                    onClose={handleClose}
+                  >
+                    <Alert onClose={handleClose} severity="success">
+                      Recommendation Posted
+                    </Alert>
+                  </Snackbar>
+                </Grid>
+              </Container>
+            </div>
+          )}
+        </Spring>
       </TabPanel>
     </div>
   );

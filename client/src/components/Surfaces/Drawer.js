@@ -15,8 +15,13 @@ import DoctorIcon from "@material-ui/icons/Group";
 import UniversityIcon from "@material-ui/icons/LocationCity";
 import DrawerButtonItem from "./DrawerButtonItem";
 
-import {IoIosCreate,IoIosUnlock,IoIosLogOut ,IoIosLogIn} from "react-icons/io";
-import { MdLibraryBooks,MdLibraryAdd } from "react-icons/md";
+import {
+  IoIosCreate,
+  IoIosUnlock,
+  IoIosLogOut,
+  IoIosLogIn
+} from "react-icons/io";
+import { MdLibraryBooks, MdLibraryAdd } from "react-icons/md";
 
 const useStyles = makeStyles({
   list: {
@@ -35,6 +40,7 @@ export default function TemporaryDrawer() {
   const openDrawer = useContext(MenuButtonContext);
 
   const [left, setLeft] = useState(openDrawer.menuClick);
+  console.log(sessionStorage.getItem("token"));
 
   const toggleDrawer = (side, open) => event => {
     if (
@@ -55,7 +61,8 @@ export default function TemporaryDrawer() {
       onKeyDown={toggleDrawer(side, false)}
     >
       <List>
-        {sessionStorage.getItem("token") === "" ? (
+        {sessionStorage.getItem("token") === "" ||
+        sessionStorage.getItem("token") === null ? (
           <>
             <ListItem button key={"Sign Up as a Student"}>
               <ListItemIcon>
@@ -98,7 +105,7 @@ export default function TemporaryDrawer() {
                 key: "Request Recommendation",
                 primary: "Request Recommendation",
                 onClick: "rr",
-                icon:<IoIosCreate style={{"fontSize":"25px"}}/>
+                icon: <IoIosCreate style={{ fontSize: "25px" }} />
               }}
             >
               <DrawerButtonItem />
@@ -109,7 +116,7 @@ export default function TemporaryDrawer() {
                 key: "Change Password",
                 primary: "Change Password",
                 onClick: "cp",
-                icon:<IoIosUnlock style={{"fontSize":"25px"}}/>
+                icon: <IoIosUnlock style={{ fontSize: "25px" }} />
               }}
             >
               <DrawerButtonItem />
@@ -122,7 +129,7 @@ export default function TemporaryDrawer() {
                 key: "Create Recommendation",
                 primary: "Create Recommendation",
                 onClick: "cr",
-                icon:<MdLibraryAdd style={{"fontSize":"25px"}}/>
+                icon: <MdLibraryAdd style={{ fontSize: "25px" }} />
               }}
             >
               <DrawerButtonItem />
@@ -133,7 +140,7 @@ export default function TemporaryDrawer() {
                 key: "View My Recommendations",
                 primary: "View My Recommendations",
                 onClick: "vr",
-                icon:<MdLibraryBooks style={{"fontSize":"25px"}}/>
+                icon: <MdLibraryBooks style={{ fontSize: "25px" }} />
               }}
             >
               <DrawerButtonItem />
@@ -143,7 +150,7 @@ export default function TemporaryDrawer() {
                 key: "Change Password",
                 primary: "Change Password",
                 onClick: "changePassword",
-                icon:<IoIosUnlock style={{"fontSize":"25px"}}/>
+                icon: <IoIosUnlock style={{ fontSize: "25px" }} />
               }}
             >
               <DrawerButtonItem />
@@ -188,27 +195,28 @@ export default function TemporaryDrawer() {
 
       <Divider />
       <List>
-        {sessionStorage.getItem("token") !== "" ? (
+        {sessionStorage.getItem("token") === "" ||
+        sessionStorage.getItem("token") === null ? (
           <ListItem button key={"LogIn"}>
             <ListItemIcon>
-              <IoIosLogOut style={{"fontSize":"25px"}}/>
-            </ListItemIcon>
-            <ListItemText
-              primary={"Logout"}
-              onClick={() => {
-                openDrawer.handleLogout();
-              }}
-            />
-          </ListItem>
-        ) : (
-          <ListItem button key={"LogIn"}>
-            <ListItemIcon>
-              <IoIosLogIn style={{"fontSize":"25px"}} />
+              <IoIosLogIn style={{ fontSize: "25px" }} />
             </ListItemIcon>
             <ListItemText
               primary={"Login"}
               onClick={() => {
                 document.location.href = "/login";
+              }}
+            />
+          </ListItem>
+        ) : (
+          <ListItem button key={"logout"}>
+            <ListItemIcon>
+              <IoIosLogOut style={{ fontSize: "25px" }} />
+            </ListItemIcon>
+            <ListItemText
+              primary={"Logout"}
+              onClick={() => {
+                openDrawer.handleLogout();
               }}
             />
           </ListItem>
