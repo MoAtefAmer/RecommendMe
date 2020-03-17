@@ -150,7 +150,7 @@ router.get("/viewProfile", async (req, res) => {
 //Get a List of All Unis
 router.get("/getUniEmails", async (req, res) => {
 
-  const uniList = await University.find({},{uemail:1,_id:0})
+  const uniList = await University.find({},{uemail:1,_id:0,Name:1,websiteLink:1})
 
   if (!uniList) {
     return res.status(404).send({ error: "No Universities Found" });

@@ -12,6 +12,7 @@
     "@testing-library/react": "^9.4.1",
     "@testing-library/user-event": "^7.2.1",
     "bootstrap": "^4.4.1",
+    "firebase": "^7.11.0",
     "jss": "^10.0.4",
     "list": "^2.0.19",
     "material-kit-react": "^1.8.0",

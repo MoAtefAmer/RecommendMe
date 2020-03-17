@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import clsx from "clsx";
 import PropTypes from "prop-types";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
@@ -16,12 +16,20 @@ import {
   Button,
   Card,
   CardActionArea,
-  CardContent
+  CardContent,
+  CircularProgress,
+  Chip,
+  Snackbar,
+
 } from "@material-ui/core";
 import { grey, blue, green, purple } from "@material-ui/core/colors";
+import MuiAlert from "@material-ui/lab/Alert";
 import QuestionCard from "./QuestionCard";
 import { FormControl } from "react-bootstrap";
 import { CloudUpload } from "@material-ui/icons";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import { storage } from "../../../firebase";
+import { FaFolderOpen,FaFolderPlus } from "react-icons/fa";
 
 function Copyright() {
   return (
@@ -60,6 +68,12 @@ function a11yProps(index) {
   };
 }
 
+
+  //Snackbar Alert
+  function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+  }
+
 const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1,
@@ -72,6 +86,26 @@ const useStyles = makeStyles(theme => ({
   paper: {
     display: "flex",
     flexDirection: "column"
+  },
+
+  buttonProgress: {
+    color: green[500],
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    marginTop: -12,
+    marginLeft: -12
+  },
+  buttonSuccess: {
+    backgroundColor: green[500],
+    "&:hover": {
+      backgroundColor: green[700]
+    }
+  },
+
+  wrapper: {
+    margin: theme.spacing(1),
+    position: "relative"
   },
   normalForm: {
     backgroundColor: "linear-gradient(60deg, #ab47bc, #8e24aa)",
@@ -100,8 +134,8 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: "black"
   },
   input: {
-    display: 'none',
-  },
+    display: "none"
+  }
 }));
 
 const ColorButton = withStyles(theme => ({
@@ -124,9 +158,268 @@ export var CardContext = React.createContext();
 
 export default function CreateRecommendation() {
   const classes = useStyles();
-  const [value, setValue] = useState(1);
-  const [cardIcon, setCardIcon] = useState("");
+  const [value, setValue] = useState(0);
+  const [universityEmail, setUniversityEmail] = useState("");
 
+  const [value0, setValue0] = useState(3);
+  const [value1, setValue1] = useState(3);
+  const [value2, setValue2] = useState(3);
+  const [value3, setValue3] = useState(3);
+  const [value4, setValue4] = useState(3);
+  const [value5, setValue5] = useState(3);
+  const [value6, setValue6] = useState(3);
+  const [value7, setValue7] = useState(3);
+  const [value8, setValue8] = useState(3);
+  const [value9, setValue9] = useState(3);
+  const [studentsEmailList, setStudentsEmailList] = useState([]);
+  const [universityEmailList, setUniversityEmailList] = useState([]);
+  const [studentEmail, setStudentEmail] = useState("");
+  const [studentName, setStudentName] = useState("");
+  const [studentMajor, setStudentMajor] = useState("");
+  const [universityName, setUniversityName] = useState("");
+  const [universityWebsiteLink, setUniversityWebsiteLink] = useState("");
+  const [studentNameErrorToggle, setStudentNameErrorToggle] = useState(false);
+  const [studentNameError, setStudentNameError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [chooseFileLoading, setChooseFileLoading] = useState(false);
+  const [remarks, setRemarks] = useState("");
+
+  const [file, setFile] = useState();
+  const [studentMajorError, setStudentMajorError] = useState("");
+  const [studentMajorErrorToggle, setStudentMajorErrorToggle] = useState(false);
+  const [universityNameError, setUniversityNameError] = useState("");
+  const [universityNameErrorToggle, setUniversityNameErrorToggle] = useState(
+    false
+  );
+  const [studentEmailError, setStudentEmailError] = useState("");
+  const [studentEmailErrorToggle, setStudentEmailErrorToggle] = useState(false);
+  const [universityEmailError, setUniversityEmailError] = useState("");
+  const [universityEmailErrorToggle, setUniversityEmailErrorToggle] = useState(
+    false
+  );
+  const [isFileUploaded, setIsFileUploaded] = useState(true);
+  const [fileSelectedText, setFileSelectedText] = useState("No File Selected");
+  const [open, setOpen] = useState(false);
+  const [pdfLink,setPdfLink]=useState("")
+
+  const SliderCallback = (count, i) => {
+    switch (i) {
+      case 0:
+        setValue0(count);
+        break;
+      case 1:
+        setValue1(count);
+        break;
+      case 2:
+        setValue2(count);
+        break;
+      case 3:
+        setValue3(count);
+        break;
+      case 4:
+        setValue4(count);
+        break;
+      case 5:
+        setValue5(count);
+        break;
+      case 6:
+        setValue6(count);
+        break;
+      case 7:
+        setValue7(count);
+        break;
+      case 8:
+        setValue8(count);
+        break;
+      case 9:
+        setValue9(count);
+        break;
+    }
+  };
+
+  var testArray = [
+    value0,
+    value1,
+    value2,
+    value3,
+    value4,
+    value5,
+    value6,
+    value7,
+    value8,
+    value9
+  ];
+
+  useEffect(() => {
+    if (studentName.length >= 1) {
+      setStudentNameErrorToggle(false);
+      setStudentNameError("");
+    }
+  }, [studentName]);
+
+  useEffect(() => {
+    if (studentMajor.length >= 1) {
+      setStudentMajorErrorToggle(false);
+      setStudentMajorError("");
+    }
+  }, [studentMajor]);
+
+  useEffect(() => {
+    if (studentEmail !== "") {
+      studentsEmailList.filter(element => {
+        if (element.email === studentEmail) {
+          setStudentName(element.Name);
+          setStudentMajor(element.major);
+          console.log(element.major);
+        }
+      });
+    }
+
+    if (studentEmail.length >= 1) {
+      setStudentEmailErrorToggle(false);
+      setStudentEmailError("");
+    }
+  }, [studentEmail]);
+
+  useEffect(() => {
+    if (universityEmail !== "") {
+      universityEmailList.filter(element => {
+        if (element.uemail === universityEmail) {
+          setUniversityName(element.Name);
+          setUniversityWebsiteLink(element.websiteLink);
+        }
+      });
+    }
+    if (universityEmail.length >= 1) {
+      setUniversityEmailErrorToggle(false);
+      setUniversityEmailError("");
+    }
+  }, [universityEmail]);
+
+  useEffect(() => {
+    if (universityName !== "") {
+      universityEmailList.filter(element => {
+        if (element.Name === universityName) {
+          setUniversityEmail(element.uemail);
+          setUniversityWebsiteLink(element.websiteLink);
+        }
+      });
+    }
+    if (universityName.length >= 1) {
+      setUniversityNameErrorToggle(false);
+      setUniversityNameError("");
+    }
+  }, [universityName]);
+
+  useEffect(() => {
+    // console.log("useEffect");
+    fetch(`http://localhost:3000/api/student/getStudentsEmails`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    }).then(res => {
+      res.json().then(data => {
+        setStudentsEmailList(data.stuList);
+      });
+    });
+
+    fetch(`http://localhost:3000/api/university/getUniEmails`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    }).then(res => {
+      res.json().then(data => {
+        setUniversityEmailList(data.uniList);
+      });
+    });
+  }, []);
+
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpen(false);
+  };
+
+
+
+  const validate = () => {
+    let isError = false;
+    const errors = {};
+    let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+    if (!re.test(studentEmail)) {
+      isError = true;
+      errors.studentEmailError = "Please enter a valid email";
+      errors.studentEmailErrorToggle = true;
+      console.log("error");
+    } else {
+      setStudentEmailErrorToggle(false);
+      setStudentEmailError("");
+      console.log("error");
+    }
+
+    if (!re.test(universityEmail)) {
+      isError = true;
+      errors.universityEmailError = "Please enter a valid email";
+      errors.universityEmailErrorToggle = true;
+    } else {
+      setUniversityEmailErrorToggle(false);
+      setUniversityEmailError("");
+    }
+
+    if (studentName.length <= 0) {
+      isError = true;
+      errors.studentNameError = "Please enter the Student's Name";
+      errors.studentNameErrorToggle = true;
+    } else {
+      setStudentNameErrorToggle(false);
+      setStudentNameError("");
+    }
+
+    if (studentMajor.length <= 0) {
+      isError = true;
+      errors.studentMajorError = "Please enter the Student's Name";
+      errors.studentMajorErrorToggle = true;
+    } else {
+      setStudentMajorErrorToggle(false);
+      setStudentMajorError("");
+    }
+
+    if (universityName.length <= 2) {
+      isError = true;
+      errors.universityNameError = "Please enter the University's Name";
+      errors.universityNameErrorToggle = true;
+      console.log(universityName);
+    } else {
+      setUniversityNameErrorToggle(false);
+      setUniversityNameError("");
+    }
+
+    if (isError) {
+      // setEmailError(errors.emailError);
+      // setEmailErrorToggle(errors.emailErrorToggle);
+
+      setStudentEmailErrorToggle(errors.studentEmailErrorToggle);
+      setStudentEmailError(errors.studentEmailError);
+
+      setStudentNameError(errors.studentNameError);
+      setStudentNameErrorToggle(errors.studentNameErrorToggle);
+      setUniversityNameErrorToggle(errors.universityNameErrorToggle);
+      setUniversityNameError(errors.universityNameError);
+      setStudentMajorErrorToggle(errors.studentMajorErrorToggle);
+      setStudentMajorError(errors.studentMajorError);
+      setUniversityEmailErrorToggle(errors.universityEmailErrorToggle);
+      setUniversityEmailError(errors.universityEmailError);
+    }
+
+    return isError;
+  };
+
+  // console.log(universityEmailList)
   const [cardsArray] = useState([
     { question: "Analytical Skills", id: 0, icon: "analytics" },
     { question: "Communication Skills", id: 1, icon: "communication" },
@@ -140,9 +433,129 @@ export default function CreateRecommendation() {
     { question: "GPA", id: 9, icon: "gpa" }
   ]);
 
+ console.log("OUTSIDEL "+sessionStorage.getItem("firebase"))
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+
+  const handleSubmitRequest = e => {
+    e.preventDefault();
+
+    const err = validate();
+
+    if (!err) {
+      if (!loading) {
+        setLoading(true);
+      }
+
+      if (file != null) {
+        setIsFileUploaded(false);
+      handleUpload()
+      // setPdfLink(sessionStorage.getItem("firebase"))
+      // console.log(sessionStorage.getItem("firebase"))
+      }
+      if (isFileUploaded === true) {
+        // setPdfLink(sessionStorage.getItem("firebase")+"")
+        // console.log(pdfLink)
+        fetch(`http://localhost:3000/api/doctor/sendRecommendation`, {
+          method: "POST",
+          body: JSON.stringify({
+            subject: "Notification Email from RecommendME",
+            message:
+              "Professor " +
+              sessionStorage.getItem("firstName") +
+              " " +
+              sessionStorage.getItem("lastName") +
+              " has posted a new recommendation for Student: " +
+              studentName +
+              " to " +
+              universityName +
+              "\n www.google.com",
+            studentName: studentName,
+            studentEmail: studentEmail,
+            major: studentMajor,
+            professorName:
+              sessionStorage.getItem("firstName") +
+              " " +
+              sessionStorage.getItem("lastName"),
+            professorEmail: sessionStorage.getItem("email"),
+            professorCurrentJob: sessionStorage.getItem("currentJob"),
+            uemail: universityEmail,
+            universityName: universityName,
+            universityLink: universityWebsiteLink,
+            communicationSkills: value1,
+            problemSolvingSkills: value4,
+            researchSkills: value3,
+            technicalKnowledge: value2,
+            analyticalSkills: value0,
+            stressHandling: value8,
+            punctuality: value6,
+            adaptationSkills: value5,
+            grades: value9,
+            englishSkills: value7,
+            pdfLink:sessionStorage.getItem("firebase"),
+            remarks:remarks,
+          
+          }),
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Headers": "*",
+            "x-access-token": sessionStorage.getItem("token")
+          }
+        }).then(res => {
+          console.log(res.status);
+          if (res.status === 200) {
+            setLoading(false);
+            //sessionStorage.setItem("firebase","")
+            console.log("yearh");
+            setOpen(true);
+            // setEmail("");
+            // setPassword("");
+            // setFirstName("");
+            // setLastName("");
+            setTimeout(() => {
+              sessionStorage.setItem("firebase","")
+              document.location.href = "/createRecommendation"}, 4000);
+          } else {
+            // setLoading(false);
+            console.log("send error");
+          }
+        });
+      }
+    } else {
+      if (err) setValue(0);
+    }
+  };
+
+  const handleUpload = () => {
+   
+
+    const uploadTask = storage.ref(`recommendationPdfs/${file.name}`).put(file);
+    uploadTask.on(
+      "state_changed",
+      snapshot => {
+        //Progress function
+        console.log(snapshot);
+      },
+      error => {
+        console.log(error);
+      },
+      () => {
+        //complete Function
+        storage
+          .ref("recommendationPdfs")
+          .child(file.name)
+          .getDownloadURL()
+          .then(url => {
+            sessionStorage.setItem("firebase",url);
+            console.log(sessionStorage.getItem("firebase"));
+            setTimeout(() => setIsFileUploaded(true), 3000);
+          });
+      }
+    );
+  
+  };
+
 
   return (
     <div className={classes.root}>
@@ -183,18 +596,45 @@ export default function CreateRecommendation() {
                       fullWidth
                       id="StudentName"
                       label="Student Name"
+                      value={studentName}
+                      error={studentNameErrorToggle}
+                      helperText={studentNameError}
+                      onChange={e => {
+                        setStudentName(e.target.value);
+                      }}
                       autoFocus
                     />
                   </Grid>
                   <Grid item xs={12} sm={4}>
-                    <TextField
-                      name="Student Email"
-                      variant="outlined"
-                      required
-                      fullWidth
-                      id="Student Email"
-                      label="Student Email"
-                      autoFocus
+                    <Autocomplete
+                      id="combo-box-demo"
+                      clearOnEscape
+                      options={studentsEmailList.map(option => option.email)}
+                      style={{ width: "100%" }}
+                      freeSolo
+                      value={studentEmail}
+                      onChange={(e, value) => {
+                        if (value !== null) {
+                          console.log(value);
+                          setStudentEmail(value);
+                        } else {
+                          setStudentEmail("");
+                        }
+                      }}
+                      renderInput={params => (
+                        <TextField
+                          {...params}
+                          label="Student Email"
+                          variant="outlined"
+                          required
+                          error={studentEmailErrorToggle}
+                          helperText={studentEmailError}
+                          value={studentEmail}
+                          onChange={e => {
+                            setStudentEmail(e.target.value);
+                          }}
+                        />
+                      )}
                     />
                   </Grid>
                   <Grid item xs={12} sm={4}>
@@ -205,7 +645,13 @@ export default function CreateRecommendation() {
                       required
                       fullWidth
                       id="Major"
+                      value={studentMajor}
+                      error={studentMajorErrorToggle}
+                      helperText={studentMajorError}
                       label="Major"
+                      onChange={e => {
+                        setStudentMajor(e.target.value);
+                      }}
                       autoFocus
                     />
                   </Grid>
@@ -225,24 +671,68 @@ export default function CreateRecommendation() {
                 </div>
                 <Grid container spacing={2}>
                   <Grid item xs={12} sm={4}>
-                    <TextField
-                      name="University Name"
-                      variant="outlined"
-                      fullWidth
-                      id="UniversityName"
-                      label="University Name"
-                      autoFocus
+                    <Autocomplete
+                      id="combo-box-demo"
+                      clearOnEscape
+                      options={universityEmailList.map(option => option.Name)}
+                      style={{ width: "100%" }}
+                      freeSolo
+                      required
+                      value={universityName}
+                      onChange={(e, value) => {
+                        if (value !== null) {
+                          setUniversityName(value);
+                        } else {
+                          setUniversityName("");
+                        }
+                      }}
+                      renderInput={params => (
+                        <TextField
+                          {...params}
+                          label="University Name"
+                          variant="outlined"
+                          required
+                          error={universityNameErrorToggle}
+                          helperText={universityNameError}
+                          value={universityName}
+                          onChange={e => {
+                            setUniversityName(e.target.value);
+                          }}
+                        />
+                      )}
                     />
                   </Grid>
                   <Grid item xs={12} sm={4}>
-                    <TextField
-                      name="University Email"
-                      variant="outlined"
+                    <Autocomplete
+                      id="combo-box-demo"
+                      clearOnEscape
+                      options={universityEmailList.map(option => option.uemail)}
+                      style={{ width: "100%" }}
+                      freeSolo
                       required
-                      fullWidth
-                      id="University Email"
-                      label="University Email"
-                      autoFocus
+                      value={universityEmail}
+                      onChange={(e, value) => {
+                        if (value !== null) {
+                          console.log(value);
+                          setUniversityEmail(value);
+                        } else {
+                          setUniversityEmail("");
+                        }
+                      }}
+                      renderInput={params => (
+                        <TextField
+                          {...params}
+                          label="University Email"
+                          variant="outlined"
+                          required
+                          error={universityEmailErrorToggle}
+                          helperText={universityEmailError}
+                          value={universityEmail}
+                          onChange={e => {
+                            setUniversityEmail(e.target.value);
+                          }}
+                        />
+                      )}
                     />
                   </Grid>
                   <Grid item xs={12} sm={4}>
@@ -252,6 +742,10 @@ export default function CreateRecommendation() {
                       fullWidth
                       id="University Link"
                       label="University Website Link"
+                      value={universityWebsiteLink}
+                      onChange={e => {
+                        setUniversityWebsiteLink(e.target.value);
+                      }}
                       autoFocus
                     />
                   </Grid>
@@ -307,6 +801,7 @@ export default function CreateRecommendation() {
                       id="CurrentJob"
                       label="Current Job"
                       autoFocus
+                      disabled
                       value={sessionStorage.getItem("currentJob")}
                     />
                   </Grid>
@@ -335,7 +830,10 @@ export default function CreateRecommendation() {
               <CardContext.Provider
                 key={i}
                 value={{
-                  element: cardsArray.filter(element => element.id === i)
+                  element: cardsArray.filter(element => element.id === i),
+                  callback: SliderCallback,
+                  index: i,
+                  valueArray: testArray[i]
                 }}
               >
                 <QuestionCard />
@@ -376,7 +874,7 @@ export default function CreateRecommendation() {
         </Container>
       </TabPanel>
       <TabPanel value={value} index={2}>
-        <Container maxWidth="lg" style={{ flexGrow: 1 }}>
+        <Container maxWidth="sm" style={{ flexGrow: 1 }}>
           <Paper elevation={3} style={{ height: "auto" }}>
             <form className={classes.form}>
               <div>
@@ -386,53 +884,116 @@ export default function CreateRecommendation() {
                   </p>
                 </div>
                 <Grid container spacing={2}>
-                  <Grid item xs={12} sm={5}>
+                  <Grid item xs={12} sm={12}>
                     <FormControl
                       as="textarea"
                       aria-label="With textarea"
                       rows="3"
+                      
+                      onChange={e => {
+                        setRemarks(e.target.value);
+                      }}
                     />
                   </Grid>
                 </Grid>
               </div>
-              <br/>
+              <br />
               <div>
-            
-              <div style={{ textAlign: "Left" }}>
+                <div style={{ textAlign: "Left" }}>
                   <p style={{ fontSize: "1.5625rem", lineHeight: "1.4em" }}>
                     Upload Recommendation Letter
                   </p>
                 </div>
                 <Grid item xs={12} sm={4}>
-                <input
-        accept="image/*"
-        className={classes.input}
-        id="contained-button-file"
-        multiple
-        type="file"
-      />
-      <label htmlFor="contained-button-file">
-        <Button variant="contained" color="primary" component="span">
-        <CloudUpload style={{fontSize:"30px",marginRight:"10px"}}/>{"  "}
-          Upload
-        </Button>
-      </label>
+                  <input
+                    accept="image/*"
+                    className={classes.input}
+                    id="contained-button-file"
+                    multiple
+                    type="file"
+                    onChange={e => {
+                    
+                      setFile(e.target.files[0]);
+                      if(e.target.files[0]!=null)
+                     setFileSelectedText(e.target.files[0].name);
+                    }}
+                  />
+                  <label htmlFor="contained-button-file">
+                    <Chip
+                      variant="outlined"
+                      label={fileSelectedText}
+                      color="primary"
+                      icon={
+                        fileSelectedText === "No File Selected" ? (
+                          <FaFolderOpen style={{ fontSize: "25px" }} />
+                        ) : (
+                          <FaFolderPlus style={{ fontSize: "25px" }} />
+                        )
+                      }
+                    />
+                    <br />
+                    <br />
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      component="span"
+                      disabled={chooseFileLoading}
+                    >
+                      <CloudUpload
+                        style={{ fontSize: "30px", marginRight: "10px" }}
+                      />
+                      {"  "}
+                      Choose File
+                      {loading && (
+                        <CircularProgress
+                          size={24}
+                          className={classes.buttonProgress}
+                        />
+                      )}
+                    </Button>
+                  </label>
                 </Grid>
               </div>
               <div style={{ textAlign: "right", paddingTop: "5%" }}>
-                <ColorButton
-                  variant="contained"
-                  onClick={e => {
-                    setValue(1);
-                  }}
-                >
-                  {" "}
-                  Next
-                </ColorButton>
+                <div className={classes.wrapper}>
+                  <BackButton
+                    variant="contained"
+                    onClick={e => {
+                      setValue(1);
+                    }}
+                  >
+                    {" "}
+                    Back
+                  </BackButton>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={handleSubmitRequest}
+                    disabled={loading}
+                  >
+                    {" "}
+                    Submit
+                  </Button>
+                  {loading && (
+                    <CircularProgress
+                      size={24}
+                      className={classes.buttonProgress}
+                    />
+                  )}
+                </div>
               </div>
             </form>
           </Paper>
         </Container>
+        <Container>
+        <Grid item >
+          <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+            <Alert onClose={handleClose} severity="success">
+             Recommendation Posted
+            </Alert>
+          </Snackbar>
+        </Grid>
+      </Container>
       </TabPanel>
     </div>
   );

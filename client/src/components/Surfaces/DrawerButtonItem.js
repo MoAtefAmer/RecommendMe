@@ -37,7 +37,7 @@ const handleOnClick= ()=>{
 
 
   return (
-    <ListItem button key={"Request Recommendation"}>
+    <ListItem button key={"Drawer Button"}>
       <ListItemIcon>
       {context.icon}
       </ListItemIcon>

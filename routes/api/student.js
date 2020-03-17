@@ -16,7 +16,7 @@ router.use(cors());
 
 //Student Signup
 router.post("/studentSignup", async (req, res) => {
-  const { email, password, Name, viewRecommendation } = req.body;
+  const { email, password, Name, viewRecommendation,major } = req.body;
 
   const isValidated = validator.createValidation(req.body);
 
@@ -33,7 +33,8 @@ router.post("/studentSignup", async (req, res) => {
     email: email,
     password: hashedPassword,
     activated: false,
-    viewRecommendation: viewRecommendation
+    viewRecommendation: viewRecommendation,
+    major:major
   });
 
   const createStudent = await Student.create(newstu);
@@ -76,6 +77,20 @@ router.post("/studentSignup", async (req, res) => {
 
  
 });
+
+
+
+//Get a List of All Students Emails
+router.get("/getStudentsEmails", async (req, res) => {
+  const stuList = await Student.find({}, { email: 1, _id: 0,Name:1,major:1 });
+
+  if (!stuList) {
+    return res.status(404).send({ error: "No Students Found" });
+  } else {
+    res.json({ stuList });
+  }
+});
+
 
 //Student activate account
 router.get("/activateAccount/:activationToken", async (req, res) => {

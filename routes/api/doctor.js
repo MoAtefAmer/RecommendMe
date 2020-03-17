@@ -6,6 +6,7 @@ const router = express.Router();
 var config = require("../../config/jwt");
 const Doctor = require("../../models/Doctor");
 const University = require("../../models/University");
+const RecommendationForm = require("../../models/RecommendationForm");
 const validator = require("../../validations/DoctorValidations");
 const mailer = require("nodemailer");
 var cors = require("cors");
@@ -66,7 +67,7 @@ router.post("/docSignup", async (req, res) => {
 
   let mailOptions = {
     from: '"RecommendMe" <recommendationsystemmailer@gmail.com>',
-    to: firstName + " "+lastName+ + " " + "<" + email + ">",
+    to: firstName + " " + lastName + +" " + "<" + email + ">",
     subject: "Account activation email",
     html: `Thank you for signing up with Recommend me. <br/> Please click here to activate your account: <a href="${url}">Activate Account</a>`
   };
@@ -80,8 +81,7 @@ router.post("/docSignup", async (req, res) => {
 
   res.status(200).send({
     auth: true,
-    msg: "Account created! Please activate your account through your email",
-
+    msg: "Account created! Please activate your account through your email"
   });
 
   res.json();
@@ -122,28 +122,27 @@ router.post("/docLogin", async (req, res) => {
       var token = jwt.sign({ id: doc._id }, config.secret, {
         expiresIn: 86400
       });
-      res.status(200).send({ auth:"Professor", token: token, id: doc._id,data:doc });
+      res
+        .status(200)
+        .send({ auth: "Professor", token: token, id: doc._id, data: doc });
     }
   });
 });
-
 
 //Delete account
 router.get("/deleteAccount/:activationToken", async (req, res) => {
   const activationToken = req.params.activationToken;
 
-  const doctor = await Doctor.findOne({ "activationToken": activationToken });
+  const doctor = await Doctor.findOne({ activationToken: activationToken });
   if (doctor) {
     await Doctor.findByIdAndDelete(doctor._id, {
       activated: true,
       activationToken: null
-    
     });
-    return res.status(200).send({msg:"Account deleted!"})
-  }else{
-    return res.status(400).send({msg:"Link expired!"})
+    return res.status(200).send({ msg: "Account deleted!" });
+  } else {
+    return res.status(400).send({ msg: "Link expired!" });
   }
-
 });
 
 //Get Doctor's Info (Profile)
@@ -159,20 +158,16 @@ router.get("/viewProfile", async (req, res) => {
   }
 });
 
-
 //Get a List of All Doctors
 router.get("/getDocEmails", async (req, res) => {
-
-  const docList = await Doctor.find({},{email:1,_id:0})
+  const docList = await Doctor.find({}, { email: 1, _id: 0 });
 
   if (!docList) {
     return res.status(404).send({ error: "No Professors Found" });
   } else {
-    
-    res.json({docList });
+    res.json({ docList });
   }
 });
-
 
 //Edit My Profile as a Doctor
 router.put("/editProfile", async (req, res) => {
@@ -205,15 +200,15 @@ router.put("/editProfile", async (req, res) => {
   }
 });
 
-// Account activation 
+// Account activation
 router.get("/activateAccount/:activationToken", async (req, res) => {
   const activationToken = req.params.activationToken;
 
-  const doctor = await Doctor.findOne({ "activationToken": activationToken });
+  const doctor = await Doctor.findOne({ activationToken: activationToken });
   if (doctor) {
     await Doctor.findByIdAndUpdate(doctor._id, {
-      "activated": true,
-      "activationToken": null
+      activated: true,
+      activationToken: null
     });
     res.status(200).redirect("https://google.com");
   } else {
@@ -223,11 +218,36 @@ router.get("/activateAccount/:activationToken", async (req, res) => {
 
 //Send recommendation
 router.post("/sendRecommendation", async (req, res) => {
-  const receiverEmail = req.body.receiver;
-  const studentEmail = req.body.studentEmail;
-  const subject = req.body.subject;
-  var message = req.body.message;
-  var pdfLink = req.body.pdfLink;
+  // const receiverEmail = req.body.receiver;
+  // const studentEmail = req.body.studentEmail;
+  // const subject = req.body.subject;
+  // var message = req.body.message;
+  // var pdfLink = req.body.pdfLink;
+  const {
+    subject,
+    message,
+    studentName,
+    studentEmail,
+    major,
+    professorName,
+    professorEmail,
+    professorCurrentJob,
+    uemail,
+    universityName,
+    universityLink,
+    communicationSkills,
+    problemSolvingSkills,
+    researchSkills,
+    technicalKnowledge,
+    analyticalSkills,
+    stressHandling,
+    punctuality,
+    adaptationSkills,
+    grades,
+    englishSkills,
+    remarks,
+    pdfLink
+  } = req.body;
 
   try {
     var stat = 0;
@@ -250,9 +270,37 @@ router.post("/sendRecommendation", async (req, res) => {
         return res.status(404).send({ error: "Invalid Token" });
       }
 
+      const newForm = new RecommendationForm({
+        studentName: studentName,
+        studentEmail: studentEmail,
+        major: major,
+        professorName: professorName,
+        professorEmail: professorEmail,
+        professorCurrentJob: professorCurrentJob,
+        uemail: uemail,
+        universityName: universityName,
+        universityLink: universityLink,
+        communicationSkills: communicationSkills,
+        problemSolvingSkills: problemSolvingSkills,
+        researchSkills: researchSkills,
+        technicalKnowledge: technicalKnowledge,
+        analyticalSkills: analyticalSkills,
+        stressHandling: stressHandling,
+        punctuality: punctuality,
+        adaptationSkills: adaptationSkills,
+        grades: grades,
+        englishSkills: englishSkills,
+        remarks: remarks,
+        pdfLink: pdfLink
+      });
+
+   await RecommendationForm.create(newForm);
+
+      //
+
       const senderEmail = await doctor.email;
 
-      const reciepients = [receiverEmail, studentEmail];
+      const reciepients = [uemail, studentEmail];
 
       let transporter = mailer.createTransport({
         service: "gmail",
@@ -264,21 +312,12 @@ router.post("/sendRecommendation", async (req, res) => {
           rejectUnauthorized: false
         }
       });
-      console.log(pdfLink);
 
       let mailOptions = {
         from: senderEmail,
         to: reciepients,
         subject: subject,
-        text: message,
-        attachments: [
-          {
-            // use URL as an attachment
-            filename: "RecommendationLetter.pdf",
-            contentType: "application/pdf",
-            path: pdfLink
-          }
-        ]
+        text: message
       };
 
       transporter.sendMail(mailOptions, async function(error, info) {

@@ -10,7 +10,7 @@ import { IoMdAnalytics, IoMdBuild, IoMdTime, IoIosSad } from "react-icons/io";
 import { GiChameleonGlyph, GiScaleMail } from "react-icons/gi";
 import { FaEtsy, FaChess } from "react-icons/fa";
 import clsx from "clsx"
-import { Spring } from 'react-spring/renderprops'
+import { Spring,Transition } from 'react-spring/renderprops'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -44,14 +44,15 @@ const useStyles = makeStyles(theme => ({
   },
   iconStylingRaised:{
     position: "relative",
-    fontSize: "72px",
+    fontSize: "62px",
     marginLeft: "40%",
     transition:"10",
-    color: "purple",
+ 
   
     
   },
   CardMaster: {
+
     "&:hover": {
       cursor: "Pointer"
     },
@@ -62,7 +63,10 @@ const useStyles = makeStyles(theme => ({
   },
   rootSlider: {
     color: "#7b1fa2"
-  }
+  },
+
+
+
 }));
 
 export default function QuestionCard() {
@@ -70,15 +74,34 @@ export default function QuestionCard() {
 
   const [raised, setRaised] = useState(false);
   const [icon, SetIcon] = useState(<div />);
- 
 
   const context = useContext(CardContext);
+  var parentCallback=context.callback
+
+const [slizor,setSlizor]=useState(context.valueArray);
+ 
 
   const iconClassName = clsx({
     [classes.iconStylingRaised]:raised,
     [classes.iconStyling]:!raised
   });
+
+
+
+//console.log(context.sliderValue[context.index])
+
+//console.log(context.sliderValue[context.index])
+
+
+// useEffect(() => {
+  
+//   parentCallback=context.callback
+  
+// }, [slide]);
+
+ 
   useEffect(() => {
+  
     switch (context.element[0].icon) {
       default:
         SetIcon(<Group className={iconClassName} />);
@@ -90,29 +113,31 @@ export default function QuestionCard() {
         SetIcon(<IoMdBuild className={iconClassName} />);
         break;
       case "research":
-        SetIcon(<Search className={classes.iconStyling} />);
+        SetIcon(<Search className={iconClassName} />);
         break;
       case "punctuality":
-        SetIcon(<IoMdTime className={classes.iconStyling} />);
+        SetIcon(<IoMdTime className={iconClassName} />);
         break;
       case "adaptation":
-        SetIcon(<GiChameleonGlyph className={classes.iconStyling} />);
+        SetIcon(<GiChameleonGlyph className={iconClassName} />);
         break;
       case "stress":
-        SetIcon(<IoIosSad className={classes.iconStyling} />);
+        SetIcon(<IoIosSad className={iconClassName} />);
         break;
       case "english":
-        SetIcon(<FaEtsy className={classes.iconStyling} />);
+        SetIcon(<FaEtsy className={iconClassName}/>);
         break;
       case "solving":
-        SetIcon(<FaChess className={classes.iconStyling} />);
+        SetIcon(<FaChess className={iconClassName} />);
         break;
       case "gpa":
-        SetIcon(<School className={classes.iconStyling} />);
+        SetIcon(<School className={iconClassName} />);
     }
+    
+// console.log("Child: "+context.sliderValue)
   }, [raised]);
 
-  
+ 
 
   const CardMouseEnter = e => {
     setRaised(true);
@@ -121,6 +146,8 @@ export default function QuestionCard() {
     setRaised(false);
   };
 
+
+  
   return (
     <Grid item xs={12} sm={4}>
       <Card
@@ -130,21 +157,8 @@ export default function QuestionCard() {
         className={classes.CardMaster}
      
       >
-        <Spring
-        from={{opacity:0}}
-        to={{opacity:1}}
-        config={{duration:1000}}
-        >
-{props =>(
-  <div style={props}>
- {icon}
-  </div>
-)
-
-}
-
-        </Spring>
-       
+ 
+{icon}
         <CardContent>
           <Typography align="center" gutterBottom variant="h5" component="h2">
             {context.element[0].question}
@@ -154,25 +168,34 @@ export default function QuestionCard() {
             student's {context.element[0].question}?
           </Typography>
         </CardContent>
-
         <Slider
-          style={{ maxWidth: "50%", position: "relative", marginLeft: "23%" }}
-          defaultValue={3}
-          classes={{ root: classes.rootSlider }}
-          aria-labelledby="discrete-slider-small-steps"
-          step={1}
-          marks={[
-            { value: 1, label: "Weakest" },
-            { value: 2 },
-            { value: 3 },
-            { value: 4 },
-            { value: 5, label: "Strongest" }
-          ]}
-          min={1}
-          max={5}
-          valueLabelDisplay="auto"
-        />
+    style={{ maxWidth: "50%", position: "relative", marginLeft: "23%" }}
+    onChangeCommitted={(e,value) =>{
+      setSlizor(value)
+     
+     
+     parentCallback(value,context.index)
+     
+     
+    }}
+    value={slizor}
+    classes={{ root: classes.rootSlider }}
+    aria-labelledby="discrete-slider-small-steps"
+    step={1}
+    marks={[
+      { value: 1, label: "Weakest" },
+      { value: 2 },
+      { value: 3 },
+      { value: 4 },
+      { value: 5, label: "Strongest" }
+    ]}
+    min={1}
+    max={5}
+    valueLabelDisplay="auto"
+  />
+         
       </Card>
     </Grid>
   );
 }
+

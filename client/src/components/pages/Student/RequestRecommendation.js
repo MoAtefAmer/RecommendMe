@@ -9,12 +9,13 @@ import {
   Container,
   CircularProgress,
   Switch,
+  Card
 
 } from "@material-ui/core";
 import { Info } from "@material-ui/icons";
 import MuiAlert from "@material-ui/lab/Alert";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { grey, lightBlue, green } from "@material-ui/core/colors";
+import { grey, lightBlue, green,purple } from "@material-ui/core/colors";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { TestContext } from "../../../App";
@@ -31,7 +32,7 @@ function Copyright() {
 
 const useStyles = makeStyles(theme => ({
   paper: {
-    marginTop: theme.spacing(8),
+    marginTop: theme.spacing(2),
     display: "flex",
     flexDirection: "column",
     alignItems: "center"
@@ -72,7 +73,7 @@ const useStyles = makeStyles(theme => ({
     }
   },
   wrapper: {
-    margin: theme.spacing(1),
+    margin: theme.spacing(2),
     position: "relative",
     textAlign: "center"
   },
@@ -99,7 +100,7 @@ export default function RequestRecommendation() {
   const [success, setSuccess] = useState(false);
   const [open, setOpen] = React.useState(false);
   const [professorEmail, setProfessorEmail] = useState("");
-  const [universityEmail,setUniversityEmail]=useState([])
+  const [universityEmail,setUniversityEmail]=useState()
   const [professorsEmailList, setProfessorEmailList] = useState([]);
   const [universityEmailList,setUniversityEmailList]=useState([])
 
@@ -108,6 +109,44 @@ export default function RequestRecommendation() {
   
   const [uemailError, setUEmailError] = useState("");
   const [uemailErrorToggle, setUEmailErrorToggle] = useState(false);
+
+
+  const ColorButton = withStyles(theme => ({
+    root: {
+      color: theme.palette.getContrastText(purple[500]),
+      background: "linear-gradient(60deg, #ab47bc, #8e24aa)",
+     
+    }
+  }))(Button);
+
+
+// Speed up calls to hasOwnProperty
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+
+function isEmpty(obj) {
+
+    // null and undefined are "empty"
+    if (obj == null) return true;
+
+    // Assume if it has a length property with a non-zero value
+    // that that property is correct.
+    if (obj.length > 0)    return false;
+    if (obj.length === 0)  return true;
+
+    // If it isn't an object at this point
+    // it is empty, but it can't be anything *but* empty
+    // Is it empty?  Depends on your application.
+    if (typeof obj !== "object") return true;
+
+    // Otherwise, does it have any properties of its own?
+    // Note that this doesn't handle
+    // toString and valueOf enumeration bugs in IE < 9
+    for (var key in obj) {
+        if (hasOwnProperty.call(obj, key)) return false;
+    }
+
+    return true;
+}
 
 
   const validate = () => {
@@ -125,9 +164,21 @@ export default function RequestRecommendation() {
       setEmailError("");
     }
     
-    // if(universityEmail!==""){
-    //   universityEmail.map(item=>{console.log("Mapping Function: "+item)})
-    //   }
+    if(typeof universityEmail=="string"){
+    isError=true;
+    errors.uemailError = "Please press the `Enter` button on your keyboard";
+    errors.uemailErrorToggle = true;
+    }
+
+if(isEmpty(universityEmail)){
+  
+  isError=true;
+  errors.uemailError = "Please fill in the field";
+  errors.uemailErrorToggle = true;
+}
+
+   if(typeof universityEmail==="object"){
+  console.log(universityEmail==="")
     universityEmail.map(item=>{
       if(!re.test(item)){
         isError = true;
@@ -139,15 +190,7 @@ export default function RequestRecommendation() {
       }
     })
 
-    // if (!(universityEmail.map(item=>{re.test(item)}))) {
-    //   isError = true;
-    //   errors.uemailError = "Please enter a valid email";
-    //   errors.uemailErrorToggle = true;
-    // } else {
-    //   setUEmailErrorToggle(false);
-    //   setUEmailError("");
-    // }
-
+  }
 
 
     if (isError) {
@@ -202,7 +245,6 @@ export default function RequestRecommendation() {
   };
 
 
-
   useEffect(() => {
     console.log("useEffect");
     fetch(`http://localhost:3000/api/doctor/getDocEmails`, {
@@ -228,13 +270,13 @@ export default function RequestRecommendation() {
     });
   }, []);
 
-  const context = useContext(TestContext);
+  
 
   console.log("Email: " + sessionStorage.getItem("email"));
- 
+console.log(isEmpty(universityEmail)) 
 
-
-  console.log(universityEmail.toString());
+console.log(typeof universityEmail)
+  //console.log(universityEmail.toString());
  
   const buttonClassname = clsx({
     [classes.buttonSuccess]: success,
@@ -257,9 +299,12 @@ export default function RequestRecommendation() {
 
   return (
     <Container component="main" maxWidth="xs">
-      <CssBaseline />
+          <Card
+          raised
+          style={{marginTop:"20%"}}
+          >
       <div className={classes.paper}>
-        <IoIosCreate style={{ fontSize: "40px" }} />
+        <IoIosCreate style={{ fontSize: "60px" }} />
 
         <Typography component="h1" variant="h5">
           Request a recommendation
@@ -380,11 +425,12 @@ export default function RequestRecommendation() {
                   />
                 )}
               />
+              
             </Grid>
           </Grid>
 
           <div className={classes.wrapper}>
-            <Button
+            <ColorButton
               type="submit"
               size="medium"
               variant="contained"
@@ -396,14 +442,15 @@ export default function RequestRecommendation() {
               disabled={loading}
             >
               Send Request
-            </Button>
+            </ColorButton>
             {loading && (
               <CircularProgress size={24} className={classes.buttonProgress} />
             )}
           </div>
         </form>
       </div>
-
+      </Card>
+     
       <Container>
         <Grid item>
           <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
