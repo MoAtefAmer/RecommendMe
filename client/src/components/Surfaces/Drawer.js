@@ -37,10 +37,11 @@ export var DrawerContext = React.createContext();
 export default function TemporaryDrawer() {
   const classes = useStyles();
 
+  
   const openDrawer = useContext(MenuButtonContext);
 
   const [left, setLeft] = useState(openDrawer.menuClick);
-  console.log(sessionStorage.getItem("token"));
+ 
 
   const toggleDrawer = (side, open) => event => {
     if (

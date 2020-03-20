@@ -2,8 +2,8 @@ import React, { useState, useContext, useEffect } from "react";
 
 import { Typography, Grid, Card, CardContent, Slider } from "@material-ui/core";
 
-import { makeStyles, withStyles } from "@material-ui/core/styles";
-import { grey,purple } from "@material-ui/core/colors";
+import { makeStyles } from "@material-ui/core/styles";
+import { grey } from "@material-ui/core/colors";
 import { Group, Search, School } from "@material-ui/icons";
 import { CardContext } from "./CreateRecommendation";
 import { IoMdAnalytics, IoMdBuild, IoMdTime, IoIosSad } from "react-icons/io";
@@ -102,7 +102,7 @@ const [slizor,setSlizor]=useState(context.valueArray);
  
   useEffect(() => {
   
-    switch (context.element[0].icon) {
+    switch (context.icon) {
       default:
         SetIcon(<Group className={iconClassName} />);
         break;
@@ -135,7 +135,7 @@ const [slizor,setSlizor]=useState(context.valueArray);
     }
     
 // console.log("Child: "+context.sliderValue)
-  }, [raised]);
+  }, [raised,iconClassName,context.element]);
 
  
 
@@ -146,8 +146,6 @@ const [slizor,setSlizor]=useState(context.valueArray);
     setRaised(false);
   };
 
-
-  
   return (
     <Grid item xs={12} sm={4}>
       <Card
@@ -161,11 +159,11 @@ const [slizor,setSlizor]=useState(context.valueArray);
 {icon}
         <CardContent>
           <Typography align="center" gutterBottom variant="h5" component="h2">
-            {context.element[0].question}
+            {context.question}
           </Typography>
           <Typography variant="body2" color="textSecondary" component="p">
             From a Scale of 1(weakest) to 5(Strongest), How Strong is this
-            student's {context.element[0].question}?
+            student's {context.question}?
           </Typography>
         </CardContent>
         <Slider

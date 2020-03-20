@@ -216,13 +216,54 @@ router.get("/activateAccount/:activationToken", async (req, res) => {
   }
 });
 
+//View My Recommendations
+router.get("/getRecommendations", async (req, res) => {
+  try {
+    var stat = 0;
+    var token = req.headers["x-access-token"];
+    if (!token) {
+      return res
+        .status(401)
+        .send({ auth: false, message: "Please login first." });
+    }
+    jwt.verify(token, config.secret, async function(err, decoded) {
+      if (err) {
+        return res
+          .status(500)
+          .send({ auth: false, message: "Failed to authenticate token." });
+      }
+      stat = decoded.id;
+
+      const doctor = await Doctor.findById(stat);
+      if (!doctor) {
+        return res.status(404).send({ error: "Invalid Token" });
+      }
+      const professorEmail = await doctor.email;
+      const page = parseInt(req.query.page);
+      const limit = parseInt(req.query.limit);
+      const count= await RecommendationForm.estimatedDocumentCount({ professorEmail: professorEmail})
+     recommendationForms = await RecommendationForm.find({
+        professorEmail: professorEmail
+     
+      }).skip((page-1)*limit).limit(limit)
+
+
+      
+      // const startIndex = (page - 1) * limit;
+      // const endIndex = page * limit;
+      // const resultForms = recommendationForms.slice(startIndex, endIndex);
+
+      res.send({count:count,data:recommendationForms});
+    });
+  } catch (error) {
+    console.log(error);
+  }
+
+  //
+});
+
 //Send recommendation
 router.post("/sendRecommendation", async (req, res) => {
-  // const receiverEmail = req.body.receiver;
-  // const studentEmail = req.body.studentEmail;
-  // const subject = req.body.subject;
-  // var message = req.body.message;
-  // var pdfLink = req.body.pdfLink;
   const {
     subject,
     message,
@@ -294,7 +335,7 @@ router.post("/sendRecommendation", async (req, res) => {
         pdfLink: pdfLink
       });
 
-   await RecommendationForm.create(newForm);
+      await RecommendationForm.create(newForm);
 
       //
 

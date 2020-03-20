@@ -268,7 +268,7 @@ export default function CreateRecommendation() {
         if (element.email === studentEmail) {
           setStudentName(element.Name);
           setStudentMajor(element.major);
-          console.log(element.major);
+   
         }
       });
     }
@@ -277,7 +277,7 @@ export default function CreateRecommendation() {
       setStudentEmailErrorToggle(false);
       setStudentEmailError("");
     }
-  }, [studentEmail]);
+  }, [studentEmail,studentsEmailList]);
 
   useEffect(() => {
     if (universityEmail !== "") {
@@ -292,7 +292,8 @@ export default function CreateRecommendation() {
       setUniversityEmailErrorToggle(false);
       setUniversityEmailError("");
     }
-  }, [universityEmail]);
+   
+  }, [universityEmail,universityEmailList]);
 
   useEffect(() => {
     if (universityName !== "") {
@@ -307,7 +308,7 @@ export default function CreateRecommendation() {
       setUniversityNameErrorToggle(false);
       setUniversityNameError("");
     }
-  }, [universityName]);
+  }, [universityName,universityEmailList]);
 
   useEffect(() => {
     // console.log("useEffect");
@@ -351,11 +352,11 @@ export default function CreateRecommendation() {
       isError = true;
       errors.studentEmailError = "Please enter a valid email";
       errors.studentEmailErrorToggle = true;
-      console.log("error");
+     
     } else {
       setStudentEmailErrorToggle(false);
       setStudentEmailError("");
-      console.log("error");
+     
     }
 
     if (!re.test(universityEmail)) {
@@ -389,7 +390,7 @@ export default function CreateRecommendation() {
       isError = true;
       errors.universityNameError = "Please enter the University's Name";
       errors.universityNameErrorToggle = true;
-      console.log(universityName);
+   
     } else {
       setUniversityNameErrorToggle(false);
       setUniversityNameError("");
@@ -414,7 +415,7 @@ export default function CreateRecommendation() {
 
     return isError;
   };
-
+console.log(value0)
   // console.log(universityEmailList)
   const [cardsArray] = useState([
     { question: "Analytical Skills", id: 0, icon: "analytics" },
@@ -429,7 +430,7 @@ export default function CreateRecommendation() {
     { question: "GPA", id: 9, icon: "gpa" }
   ]);
 
-  console.log("OUTSIDEL " + sessionStorage.getItem("firebase"));
+  
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -499,11 +500,11 @@ export default function CreateRecommendation() {
             "x-access-token": sessionStorage.getItem("token")
           }
         }).then(res => {
-          console.log(res.status);
+          
           if (res.status === 200) {
             setLoading(false);
             //sessionStorage.setItem("firebase","")
-            console.log("yearh");
+          
             setOpen(true);
             setBackdrop(false);
             // setEmail("");
@@ -516,7 +517,7 @@ export default function CreateRecommendation() {
             }, 4000);
           } else {
             // setLoading(false);
-            console.log("send error");
+           
             setBackdrop(false);
           }
         });
@@ -532,10 +533,10 @@ export default function CreateRecommendation() {
       "state_changed",
       snapshot => {
         //Progress function
-        console.log(snapshot);
+     
       },
       error => {
-        console.log(error);
+      
       },
       () => {
         //complete Function
@@ -545,7 +546,7 @@ export default function CreateRecommendation() {
           .getDownloadURL()
           .then(url => {
             sessionStorage.setItem("firebase", url);
-            console.log(sessionStorage.getItem("firebase"));
+           
             setTimeout(() => setIsFileUploaded(true), 3000);
           });
       }
@@ -620,7 +621,7 @@ export default function CreateRecommendation() {
                             value={studentEmail}
                             onChange={(e, value) => {
                               if (value !== null) {
-                                console.log(value);
+                               
                                 setStudentEmail(value);
                               } else {
                                 setStudentEmail("");
@@ -722,7 +723,7 @@ export default function CreateRecommendation() {
                             value={universityEmail}
                             onChange={(e, value) => {
                               if (value !== null) {
-                                console.log(value);
+                             
                                 setUniversityEmail(value);
                               } else {
                                 setUniversityEmail("");
@@ -848,10 +849,11 @@ export default function CreateRecommendation() {
                     <CardContext.Provider
                       key={i}
                       value={{
-                        element: cardsArray.filter(element => element.id === i),
+                        icon: card.icon,
                         callback: SliderCallback,
                         index: i,
-                        valueArray: testArray[i]
+                        valueArray: testArray[i],
+                        question:card.question
                       }}
                     >
                       <QuestionCard />

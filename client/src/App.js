@@ -8,6 +8,7 @@ import ButtonAppBar from "./components/Surfaces/ButtonAppBar";
 import LoginPage from "./components/pages/LoginPage";
 import RequestRecommendation from "./components/pages/Student/RequestRecommendation";
 import CreateRecommendation from "./components/pages/Professor/CreateRecommendation";
+import ViewRecommendations from "./components/Common/ViewRecommendations";
 
 export var TestContext = React.createContext();
 export class App extends React.Component {
@@ -27,16 +28,19 @@ export class App extends React.Component {
               path="/studentSignup"
               render={() => (
                 <>
-                  {sessionStorage.getItem("token") !== "" ? (
-                    (document.location.href = "/")
+                  {sessionStorage.getItem("token") === "" ||sessionStorage.getItem("token")===null ? (
+                   
+                   <TestContext.Provider
+                   value={{
+                     foo: "test"
+                   }}
+                 >
+                   <SignUp />
+                 </TestContext.Provider>
+                   
+                  
                   ) : (
-                    <TestContext.Provider
-                      value={{
-                        foo: "test"
-                      }}
-                    >
-                      <SignUp />
-                    </TestContext.Provider>
+                    (document.location.href = "/")
                   )}
                 </>
               )}
@@ -47,16 +51,18 @@ export class App extends React.Component {
               path="/doctorSignup"
               render={() => (
                 <>
-                  {sessionStorage.getItem("token") !== "" ? (
-                    (document.location.href = "/")
-                  ) : (
+                  {sessionStorage.getItem("token") === "" ||  sessionStorage.getItem("token") === null ? (
+                    
                     <TestContext.Provider
-                      value={{
-                        foo: "test"
-                      }}
-                    >
-                      <DocSignUp />
-                    </TestContext.Provider>
+                    value={{
+                      foo: "test"
+                    }}
+                  >
+                    <DocSignUp />
+                  </TestContext.Provider>
+                  
+                  ) : (
+                    (document.location.href = "/")
                   )}
                 </>
               )}
@@ -66,16 +72,18 @@ export class App extends React.Component {
               path="/universitySignup"
               render={() => (
                 <>
-                  {sessionStorage.getItem("token") !== "" ? (
-                    (document.location.href = "/")
+                  {sessionStorage.getItem("token") === "" || sessionStorage.getItem("token")===null ? (
+                  
+                  <TestContext.Provider
+                  value={{
+                    foo: "test"
+                  }}
+                >
+                  <UniSignup />
+                </TestContext.Provider>
+                 
                   ) : (
-                    <TestContext.Provider
-                      value={{
-                        foo: "test"
-                      }}
-                    >
-                      <UniSignup />
-                    </TestContext.Provider>
+                    (document.location.href = "/")
                   )}
                 </>
               )}
@@ -121,7 +129,7 @@ export class App extends React.Component {
               path="/createRecommendation"
               render={() => (
                 <>
-                  {sessionStorage.getItem("token") !== "" &&
+                  {(sessionStorage.getItem("token") !== "" ||sessionStorage.getItem("token")!==null ) &&
                   sessionStorage.getItem("auth") === "Professor" ? (
                     <>
                       <CreateRecommendation />
@@ -132,6 +140,25 @@ export class App extends React.Component {
                 </>
               )}
             />
+  <Route
+              exact
+              path="/viewRecommendations"
+              render={() => (
+                <>
+                  {(sessionStorage.getItem("token") !== "" ||sessionStorage.getItem("token")!==null ) &&
+                  sessionStorage.getItem("auth") === "Professor" ? (
+                    <>
+                      <ViewRecommendations />
+                    </>
+                  ) : (
+                    (document.location.href = "/")
+                  )}
+                </>
+              )}
+            />
+
+
+
           </React.Fragment>
         </Router>
       </div>
