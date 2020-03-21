@@ -145,8 +145,7 @@ export class App extends React.Component {
               path="/viewRecommendations"
               render={() => (
                 <>
-                  {(sessionStorage.getItem("token") !== "" ||sessionStorage.getItem("token")!==null ) &&
-                  sessionStorage.getItem("auth") === "Professor" ? (
+                  {(sessionStorage.getItem("token") !== "" ||sessionStorage.getItem("token")!==null )  ? (
                     <>
                       <ViewRecommendations />
                     </>

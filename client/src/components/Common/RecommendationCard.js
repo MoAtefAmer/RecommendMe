@@ -67,7 +67,9 @@ const useStyles = makeStyles(theme => ({
     color:"black"
   
   },
- 
+ deleteButton:{
+   color:"#8e24aa"
+ }
   
 }));
 
@@ -114,7 +116,8 @@ useEffect(()=>{
     <SmallModalContext.Provider
    value={{
      show:smallModalShow,
-     callback:smallModalCallback
+     callback:smallModalCallback,
+     docId:context.docId
    }}
     ><AreYouSureModal/></SmallModalContext.Provider>
     )
@@ -122,12 +125,24 @@ useEffect(()=>{
  },[smallModalShow])
 
 
+
+
+
  useEffect(()=>{
   setInfoModal(
     <InfoModalContext.Provider
    value={{
      show:infoModalShow,
-     callback:infoModalCallback
+     callback:infoModalCallback,
+     studentName:context.studentName,
+     studentEmail:context.studentEmail,
+     major:context.major,
+     universityEmail:context.universityEmail,
+     universityName:context.universityName,
+     universityLink:context.universityLink,
+     evaluation:context.evaluation,
+     remarks:context.remarks,
+     pdfLink:context.pdfLink
    }}
     ><InformationModal/></InfoModalContext.Provider>
     )

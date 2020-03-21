@@ -150,6 +150,18 @@ const RecommendationFormSchema = new Schema({
   pdfLink: {
     type: String,
     required: false
+  },
+  profView:{
+type:Boolean,
+default:true
+  },
+  uniView:{
+    type:Boolean,
+    default:true
+  },
+  studentView:{
+    type:Boolean,
+    default:true
   }
 });
 

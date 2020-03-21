@@ -216,6 +216,10 @@ router.get("/activateAccount/:activationToken", async (req, res) => {
   }
 });
 
+
+
+
+
 //View My Recommendations
 router.get("/getRecommendations", async (req, res) => {
   try {
@@ -241,9 +245,10 @@ router.get("/getRecommendations", async (req, res) => {
       const professorEmail = await doctor.email;
       const page = parseInt(req.query.page);
       const limit = parseInt(req.query.limit);
-      const count= await RecommendationForm.estimatedDocumentCount({ professorEmail: professorEmail})
+      const count= await RecommendationForm.countDocuments({ professorEmail: professorEmail,profView:true})
      recommendationForms = await RecommendationForm.find({
-        professorEmail: professorEmail
+        professorEmail: professorEmail,
+        profView:true
      
       }).skip((page-1)*limit).limit(limit)
 
@@ -261,6 +266,50 @@ router.get("/getRecommendations", async (req, res) => {
 
   //
 });
+
+
+//Delete ProfView
+router.post("/deleteProfView", async (req,res)=>{
+
+  try {
+    var stat = 0;
+    var token = req.headers["x-access-token"];
+    if (!token) {
+      return res
+        .status(401)
+        .send({ auth: false, message: "Please login first." });
+    }
+    jwt.verify(token, config.secret, async function(err, decoded) {
+      if (err) {
+        return res
+          .status(500)
+          .send({ auth: false, message: "Failed to authenticate token." });
+      }
+      stat = decoded.id;
+
+      const doctor = await Doctor.findById(stat);
+      if (!doctor) {
+        return res.status(404).send({ error: "Invalid Token" });
+      }
+    
+const formId=req.body.id
+
+const theForm = await RecommendationForm.findByIdAndUpdate(formId,{profView:false})
+
+if(theForm){
+  res.status(200).send({msg:"Document Successfully Updated"})
+}else{
+res.status(404).send({msg:"document not found"})
+}
+
+
+    });
+  } catch (error) {
+    console.log(error);
+  }
+
+  
+})
 
 //Send recommendation
 router.post("/sendRecommendation", async (req, res) => {

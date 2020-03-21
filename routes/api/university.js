@@ -6,6 +6,7 @@ var config = require("../../config/jwt");
 const University = require("../../models/University");
 const validator = require("../../validations/UniversityValidations");
 const mailer = require("nodemailer");
+const RecommendationForm = require("../../models/RecommendationForm");
 var cors = require("cors");
 
 router.use(cors());
@@ -90,6 +91,100 @@ router.get("/activateAccount/:activationToken", async (req, res) => {
     res.status(400).send({ msg: "Link Expired" });
   }
 });
+
+
+//View My Recommendations
+router.get("/getRecommendations", async (req, res) => {
+  try {
+    var stat = 0;
+    var token = req.headers["x-access-token"];
+    if (!token) {
+      return res
+        .status(401)
+        .send({ auth: false, message: "Please login first." });
+    }
+    jwt.verify(token, config.secret, async function(err, decoded) {
+      if (err) {
+        return res
+          .status(500)
+          .send({ auth: false, message: "Failed to authenticate token." });
+      }
+      stat = decoded.id;
+
+      const university = await University.findById(stat);
+      if (!university) {
+        return res.status(404).send({ error: "Invalid Token" });
+      }
+      const universityEmail = await university.uemail;
+      const page = parseInt(req.query.page);
+      const limit = parseInt(req.query.limit);
+      const count= await RecommendationForm.countDocuments({uemail: universityEmail,uniView:true})
+     recommendationForms = await RecommendationForm.find({
+        uemail: universityEmail,
+        uniView:true
+     
+      }).skip((page-1)*limit).limit(limit)
+
+
+      
+      // const startIndex = (page - 1) * limit;
+      // const endIndex = page * limit;
+      // const resultForms = recommendationForms.slice(startIndex, endIndex);
+
+      res.send({count:count,data:recommendationForms});
+    });
+  } catch (error) {
+    console.log(error);
+  }
+
+  //
+});
+
+
+
+//Delete UniView
+router.post("/deleteUniView", async (req,res)=>{
+
+  try {
+    var stat = 0;
+    var token = req.headers["x-access-token"];
+    if (!token) {
+      return res
+        .status(401)
+        .send({ auth: false, message: "Please login first." });
+    }
+    jwt.verify(token, config.secret, async function(err, decoded) {
+      if (err) {
+        return res
+          .status(500)
+          .send({ auth: false, message: "Failed to authenticate token." });
+      }
+      stat = decoded.id;
+
+      const university = await University.findById(stat);
+      if (!university) {
+        return res.status(404).send({ error: "Invalid Token" });
+      }
+    
+const formId=req.body.id
+
+const theForm = await RecommendationForm.findByIdAndUpdate(formId,{uniView:false})
+
+if(theForm){
+  res.status(200).send({msg:"Document Successfully Updated"})
+}else{
+res.status(404).send({msg:"document not found"})
+}
+
+
+    });
+  } catch (error) {
+    console.log(error);
+  }
+
+  
+})
+
 
 
 //University Login

@@ -919,7 +919,7 @@ console.log(value0)
                           <FormControl
                             as="textarea"
                             aria-label="With textarea"
-                            rows="3"
+                            rows="4"
                             onChange={e => {
                               setRemarks(e.target.value);
                             }}

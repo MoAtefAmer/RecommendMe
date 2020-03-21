@@ -44,12 +44,25 @@ export default function ViewRecommendations() {
   const [limit,setLimit]=useState(6);
   const [cardsArray, setCardsArray] = useState([]);
   const [count,setCount]=useState();
+  const [shouldILoad,setShouldILoad]=useState(true)
  
-  const [test,setTest]=useState()
+ 
 
   useEffect(() => {
+
+var stateLoad="";
+switch(sessionStorage.getItem("auth")){
+  case "Professor":stateLoad="doctor";
+  break;
+  case "University": stateLoad="university";
+  break;
+  case "Student":stateLoad="student";
+  break;
+
+}
+
     setLoading(true)
-    fetch(`http://localhost:3000/api/doctor/getRecommendations?page=${page}&limit=${limit}`, {
+    fetch(`http://localhost:3000/api/${stateLoad}/getRecommendations?page=${page}&limit=${limit}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -62,14 +75,24 @@ export default function ViewRecommendations() {
         setLoading(false)
       });
     });
+    
 
   }, [page]);
  
+
+
+
+
 console.log(cardsArray)
  console.log(count) 
 
  
+useEffect(()=>{
+if(count===1){
+  setShouldILoad(false)
+}
 
+},[count])
 
 
   return (
@@ -83,6 +106,7 @@ console.log(cardsArray)
   {props => <div style={props}>
   <Grid container spacing={2}>
         {cardsArray.map((card, i) => (
+         
           <RecommendationCardContext.Provider key={i} value={{
             studentName:card.studentName,
             studentEmail:card.studentEmail,
@@ -92,7 +116,8 @@ console.log(cardsArray)
             universityLink:card.universityLink,
             evaluation:[card.communicationSkills,card.problemSolvingSkills,card.researchSkills,card.technicalKnowledge,card.analyticalSkills,card.stressHandling,card.punctuality,card.adaptationSkills,card.grades,card.englishSkills],
             remarks:card.remarks,
-            pdfLink:card.pdfLink
+            pdfLink:card.pdfLink,
+            docId:card._id
 
           }}>
             <RecommendationCard />
@@ -108,13 +133,14 @@ console.log(cardsArray)
             style={{ marginTop: "5%", marginLeft: "2%" }}
            
           >
+            { shouldILoad &&
             <Pagination  count={count} color="secondary" page={page} onChange={(e,pageNumber) =>{
-              console.log(pageNumber)
+             
               setPage(pageNumber)
              
             }} />
 
-            
+          }
           </Grid>
           <Grid item xs={12} sm={4}></Grid>
         </Grid>

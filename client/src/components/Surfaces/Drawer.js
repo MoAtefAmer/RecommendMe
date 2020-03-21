@@ -161,9 +161,10 @@ export default function TemporaryDrawer() {
           <>
             <DrawerContext.Provider
               value={{
-                key: "Uni",
-                primary: "Uni",
-                onClick: "rr"
+                key: "View Recommendations2",
+                primary: "View Recommendations",
+                onClick: "vr",
+                icon:<MdLibraryBooks style={{ fontSize: "25px" }} />
               }}
             >
               <DrawerButtonItem />
