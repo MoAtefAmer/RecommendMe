@@ -65,36 +65,36 @@ export default function TemporaryDrawer() {
         {sessionStorage.getItem("token") === "" ||
         sessionStorage.getItem("token") === null ? (
           <>
-            <ListItem button key={"Sign Up as a Student"}>
+            <ListItem button key={"Sign Up as a Student"}  onClick={() => {
+                  document.location.href = "/studentSignup";
+                }}>
               <ListItemIcon>
                 <StudentIcon />
               </ListItemIcon>
               <ListItemText
-                onClick={() => {
-                  document.location.href = "/studentSignup";
-                }}
+               
                 primary={"Register as a Student"}
               />
             </ListItem>
-            <ListItem button key={"Sign Up as a University"}>
+            <ListItem button key={"Sign Up as a University"}    onClick={() => {
+                  document.location.href = "/universitySignup";
+                }}>
               <ListItemIcon>
                 <UniversityIcon />
               </ListItemIcon>
               <ListItemText
-                onClick={() => {
-                  document.location.href = "/universitySignup";
-                }}
+             
                 primary={"Register as a University"}
               />
             </ListItem>
-            <ListItem button key={"Sign Up as a Professor"}>
+            <ListItem button key={"Sign Up as a Professor"}    onClick={() => {
+                  document.location.href = "/doctorSignup";
+                }}>
               <ListItemIcon>
                 <DoctorIcon />
               </ListItemIcon>
               <ListItemText
-                onClick={() => {
-                  document.location.href = "/doctorSignup";
-                }}
+             
                 primary={"Register as a Professor"}
               />
             </ListItem>
@@ -112,6 +112,18 @@ export default function TemporaryDrawer() {
               <DrawerButtonItem />
             </DrawerContext.Provider>
 
+
+            <DrawerContext.Provider
+              value={{
+                key: "View Recommendations3",
+                primary: "View Recommendations",
+                onClick: "vr",
+                icon: <MdLibraryBooks style={{ fontSize: "25px" }} />
+              }}
+            >
+              <DrawerButtonItem />
+            </DrawerContext.Provider>
+
             <DrawerContext.Provider
               value={{
                 key: "Change Password",
@@ -122,6 +134,9 @@ export default function TemporaryDrawer() {
             >
               <DrawerButtonItem />
             </DrawerContext.Provider>
+
+          
+
           </>
         ) : sessionStorage.getItem("auth") === "Professor" ? (
           <>

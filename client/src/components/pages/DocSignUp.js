@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -15,7 +15,8 @@ import Container from "@material-ui/core/Container";
 import { grey, lightBlue, green } from "@material-ui/core/colors";
 import MuiAlert from "@material-ui/lab/Alert";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import { TestContext } from "../../App";
+import { Spring } from "react-spring/renderprops";
+
 
 function Copyright() {
   return (
@@ -217,6 +218,53 @@ export default function DocSignUp() {
     return isError;
   };
 
+
+  useEffect(() => {
+    if (firstName.length >= 1) {
+      setFirstNameErrorToggle(false);
+      setFirstNameError("");
+    }
+  }, [firstName]);
+
+  
+  useEffect(() => {
+    if (lastName.length >= 1) {
+      setLastNameErrorToggle(false);
+      setLastNameError("");
+    }
+  }, [lastName]);
+
+
+  useEffect(() => {
+    if (currentJob.length >= 1) {
+      setCurrentJobErrorToggle(false);
+      setCurrentJobError("");
+    }
+  }, [currentJob]);
+
+  useEffect(() => {
+    if (email.length >= 1) {
+      setEmailErrorToggle(false);
+      setEmailError("");
+    }
+  }, [email]);
+
+
+
+  useEffect(() => {
+    if ((password === confirmPassword)) {
+   
+      setPasswordError("")
+      setPasswordErrorToggle(false)
+      setConfirmPasswordError("")
+    setConfirmPasswordErrorToggle(false)
+    }
+  
+
+  }, [password,confirmPassword]);
+
+
+
   //Snackbar Alert
   function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -290,7 +338,13 @@ export default function DocSignUp() {
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
-      <div className={classes.paper}>
+
+      <Spring
+ from={{ opacity: 0, transform: "translate3d(-100%,0,0)" }}
+ to={{ opacity: 1, transform: "translate3d(0,0,0)" }}>
+  {props => <div style={props}>
+    
+  <div className={classes.paper}>
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
         </Avatar>
@@ -497,6 +551,11 @@ export default function DocSignUp() {
           </Grid>
         </form>
       </div>
+    
+    </div>}
+</Spring>
+
+     
       <Box mt={5}>
         <Copyright />
       </Box>

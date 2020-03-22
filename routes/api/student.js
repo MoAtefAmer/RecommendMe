@@ -6,6 +6,7 @@ const router = express.Router();
 var config = require("../../config/jwt");
 const Doctor = require("../../models/Doctor");
 const University = require("../../models/University");
+const RecommendationForm = require("../../models/RecommendationForm")
 const Student = require("../../models/Student");
 const validator = require("../../validations/StudentValidation");
 const mailer = require("nodemailer");
@@ -137,6 +138,108 @@ router.post("/studentLogin", async (req, res) => {
     }
   });
 });
+
+
+
+
+//View My Recommendations
+router.get("/getRecommendations", async (req, res) => {
+  try {
+    var stat = 0;
+    var token = req.headers["x-access-token"];
+    if (!token) {
+      return res
+        .status(401)
+        .send({ auth: false, message: "Please login first." });
+    }
+    jwt.verify(token, config.secret, async function(err, decoded) {
+      if (err) {
+        return res
+          .status(500)
+          .send({ auth: false, message: "Failed to authenticate token." });
+      }
+      stat = decoded.id;
+
+      const student = await Student.findById(stat);
+      if (!student) {
+        return res.status(404).send({ error: "Invalid Token" });
+      }
+
+      const studentViewingRight= await student.viewRecommendation
+      
+      const studentEmail = await student.email;
+      const page = parseInt(req.query.page);
+      const limit = parseInt(req.query.limit);
+      const count= await RecommendationForm.countDocuments({studentEmail: studentEmail,studentView:true})
+     recommendationForms = await RecommendationForm.find({
+      studentEmail: studentEmail,
+        studentView:true
+     
+      }).skip((page-1)*limit).limit(limit)
+
+
+      
+if(studentViewingRight){
+  res.send({count:count,data:recommendationForms});
+}else{
+  res.send({count:0,data:[]})
+}
+    
+    });
+  } catch (error) {
+    console.log(error);
+  }
+
+  //
+});
+
+//Delete StudentView
+router.post("/deleteStudentView", async (req,res)=>{
+
+  try {
+    var stat = 0;
+    var token = req.headers["x-access-token"];
+    if (!token) {
+      return res
+        .status(401)
+        .send({ auth: false, message: "Please login first." });
+    }
+    jwt.verify(token, config.secret, async function(err, decoded) {
+      if (err) {
+        return res
+          .status(500)
+          .send({ auth: false, message: "Failed to authenticate token." });
+      }
+      stat = decoded.id;
+
+      const student = await Student.findById(stat);
+      if (!student) {
+        return res.status(404).send({ error: "Invalid Token" });
+      }
+    
+const formId=req.body.id
+
+const theForm = await RecommendationForm.findByIdAndUpdate(formId,{studentView:false})
+
+if(theForm){
+  res.status(200).send({msg:"Document Successfully Updated"})
+}else{
+res.status(404).send({msg:"document not found"})
+}
+
+
+    });
+  } catch (error) {
+    console.log(error);
+  }
+
+  
+})
+
+
+
+
+
 
 // Request Recommendation
 router.post("/requestRecommendation", async (req, res) => {

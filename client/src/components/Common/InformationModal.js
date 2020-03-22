@@ -217,6 +217,14 @@ export default function InformationModal() {
         </Modal.Body>
         <ModalFooter>
           <Typography variant="subtitle1" component="h2">
+            From: {context.professorName}{" "}
+            
+            <br />
+            Occupation: {context.professorCurrentJob}
+            <br />
+            Professor Email: {context.professorEmail}
+          </Typography>
+          <Typography variant="subtitle1" component="h2">
             to {context.universityName}{" "}
             <a target={target} href={context.universityLink}>
               {" "}
@@ -228,6 +236,7 @@ export default function InformationModal() {
             Student Email: {context.studentEmail}
           </Typography>
         </ModalFooter>
+        
       </Modal>
     </>
   );

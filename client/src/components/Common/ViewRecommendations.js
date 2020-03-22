@@ -45,7 +45,7 @@ export default function ViewRecommendations() {
   const [cardsArray, setCardsArray] = useState([]);
   const [count,setCount]=useState();
   const [shouldILoad,setShouldILoad]=useState(true)
- 
+
  
 
   useEffect(() => {
@@ -88,7 +88,7 @@ console.log(cardsArray)
 
  
 useEffect(()=>{
-if(count===1){
+if(count===1 || count===0){
   setShouldILoad(false)
 }
 
@@ -117,7 +117,10 @@ if(count===1){
             evaluation:[card.communicationSkills,card.problemSolvingSkills,card.researchSkills,card.technicalKnowledge,card.analyticalSkills,card.stressHandling,card.punctuality,card.adaptationSkills,card.grades,card.englishSkills],
             remarks:card.remarks,
             pdfLink:card.pdfLink,
-            docId:card._id
+            docId:card._id,
+            professorName:card.professorName,
+            professorEmail:card.professorEmail,
+            professorCurrentJob:card.professorCurrentJob
 
           }}>
             <RecommendationCard />
@@ -133,13 +136,18 @@ if(count===1){
             style={{ marginTop: "5%", marginLeft: "2%" }}
            
           >
-            { shouldILoad &&
+            {shouldILoad &&
             <Pagination  count={count} color="secondary" page={page} onChange={(e,pageNumber) =>{
              
               setPage(pageNumber)
              
             }} />
 
+          }
+
+
+          {
+            cardsArray.length===0 &&<h1>Looks like there is nothing to load!</h1>
           }
           </Grid>
           <Grid item xs={12} sm={4}></Grid>

@@ -16,7 +16,7 @@ import { grey, lightBlue, green } from "@material-ui/core/colors";
 import MuiAlert from "@material-ui/lab/Alert";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { TestContext } from "../../App";
-
+import { Spring } from "react-spring/renderprops";
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
@@ -262,7 +262,11 @@ export default function UniversitySignUp() {
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
-      <div className={classes.paper}>
+      <Spring
+  from={{ opacity: 0, transform: "translate3d(-100%,0,0)" }}
+  to={{ opacity: 1, transform: "translate3d(0,0,0)" }}>
+  {props => <div style={props}>
+  <div className={classes.paper}>
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
         </Avatar>
@@ -405,6 +409,15 @@ export default function UniversitySignUp() {
           </Grid>
         </form>
       </div>
+    
+    
+    
+    
+    </div>}
+</Spring>
+
+
+      
       <Box mt={5}>
         <Copyright />
       </Box>
