@@ -6,7 +6,7 @@ const router = express.Router();
 var config = require("../../config/jwt");
 const Doctor = require("../../models/Doctor");
 const University = require("../../models/University");
-const RecommendationForm = require("../../models/RecommendationForm")
+const RecommendationForm = require("../../models/RecommendationForm");
 const Student = require("../../models/Student");
 const validator = require("../../validations/StudentValidation");
 const mailer = require("nodemailer");
@@ -17,7 +17,7 @@ router.use(cors());
 
 //Student Signup
 router.post("/studentSignup", async (req, res) => {
-  const { email, password, Name, viewRecommendation,major } = req.body;
+  const { email, password, Name, viewRecommendation, major } = req.body;
 
   const isValidated = validator.createValidation(req.body);
 
@@ -35,7 +35,7 @@ router.post("/studentSignup", async (req, res) => {
     password: hashedPassword,
     activated: false,
     viewRecommendation: viewRecommendation,
-    major:major
+    major: major
   });
 
   const createStudent = await Student.create(newstu);
@@ -75,15 +75,14 @@ router.post("/studentSignup", async (req, res) => {
     msg: "Account created! Please activate your account through your email",
     data: newstu
   });
-
- 
 });
-
-
 
 //Get a List of All Students Emails
 router.get("/getStudentsEmails", async (req, res) => {
-  const stuList = await Student.find({}, { email: 1, _id: 0,Name:1,major:1 });
+  const stuList = await Student.find(
+    {},
+    { email: 1, _id: 0, Name: 1, major: 1 }
+  );
 
   if (!stuList) {
     return res.status(404).send({ error: "No Students Found" });
@@ -91,7 +90,6 @@ router.get("/getStudentsEmails", async (req, res) => {
     res.json({ stuList });
   }
 });
-
 
 //Student activate account
 router.get("/activateAccount/:activationToken", async (req, res) => {
@@ -139,9 +137,6 @@ router.post("/studentLogin", async (req, res) => {
   });
 });
 
-
-
-
 //View My Recommendations
 router.get("/getRecommendations", async (req, res) => {
   try {
@@ -165,26 +160,27 @@ router.get("/getRecommendations", async (req, res) => {
         return res.status(404).send({ error: "Invalid Token" });
       }
 
-      const studentViewingRight= await student.viewRecommendation
-      
+      const studentViewingRight = await student.viewRecommendation;
+
       const studentEmail = await student.email;
       const page = parseInt(req.query.page);
       const limit = parseInt(req.query.limit);
-      const count= await RecommendationForm.countDocuments({studentEmail: studentEmail,studentView:true})
-     recommendationForms = await RecommendationForm.find({
-      studentEmail: studentEmail,
-        studentView:true
-     
-      }).skip((page-1)*limit).limit(limit)
+      const count = await RecommendationForm.countDocuments({
+        studentEmail: studentEmail,
+        studentView: true
+      });
+      recommendationForms = await RecommendationForm.find({
+        studentEmail: studentEmail,
+        studentView: true
+      })
+        .skip((page - 1) * limit)
+        .limit(limit);
 
-
-      
-if(studentViewingRight){
-  res.send({count:count,data:recommendationForms});
-}else{
-  res.send({count:0,data:[]})
-}
-    
+      if (studentViewingRight) {
+        res.send({ count: count, data: recommendationForms });
+      } else {
+        res.send({ count: 0, data: [] });
+      }
     });
   } catch (error) {
     console.log(error);
@@ -194,8 +190,7 @@ if(studentViewingRight){
 });
 
 //Delete StudentView
-router.post("/deleteStudentView", async (req,res)=>{
-
+router.post("/deleteStudentView", async (req, res) => {
   try {
     var stat = 0;
     var token = req.headers["x-access-token"];
@@ -216,30 +211,69 @@ router.post("/deleteStudentView", async (req,res)=>{
       if (!student) {
         return res.status(404).send({ error: "Invalid Token" });
       }
-    
-const formId=req.body.id
 
-const theForm = await RecommendationForm.findByIdAndUpdate(formId,{studentView:false})
+      const formId = req.body.id;
 
-if(theForm){
-  res.status(200).send({msg:"Document Successfully Updated"})
-}else{
-res.status(404).send({msg:"document not found"})
-}
+      const theForm = await RecommendationForm.findByIdAndUpdate(formId, {
+        studentView: false
+      });
 
-
+      if (theForm) {
+        res.status(200).send({ msg: "Document Successfully Updated" });
+      } else {
+        res.status(404).send({ msg: "document not found" });
+      }
     });
   } catch (error) {
     console.log(error);
   }
+});
 
-  
-})
+//Change Password
 
+router.post("/changePassword", async (req, res) => {
+  var stat = 0;
+  var token = req.headers["x-access-token"];
+  if (!token) {
+    return res
+      .status(401)
+      .send({ auth: false, message: "Please login first." });
+  }
+  jwt.verify(token, config.secret, async function(err, decoded) {
+    if (err) {
+      return res
+        .status(500)
+        .send({ auth: false, message: "Failed to authenticate token." });
+    }
+    stat = decoded.id;
 
+    const student = await Student.findById(stat);
+    if (!student) {
+      return res.status(404).send({ error: "Invalid Token" });
+    }
 
+    const oldPassword = req.body.oldPassword;
+    const newPassword = req.body.newPassword;
 
+    if (oldPassword !== newPassword) {
+      const isCorrectPassword = bcrypt.compareSync(
+        oldPassword,
+        student.password
+      );
+      if (!isCorrectPassword) {
+        return res.status(401).send({ msg: "Incorrect password" });
+      } else {
+        const hashedPassword = bcrypt.hashSync(newPassword, 10);
 
+        await Student.findByIdAndUpdate(stat, { password: hashedPassword });
+
+        return res.status(200).send({ msg: "Password Updated" });
+      }
+    } else {
+      return res.status(400).send({ msg: "You cannot set the same password!" });
+    }
+  });
+});
 
 // Request Recommendation
 router.post("/requestRecommendation", async (req, res) => {
@@ -307,8 +341,17 @@ router.post("/requestRecommendation", async (req, res) => {
             " to launch the website, click here:  " +
             `<a href="${url2}">${url2}</a>`
         };
-        
-      await  Doctor.findByIdAndUpdate(doc._id,{$addToSet:{ notifications:{info:sName+" is requesting your recommendation. University Email(s): "+req.body.uemail }} })
+
+        await Doctor.findByIdAndUpdate(doc._id, {
+          $addToSet: {
+            notifications: {
+              info:
+                sName +
+                " is requesting your recommendation. University Email(s): " +
+                req.body.uemail
+            }
+          }
+        });
 
         transporter.sendMail(mailOptions, function(error, info) {
           if (error) {
@@ -329,10 +372,10 @@ router.post("/requestRecommendation", async (req, res) => {
           email: email,
           password: hashedPassword,
           activated: false,
-          currentJob:"",
-          contactInfo:"",
-          firstName:"",
-          lastName:""
+          currentJob: "",
+          contactInfo: "",
+          firstName: "",
+          lastName: ""
         });
 
         const createDoctor = await Doctor.create(newdoc, err => {
@@ -344,7 +387,7 @@ router.post("/requestRecommendation", async (req, res) => {
         await Doctor.findByIdAndUpdate(
           newdoc._id,
           {
-            "activationToken": token
+            activationToken: token
           },
           err => {
             if (err) {
@@ -352,11 +395,10 @@ router.post("/requestRecommendation", async (req, res) => {
             }
           }
         );
-        const url =
-          `http://localhost:3000/api/doctor/activateAccount/` +token;
+        const url = `http://localhost:3000/api/doctor/activateAccount/` + token;
         const delUrl =
-          `http://localhost:3000/api/doctor/deleteAccount/` +token;
-        //////Atef
+          `http://localhost:3000/api/doctor/deleteAccount/` + token;
+
         let mailOptions2 = {
           from: '"RecommendMe" <recommendationsystemmailer@gmail.com>',
           to: "" + "" + "<" + email + ">",
@@ -368,7 +410,7 @@ router.post("/requestRecommendation", async (req, res) => {
             ` has requested your recommendation for his application to a certain University.<br/> 
         To do so, we created you an account on our website and here is your temporary <b>password</b>: ` +
             password +
-            `<br/> <b>If you wish to activate your account please click here:</b> <a href="${url}">Activate Account</a> <br/> However if you wish to delete your account please click here: <a href="${delUrl}">Delete Account</a> <br/> Have a nice day!`
+            `<br/> <b>If you wish to activate your account please click here:</b> <a href="${url}">Activate Account</a> <br/> However if you wish to delete your account please click here: <a href="${delUrl}">Delete Account</a> <br/>`
         };
         transporter.sendMail(mailOptions2, function(error, info) {
           if (error) {

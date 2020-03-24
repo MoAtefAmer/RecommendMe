@@ -76,6 +76,60 @@ router.post("/uniSignup", async (req, res) => {
 });
 
 
+
+//Change Password
+
+router.post("/changePassword", async (req, res) => {
+  var stat = 0;
+  var token = req.headers["x-access-token"];
+  if (!token) {
+    return res
+      .status(401)
+      .send({ auth: false, message: "Please login first." });
+  }
+  jwt.verify(token, config.secret, async function(err, decoded) {
+    if (err) {
+      return res
+        .status(500)
+        .send({ auth: false, message: "Failed to authenticate token." });
+    }
+    stat = decoded.id;
+
+    const university = await University.findById(stat);
+    if (!university) {
+      return res.status(404).send({ error: "Invalid Token" });
+    }
+
+    const oldPassword = req.body.oldPassword;
+    const newPassword = req.body.newPassword;
+
+    if (oldPassword !== newPassword) {
+      const isCorrectPassword = bcrypt.compareSync(
+        oldPassword,
+        university.password
+      );
+      if (!isCorrectPassword) {
+        return res.status(401).send({ msg: "Incorrect password" });
+      } else {
+        const hashedPassword = bcrypt.hashSync(newPassword, 10);
+
+        await University.findByIdAndUpdate(stat, { password: hashedPassword });
+
+        return res.status(200).send({ msg: "Password Updated" });
+      }
+    } else {
+      return res.status(400).send({ msg: "You cannot set the same password!" });
+    }
+  });
+});
+
+
+
+
+
+
+
+
 // Account activation 
 router.get("/activateAccount/:activationToken", async (req, res) => {
   const activationToken = req.params.activationToken;

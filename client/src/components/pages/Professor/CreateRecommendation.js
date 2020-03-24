@@ -180,6 +180,8 @@ export default function CreateRecommendation() {
   const [loading, setLoading] = useState(false);
   const [chooseFileLoading, setChooseFileLoading] = useState(false);
   const [remarks, setRemarks] = useState("");
+  const [universityWebsiteLinkError,setUniversityWebsiteLinkError]=useState("")
+  const [universityWebsiteLinkErrorToggle,setUniversityWebsiteLinkErrorToggle]=useState(false)
 
   const [file, setFile] = useState();
   const [studentMajorError, setStudentMajorError] = useState("");
@@ -261,6 +263,15 @@ export default function CreateRecommendation() {
       setStudentMajorError("");
     }
   }, [studentMajor]);
+
+
+  useEffect(() => {
+    if (universityWebsiteLinkError.length >= 1) {
+      setUniversityWebsiteLinkErrorToggle(false);
+      setUniversityWebsiteLinkError("");
+    }
+  }, [universityWebsiteLink]);
+
 
   useEffect(() => {
     if (studentEmail !== "") {
@@ -396,6 +407,17 @@ export default function CreateRecommendation() {
       setUniversityNameError("");
     }
 
+    if (universityWebsiteLink.length <= 8) {
+      isError = true;
+      errors.universityWebsiteLinkError = "Please enter the University's Website Link";
+      errors.universityWebsiteLinkErrorToggle = true;
+   
+    } else {
+      setUniversityWebsiteLinkErrorToggle(false);
+      setUniversityWebsiteLinkError("");
+    }
+
+
     if (isError) {
       // setEmailError(errors.emailError);
       // setEmailErrorToggle(errors.emailErrorToggle);
@@ -411,6 +433,8 @@ export default function CreateRecommendation() {
       setStudentMajorError(errors.studentMajorError);
       setUniversityEmailErrorToggle(errors.universityEmailErrorToggle);
       setUniversityEmailError(errors.universityEmailError);
+      setUniversityWebsiteLinkErrorToggle(errors.universityWebsiteLinkErrorToggle);
+      setUniversityWebsiteLinkError(errors.universityWebsiteLinkError);
     }
 
     return isError;
@@ -468,7 +492,7 @@ console.log(value0)
               studentName +
               " to " +
               universityName +
-              "\n www.google.com",
+              "\n http://localhost:3001/login"+"\n",
             studentName: studentName,
             studentEmail: studentEmail,
             major: studentMajor,
@@ -753,6 +777,9 @@ console.log(value0)
                             id="University Link"
                             label="University Website Link"
                             value={universityWebsiteLink}
+                            required
+                            error={universityWebsiteLinkErrorToggle}
+                            helperText={universityWebsiteLinkError}
                             onChange={e => {
                               setUniversityWebsiteLink(e.target.value);
                             }}

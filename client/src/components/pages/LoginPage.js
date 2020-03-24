@@ -177,7 +177,7 @@ export default function LoginPage(props) {
                     setSnackbarErrorMessage("Login Successful");
                     setOpen(true);
               
-                    setTimeout(() => (document.location.href = "/"), 3000);
+                    document.location.href = "/";
                   }
                 }
 
@@ -225,7 +225,7 @@ export default function LoginPage(props) {
                     setOpen(true);
 
                  
-                    setTimeout(() => (document.location.href = "/"), 3000);
+                   document.location.href = "/"
                   }
                 }
                 if (res.status === 401) {

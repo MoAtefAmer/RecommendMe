@@ -187,9 +187,10 @@ export default function TemporaryDrawer() {
 
             <DrawerContext.Provider
               value={{
-                key: "Uni",
-                primary: "Uni",
-                onClick: "cp"
+                key: "Change Password",
+                primary: "Change Password",
+                onClick: "changePassword",
+                icon: <IoIosUnlock style={{ fontSize: "25px" }} />
               }}
             >
               <DrawerButtonItem />

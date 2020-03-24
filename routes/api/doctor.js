@@ -7,8 +7,11 @@ var config = require("../../config/jwt");
 const Doctor = require("../../models/Doctor");
 const University = require("../../models/University");
 const RecommendationForm = require("../../models/RecommendationForm");
+const Student = require("../../models/Student");
 const validator = require("../../validations/DoctorValidations");
+const recValidator = require("../../validations/RecommendationFormValidations");
 const mailer = require("nodemailer");
+var randomstring = require("randomstring");
 var cors = require("cors");
 
 router.use(cors());
@@ -216,10 +219,6 @@ router.get("/activateAccount/:activationToken", async (req, res) => {
   }
 });
 
-
-
-
-
 //View My Recommendations
 router.get("/getRecommendations", async (req, res) => {
   try {
@@ -245,20 +244,22 @@ router.get("/getRecommendations", async (req, res) => {
       const professorEmail = await doctor.email;
       const page = parseInt(req.query.page);
       const limit = parseInt(req.query.limit);
-      const count= await RecommendationForm.countDocuments({ professorEmail: professorEmail,profView:true})
-     recommendationForms = await RecommendationForm.find({
+      const count = await RecommendationForm.countDocuments({
         professorEmail: professorEmail,
-        profView:true
-     
-      }).skip((page-1)*limit).limit(limit)
+        profView: true
+      });
+      recommendationForms = await RecommendationForm.find({
+        professorEmail: professorEmail,
+        profView: true
+      })
+        .skip((page - 1) * limit)
+        .limit(limit);
 
-
-      
       // const startIndex = (page - 1) * limit;
       // const endIndex = page * limit;
       // const resultForms = recommendationForms.slice(startIndex, endIndex);
 
-      res.send({count:count,data:recommendationForms});
+      res.send({ count: count, data: recommendationForms });
     });
   } catch (error) {
     console.log(error);
@@ -267,10 +268,8 @@ router.get("/getRecommendations", async (req, res) => {
   //
 });
 
-
 //Delete ProfView
-router.post("/deleteProfView", async (req,res)=>{
-
+router.post("/deleteProfView", async (req, res) => {
   try {
     var stat = 0;
     var token = req.headers["x-access-token"];
@@ -291,25 +290,76 @@ router.post("/deleteProfView", async (req,res)=>{
       if (!doctor) {
         return res.status(404).send({ error: "Invalid Token" });
       }
-    
-const formId=req.body.id
 
-const theForm = await RecommendationForm.findByIdAndUpdate(formId,{profView:false})
+      const formId = req.body.id;
 
-if(theForm){
-  res.status(200).send({msg:"Document Successfully Updated"})
-}else{
-res.status(404).send({msg:"document not found"})
-}
+      const theForm = await RecommendationForm.findByIdAndUpdate(formId, {
+        profView: false
+      });
 
-
+      if (theForm) {
+        res.status(200).send({ msg: "Document Successfully Updated" });
+      } else {
+        res.status(404).send({ msg: "document not found" });
+      }
     });
   } catch (error) {
     console.log(error);
   }
+});
 
-  
-})
+
+
+//Change Password
+
+router.post("/changePassword", async (req, res) => {
+  var stat = 0;
+  var token = req.headers["x-access-token"];
+  if (!token) {
+    return res
+      .status(401)
+      .send({ auth: false, message: "Please login first." });
+  }
+  jwt.verify(token, config.secret, async function(err, decoded) {
+    if (err) {
+      return res
+        .status(500)
+        .send({ auth: false, message: "Failed to authenticate token." });
+    }
+    stat = decoded.id;
+
+    const doctor = await Doctor.findById(stat);
+    if (!doctor) {
+      return res.status(404).send({ error: "Invalid Token" });
+    }
+
+    const oldPassword = req.body.oldPassword;
+    const newPassword = req.body.newPassword;
+
+    if (oldPassword !== newPassword) {
+      const isCorrectPassword = bcrypt.compareSync(
+        oldPassword,
+        doctor.password
+      );
+      if (!isCorrectPassword) {
+        return res.status(401).send({ msg: "Incorrect password" });
+      } else {
+        const hashedPassword = bcrypt.hashSync(newPassword, 10);
+
+        await Doctor.findByIdAndUpdate(stat, { password: hashedPassword });
+
+        return res.status(200).send({ msg: "Password Updated" });
+      }
+    } else {
+      return res.status(400).send({ msg: "You cannot set the same password!" });
+    }
+  });
+});
+
+
+
+
+
 
 //Send recommendation
 router.post("/sendRecommendation", async (req, res) => {
@@ -386,11 +436,95 @@ router.post("/sendRecommendation", async (req, res) => {
 
       await RecommendationForm.create(newForm);
 
-      //
-
+      const checkStudent = await Student.findOne({ email: studentEmail });
+      const checkUniversity =await University.findOne({uemail:uemail})
+      var appendedMessageStudent;
+      var appendedMessageUniversity;
+      var universityMailOptions; 
+      var studentMailOptions;
       const senderEmail = await doctor.email;
+   
+      if (!checkStudent) {
+        const password = randomstring.generate({
+          length: 8
+        });
 
-      const reciepients = [uemail, studentEmail];
+        const hashedPassword = bcrypt.hashSync(password, 10);
+        const newstu = new Student({
+          Name: studentName,
+          email: studentEmail,
+          password: hashedPassword,
+          activated: false,
+          viewRecommendation: true,
+          major: major,
+
+          recommendersEmails: {
+            remail: professorEmail,
+            uemail: uemail
+          }
+        });
+        const createStudent = await Student.create(newstu);
+        const token = await jwt.sign({ id: newstu._id }, config.secret, {}); ///////
+
+        await Student.findByIdAndUpdate(createStudent._id, {
+          activationToken: token
+        });
+        const url =
+          `http://localhost:3000/api/student/activateAccount/` + token;
+          appendedMessageStudent =
+          `There has been a new Recommendation posted on our website concerning this email. Since you do not have an account on our website, we made you one. Click <a href="${url}">Here</a> to activate your account then kindly use this temporary <b>password: </b>` +
+          password +
+          ` to login to your account and check the posted recommendation when you login`;
+      
+          studentMailOptions = {
+            from: senderEmail,
+            to: studentEmail,
+            subject: "Notification Email from RecommendME",
+            html: appendedMessageStudent
+          };
+        
+      
+      
+        }
+
+
+      if (!checkUniversity) {
+        const password = randomstring.generate({
+          length: 8
+        });
+
+        const hashedPassword = bcrypt.hashSync(password, 10);
+        const newUni = new University({
+          Name: universityName,
+          uemail: uemail,
+          password: hashedPassword,
+          activated: false,
+          websiteLink:""+universityLink,
+        });
+        const createUniversity = await University.create(newUni);
+        const token = await jwt.sign({ id: newUni._id }, config.secret, {}); ///////
+
+        await University.findByIdAndUpdate(createUniversity._id, {
+          activationToken: token
+        });
+        const url =
+          `http://localhost:3000/api/university/activateAccount/` + token;
+          appendedMessageUniversity =
+          `There has been a new Recommendation posted on our website concerning the owner(s) of this email. Since you do not have an account on our website, we made you one. Click <a href="${url}">Here</a> to activate your account then kindly use this temporary <b>password: </b>` +
+          password +
+          ` to login to your account and check the posted recommendation when you login`;
+
+
+          universityMailOptions = {
+            from: senderEmail,
+            to: uemail,
+            subject: "Notification Email from RecommendME",
+            html: appendedMessageUniversity
+          };
+      }
+
+ 
+      
 
       let transporter = mailer.createTransport({
         service: "gmail",
@@ -403,43 +537,143 @@ router.post("/sendRecommendation", async (req, res) => {
         }
       });
 
+
+     const dudes=[studentEmail,uemail]
       let mailOptions = {
         from: senderEmail,
-        to: reciepients,
+        to: dudes,
         subject: subject,
-        text: message
+        text: message,
+      
       };
 
+      if(checkUniversity && checkStudent){
       transporter.sendMail(mailOptions, async function(error, info) {
         if (error) {
           console.log(error);
           return res.status(401).send({ msg: "Error while sending email" });
         } else {
           console.log("Email sent: " + info.response);
-          const uemail = req.body.receiver;
-          let uni = await University.findOne({ uemail });
+          // const uemail = req.body.receiver;
+          // let uni = await University.findOne({ uemail });
 
-          if (uni != null) {
-            let uniID = await uni._id;
+          // if (uni != null) {
+          //   let uniID = await uni._id;
 
-            await University.findByIdAndUpdate(uniID, {
-              $addToSet: {
-                notificationList: {
-                  info:
-                    "Professor " +
-                    doctor.firstName +
-                    " " +
-                    doctor.lastName +
-                    " has sent you an email"
-                }
-              }
-            });
-          }
+          //   await University.findByIdAndUpdate(uniID, {
+          //     $addToSet: {
+          //       notificationList: {
+          //         info:
+          //           "Professor " +
+          //           doctor.firstName +
+          //           " " +
+          //           doctor.lastName +
+          //           " has sent you an email"
+          //       }
+          //     }
+          //   });
+          // }
           return res
             .status(200)
             .send({ msg: "recommendation email sent successfully" });
         }
       });
+    }
+
+    if(!checkStudent && !checkUniversity){
+      transporter.sendMail(studentMailOptions, async function(error, info) {
+        if (error) {
+          console.log(error);
+          return res.status(401).send({ msg: "Error while sending email" });
+        } else {
+          console.log("Email sent: " + info.response);
+          transporter.sendMail(universityMailOptions, async function(error, info) {
+            if (error) {
+              console.log(error);
+              return res.status(401).send({ msg: "Error while sending email" });
+            } else {
+              console.log("Email2 sent: " + info.response);
+              return res
+                .status(200)
+                .send({ msg: "Recommendation emails sent successfully" });
+            }
+          });
+
+
+          
+        }
+      });
+
+    }
+
+    if(checkStudent && !checkUniversity){
+      transporter.sendMail({
+        from: senderEmail,
+        to: studentEmail,
+        subject: subject,
+        text: message,
+      
+      }, async function(error, info) {
+        if (error) {
+          console.log(error);
+          return res.status(401).send({ msg: "Error while sending email" });
+        } else {
+          console.log("Email sent: " + info.response);
+          transporter.sendMail(universityMailOptions, async function(error, info) {
+            if (error) {
+              console.log(error);
+              return res.status(401).send({ msg: "Error while sending email" });
+            } else {
+              console.log("Email2 sent: " + info.response);
+              return res
+                .status(200)
+                .send({ msg: "Recommendation emails sent successfully" });
+            }
+          });
+
+
+          
+        }
+      });
+
+    }
+
+
+    if(!checkStudent && checkUniversity){
+      transporter.sendMail({
+        from: senderEmail,
+        to: uemail,
+        subject: subject,
+        text: message,
+      
+      }, async function(error, info) {
+        if (error) {
+          console.log(error);
+          return res.status(401).send({ msg: "Error while sending email" });
+        } else {
+          console.log("Email sent: " + info.response);
+          transporter.sendMail(studentMailOptions, async function(error, info) {
+            if (error) {
+              console.log(error);
+              return res.status(401).send({ msg: "Error while sending email" });
+            } else {
+              console.log("Email2 sent: " + info.response);
+              return res
+                .status(200)
+                .send({ msg: "Recommendation emails sent successfully" });
+            }
+          });
+
+
+          
+        }
+      });
+
+    }
+
+
+
+
     });
   } catch (error) {
     console.log(error);

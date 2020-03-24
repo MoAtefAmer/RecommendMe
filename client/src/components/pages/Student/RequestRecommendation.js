@@ -238,7 +238,7 @@ if(isEmpty(universityEmail)){
           setProfessorEmail("");
           setUniversityEmail("")
          
-          setTimeout(() => (document.location.reload()), 4000);
+          document.location.reload()
         } else {
           setLoading(false);
         }
