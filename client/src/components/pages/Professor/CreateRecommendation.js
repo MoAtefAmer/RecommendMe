@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useContext } from "react";
 import clsx from "clsx";
 import PropTypes from "prop-types";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
@@ -28,6 +28,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import { storage } from "../../../firebase";
 import { FaFolderOpen, FaFolderPlus } from "react-icons/fa";
 import { Spring } from "react-spring/renderprops";
+import {TestContext} from "../../../App"
 
 function Copyright() {
   return (
@@ -102,7 +103,7 @@ const useStyles = makeStyles(theme => ({
 
   wrapper: {
     margin: theme.spacing(1),
-    position: "relative"
+    
   },
   normalForm: {
     backgroundColor: "linear-gradient(60deg, #ab47bc, #8e24aa)",
@@ -115,9 +116,10 @@ const useStyles = makeStyles(theme => ({
   },
 
   iconStyling: {
-    position: "relative",
+    
     fontSize: "65px",
-    marginLeft: "40%"
+    marginLeft: "40%",
+
   },
   CardMaster: {
     "&:hover": {
@@ -156,7 +158,9 @@ export var CardContext = React.createContext();
 export default function CreateRecommendation() {
   const classes = useStyles();
   const [value, setValue] = useState(0);
-  const [universityEmail, setUniversityEmail] = useState("");
+  const [universityEmail, setUniversityEmail] = useState(sessionStorage.getItem("notificationUniversityEmail"));
+
+  const context = useContext(TestContext)
 
   const [value0, setValue0] = useState(3);
   const [value1, setValue1] = useState(3);
@@ -170,7 +174,7 @@ export default function CreateRecommendation() {
   const [value9, setValue9] = useState(3);
   const [studentsEmailList, setStudentsEmailList] = useState([]);
   const [universityEmailList, setUniversityEmailList] = useState([]);
-  const [studentEmail, setStudentEmail] = useState("");
+  const [studentEmail, setStudentEmail] = useState(sessionStorage.getItem("notificationStudentEmail"));
   const [studentName, setStudentName] = useState("");
   const [studentMajor, setStudentMajor] = useState("");
   const [universityName, setUniversityName] = useState("");
@@ -439,7 +443,7 @@ export default function CreateRecommendation() {
 
     return isError;
   };
-console.log(value0)
+
   // console.log(universityEmailList)
   const [cardsArray] = useState([
     { question: "Analytical Skills", id: 0, icon: "analytics" },
@@ -577,9 +581,11 @@ console.log(value0)
     );
   };
 
+
+
   return (
     <div className={classes.root}>
-      <AppBar position="sticky" color="default">
+      <AppBar position="sticky" color="default" style={{zIndex:"998"}}>
         <Tabs
           value={value}
           onChange={handleChange}
@@ -599,6 +605,7 @@ console.log(value0)
         <CssBaseline />
 
         <Container maxWidth="lg" style={{ flexGrow: 1 }}>
+        <div style={{zIndex:"-1",position:"static"}}>
           <Spring
             from={{ opacity: 0, transform: "translate3d(-100%,0,0)" }}
             to={{ opacity: 1, transform: "translate3d(0,0,0)" }}
@@ -860,6 +867,7 @@ console.log(value0)
               </div>
             )}
           </Spring>
+          </div>
         </Container>
       </TabPanel>
       {/* //Atef */}

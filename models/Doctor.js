@@ -51,11 +51,13 @@ const DoctorSchema = new Schema({
    },
    notifications:{
     type:[{
-      info:String,
+      studentEmail:String,
+      universityEmail:String,
+      studentName:String,
       read:{
          type:Boolean,
          default:false
-      }
+      },
     }]
     
     

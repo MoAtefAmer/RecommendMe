@@ -96,17 +96,19 @@ if(count===1 || count===0){
 
 
   return (
-    <Container maxWidth="lg" style={{ flexGrow: 1, marginTop: "2%" }}>
+    <Container maxWidth="lg" style={{ flexGrow: 1, marginTop: "2%"}}>
 
 
 
-     {!loading ? (<Spring
+     {!loading ? (
+   
+     <Spring 
    from={{ opacity: 0, transform: "translate3d(-100%,0,0)" }}
    to={{ opacity: 1, transform: "translate3d(0,0,0)" }}>
   {props => <div style={props}>
-  <Grid container spacing={2}>
+  <Grid container spacing={2} >
         {cardsArray.map((card, i) => (
-         
+      
           <RecommendationCardContext.Provider key={i} value={{
             studentName:card.studentName,
             studentEmail:card.studentEmail,
@@ -125,6 +127,7 @@ if(count===1 || count===0){
           }}>
             <RecommendationCard />
           </RecommendationCardContext.Provider>
+          
         ))}
 
         <Grid container spacing={2}>
@@ -147,7 +150,7 @@ if(count===1 || count===0){
 
 
           {
-            cardsArray.length===0 &&<h1>Looks like there is nothing to load!</h1>
+            cardsArray.length===0 &&<h1>There are no Recommendations posted yet!</h1>
           }
           </Grid>
           <Grid item xs={12} sm={4}></Grid>

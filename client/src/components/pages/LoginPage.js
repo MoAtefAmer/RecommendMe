@@ -171,6 +171,7 @@ export default function LoginPage(props) {
                     sessionStorage.setItem("email",email)
                     sessionStorage.setItem("token", data.token);
                     sessionStorage.setItem("auth", data.auth);
+                   
                     setEmail("");
                     setPassword("");
                     setSeverity("success");
@@ -220,6 +221,9 @@ export default function LoginPage(props) {
                     sessionStorage.setItem("currentJob",data.data.currentJob)
                     sessionStorage.setItem("token", data.token);
                     sessionStorage.setItem("auth", data.auth);
+                    sessionStorage.setItem("notificationId","")
+                      sessionStorage.setItem("notificationStudentEmail","")
+                      sessionStorage.setItem("notificationUniversityEmail","")
                     setSeverity("success");
                     setSnackbarErrorMessage("Login Successful");
                     setOpen(true);

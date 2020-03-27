@@ -5,13 +5,14 @@ var jwt = require("jsonwebtoken");
 const router = express.Router();
 var config = require("../../config/jwt");
 const Doctor = require("../../models/Doctor");
-const University = require("../../models/University");
 const RecommendationForm = require("../../models/RecommendationForm");
 const Student = require("../../models/Student");
 const validator = require("../../validations/StudentValidation");
 const mailer = require("nodemailer");
 var randomstring = require("randomstring");
 var cors = require("cors");
+const cryptoRandomString = require('crypto-random-string');
+var Pusher = require('pusher');
 
 router.use(cors());
 
@@ -101,7 +102,7 @@ router.get("/activateAccount/:activationToken", async (req, res) => {
       activated: true,
       activationToken: null
     });
-    res.status(200).redirect("https://google.com");
+    res.status(200).redirect("http://localhost:3001/");
   } else {
     res.status(400).send({ msg: "Link Expired" });
   }
@@ -275,6 +276,19 @@ router.post("/changePassword", async (req, res) => {
   });
 });
 
+
+
+
+var pusher = new Pusher({
+  appId:  process.env.PUSHER_APP_ID,
+  key: process.env.PUSHER_APP_KEY,
+  secret: process.env.PUSHER_APP_SECRET,
+  cluster: 'eu',
+  encrypted: true
+});
+
+
+
 // Request Recommendation
 router.post("/requestRecommendation", async (req, res) => {
   try {
@@ -304,6 +318,9 @@ router.post("/requestRecommendation", async (req, res) => {
       //     .status(400)
       //     .send({ error: isValidated.error.details[0].message });
       // }
+
+     
+
       await Student.findByIdAndUpdate(stat, {
         $addToSet: {
           recommendersEmails: {
@@ -322,7 +339,7 @@ router.post("/requestRecommendation", async (req, res) => {
           rejectUnauthorized: false
         }
       });
-      const url2 = `https://google.com`;
+      const url2 = `http://localhost:3001/login`;
 
       const email = req.body.remail;
       const sName = student.Name;
@@ -342,15 +359,29 @@ router.post("/requestRecommendation", async (req, res) => {
             `<a href="${url2}">${url2}</a>`
         };
 
-        await Doctor.findByIdAndUpdate(doc._id, {
+  
+   await Doctor.findByIdAndUpdate(doc._id, {
           $addToSet: {
             notifications: {
-              info:
-                sName +
-                " is requesting your recommendation. University Email(s): " +
-                req.body.uemail
+              studentName: sName ,
+              universityEmail:req.body.uemail,
+              studentEmail:sEmail
             }
           }
+        });
+
+        const theDoc= await Doctor.findById(doc._id)
+     
+        const notifications=await theDoc.notifications
+        const theNotification= notifications[notifications.length-1]
+        
+
+       
+        pusher.trigger('my-channel', 'my-event', {
+          studentName: sName,
+          universityEmail:req.body.uemail,
+          studentEmail:sEmail,
+          id:theNotification._id
         });
 
         transporter.sendMail(mailOptions, function(error, info) {
@@ -367,6 +398,7 @@ router.post("/requestRecommendation", async (req, res) => {
           length: 8
         });
 
+        const cryptoToken=cryptoRandomString({length: 32, type: 'url-safe'});
         const hashedPassword = bcrypt.hashSync(password, 10);
         const newdoc = new Doctor({
           email: email,
@@ -375,29 +407,16 @@ router.post("/requestRecommendation", async (req, res) => {
           currentJob: "",
           contactInfo: "",
           firstName: "",
-          lastName: ""
+          lastName: "",
+          activationToken:cryptoToken
         });
+        await Doctor.create(newdoc)
 
-        const createDoctor = await Doctor.create(newdoc, err => {
-          if (err) {
-            return res.status(401).send({ msg: "Server error" });
-          }
-        });
-        const token = await jwt.sign({ id: newdoc._id }, config.secret, {});
-        await Doctor.findByIdAndUpdate(
-          newdoc._id,
-          {
-            activationToken: token
-          },
-          err => {
-            if (err) {
-              return res.status(401).send({ msg: "Server error" });
-            }
-          }
-        );
-        const url = `http://localhost:3000/api/doctor/activateAccount/` + token;
+
+      
+        const url = `http://localhost:3000/api/doctor/activateAccount/` + cryptoToken;
         const delUrl =
-          `http://localhost:3000/api/doctor/deleteAccount/` + token;
+          `http://localhost:3000/api/doctor/deleteAccount/` + cryptoToken;
 
         let mailOptions2 = {
           from: '"RecommendMe" <recommendationsystemmailer@gmail.com>',

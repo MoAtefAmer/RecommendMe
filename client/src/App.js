@@ -15,13 +15,21 @@ export var TestContext = React.createContext();
 export class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+  };
   }
 
+   
+
+  
   render() {
+
+    
     return (
       <div>
-        <ButtonAppBar />
+           
+        <ButtonAppBar style={{position:"relative",zIndex:10}} />
+        
         <Router>
           <React.Fragment>
             <Route
@@ -94,7 +102,8 @@ export class App extends React.Component {
                   sessionStorage.getItem("token") === null ? (
                     <TestContext.Provider
                       value={{
-                        foo: "test"
+                        foo: "test",
+                        
                       }}
                     >
                       <LoginPage />
@@ -130,7 +139,14 @@ export class App extends React.Component {
                     sessionStorage.getItem("token") !== null) &&
                   sessionStorage.getItem("auth") === "Professor" ? (
                     <>
+                       <TestContext.Provider
+                      value={{
+                     
+                    
+                      }}
+                    >
                       <CreateRecommendation />
+                      </TestContext.Provider>
                     </>
                   ) : (
                     (document.location.href = "/")
@@ -146,7 +162,7 @@ export class App extends React.Component {
                   {sessionStorage.getItem("token") !== "" ||
                   sessionStorage.getItem("token") !== null ? (
                     <>
-                      <ViewRecommendations />
+                      <ViewRecommendations style={{position:"relative",zIndex:1}} />
                     </>
                   ) : (
                     (document.location.href = "/")

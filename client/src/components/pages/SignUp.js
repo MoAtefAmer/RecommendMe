@@ -310,7 +310,7 @@ export default function SignUp() {
           setPassword("");
           setFirstName("");
           setLastName("");
-          setTimeout(() => (document.location.href = "/login"), 4000);
+          document.location.href = "/login"
         } else {
           setLoading(false);
         }

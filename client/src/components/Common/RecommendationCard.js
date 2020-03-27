@@ -19,6 +19,7 @@ import { FiClipboard } from "react-icons/fi";
 import { Delete } from "@material-ui/icons";
 import InformationModal from "./InformationModal";
 import AreYouSureModal from "./AreYouSureModal";
+
 const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1,
@@ -57,7 +58,8 @@ const useStyles = makeStyles(theme => ({
   CardMaster: {
     "&:hover": {
       cursor: "Pointer"
-    }
+    },
+ 
   },
 
   CardMaster2: {
@@ -150,13 +152,17 @@ export default function RecommendationCard() {
 
   return (
     <>
-      <Grid item xs={12} sm={4}>
+      <Grid item xs={12} sm={4} >
+     
+      
         <Card
           onMouseEnter={CardMouseEnter}
           onMouseLeave={CardMouseLeave}
           raised={raised}
           className={classes.CardMaster}
+          
         >
+         
           <CardActionArea
             onClick={e => {
               setInfoModalShow(true);
@@ -206,9 +212,12 @@ export default function RecommendationCard() {
             Delete
           </Button>
         </Card>
+       
+        
       </Grid>
       {infoModal}
       {smallModal}
+      
     </>
   );
 }

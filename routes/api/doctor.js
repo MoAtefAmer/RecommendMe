@@ -9,10 +9,10 @@ const University = require("../../models/University");
 const RecommendationForm = require("../../models/RecommendationForm");
 const Student = require("../../models/Student");
 const validator = require("../../validations/DoctorValidations");
-const recValidator = require("../../validations/RecommendationFormValidations");
 const mailer = require("nodemailer");
 var randomstring = require("randomstring");
 var cors = require("cors");
+var Pusher = require('pusher');
 
 router.use(cors());
 
@@ -132,21 +132,7 @@ router.post("/docLogin", async (req, res) => {
   });
 });
 
-//Delete account
-router.get("/deleteAccount/:activationToken", async (req, res) => {
-  const activationToken = req.params.activationToken;
 
-  const doctor = await Doctor.findOne({ activationToken: activationToken });
-  if (doctor) {
-    await Doctor.findByIdAndDelete(doctor._id, {
-      activated: true,
-      activationToken: null
-    });
-    return res.status(200).send({ msg: "Account deleted!" });
-  } else {
-    return res.status(400).send({ msg: "Link expired!" });
-  }
-});
 
 //Get Doctor's Info (Profile)
 router.get("/viewProfile", async (req, res) => {
@@ -163,6 +149,7 @@ router.get("/viewProfile", async (req, res) => {
 
 //Get a List of All Doctors
 router.get("/getDocEmails", async (req, res) => {
+
   const docList = await Doctor.find({}, { email: 1, _id: 0 });
 
   if (!docList) {
@@ -203,6 +190,69 @@ router.put("/editProfile", async (req, res) => {
   }
 });
 
+
+//Delete account
+router.get("/deleteAccount/:activationToken", async (req, res) => {
+  const activationToken = req.params.activationToken;
+
+  const doctor = await Doctor.findOne({ activationToken: activationToken });
+  if (doctor) {
+    await Doctor.findByIdAndDelete(doctor._id, {
+      activated: true,
+      activationToken: null
+    });
+
+
+    
+    return res.status(200).redirect("http://localhost:3001/");
+  } else {
+    return res.status(400).redirect("http://localhost:3001/login");
+  }
+});
+
+
+var pusher = new Pusher({
+  appId:  process.env.PUSHER_APP_ID,
+  key: process.env.PUSHER_APP_KEY,
+  secret: process.env.PUSHER_APP_SECRET,
+  cluster: 'eu',
+  encrypted: true
+});
+
+//Read Notification
+router.post("/readNotification", async(req,res)=>{
+
+  var stat = 0;
+  var token = req.headers["x-access-token"];
+  if (!token) {
+    return res
+      .status(401)
+      .send({ auth: false, message: "Please login first." });
+  }
+  jwt.verify(token, config.secret, async function(err, decoded) {
+    if (err) {
+      return res
+        .status(500)
+        .send({ auth: false, message: "Failed to authenticate token." });
+    }
+    stat = decoded.id;
+
+    const doctor = await Doctor.findById(stat);
+    if (!doctor) {
+      return res.status(404).send({ error: "Invalid Token" });
+    }
+
+
+
+    
+    
+  });
+
+
+
+} )
+
+
 // Account activation
 router.get("/activateAccount/:activationToken", async (req, res) => {
   const activationToken = req.params.activationToken;
@@ -213,7 +263,7 @@ router.get("/activateAccount/:activationToken", async (req, res) => {
       activated: true,
       activationToken: null
     });
-    res.status(200).redirect("https://google.com");
+    res.status(200).redirect("https://localhost:3001/");
   } else {
     res.status(400).send({ msg: "Link Expired" });
   }
@@ -358,7 +408,35 @@ router.post("/changePassword", async (req, res) => {
 
 
 
+//Retrieve Notifications
 
+router.get("/getNotifications", async (req,res)=>{
+
+  var stat = 0;
+  var token = req.headers["x-access-token"];
+  if (!token) {
+    return res
+      .status(401)
+      .send({ auth: false, message: "Please login first." });
+  }
+  jwt.verify(token, config.secret, async function(err, decoded) {
+    if (err) {
+      return res
+        .status(500)
+        .send({ auth: false, message: "Failed to authenticate token." });
+    }
+    stat = decoded.id;
+
+    const doctor = await Doctor.findById(stat);
+    if (!doctor) {
+      return res.status(404).send({ error: "Invalid Token" });
+    }
+
+res.json({notifications:doctor.notifications})
+  
+  });
+  
+})
 
 
 //Send recommendation
