@@ -216,7 +216,7 @@ var pusher = new Pusher({
   key: process.env.PUSHER_APP_KEY,
   secret: process.env.PUSHER_APP_SECRET,
   cluster: 'eu',
-  encrypted: true
+  useTLS: true
 });
 
 //Read Notification
@@ -242,7 +242,19 @@ router.post("/readNotification", async(req,res)=>{
       return res.status(404).send({ error: "Invalid Token" });
     }
 
+    const notificationid=req.body.notificationId
+  
 
+
+ await Doctor.updateOne({
+    "notifications._id": notificationid
+}, {
+   $set: { "notifications.$.read": true }
+})
+
+ 
+
+    res.status(200).send({msg:"Notfication Updated Successfully"})
 
     
     

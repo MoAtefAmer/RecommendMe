@@ -1,4 +1,4 @@
-import React, { useEffect, useState,useContext } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -10,7 +10,7 @@ import { Icon } from "@iconify/react";
 import logoutIcon from "@iconify/icons-mdi/logout";
 import loginIcon from "@iconify/icons-mdi/login";
 import MenuDrawer from "./Drawer";
-import { Notifications } from "@material-ui/icons";
+import { Notifications, NotificationsActive } from "@material-ui/icons";
 import { Dropdown, DropdownButton } from "react-bootstrap";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -19,25 +19,25 @@ import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import ListItemText from "@material-ui/core/ListItemText";
 import Checkbox from "@material-ui/core/Checkbox";
 import IconButton from "@material-ui/core/IconButton";
+import Paper from "@material-ui/core/Paper";
 import DeleteIcon from "@material-ui/icons/Delete";
-import { ButtonGroup ,Modal,Popover} from "react-bootstrap";
 
-import Pusher from "pusher-js"
+import { ButtonGroup, Modal, Popover } from "react-bootstrap";
+
+import Pusher from "pusher-js";
+import { Typography, CircularProgress } from "@material-ui/core";
 
 const useStyles = makeStyles(theme => ({
   root: {
-    flexGrow: 1,
-    
+    flexGrow: 1
   },
   root2: {
     width: "100%",
     maxWidth: 360,
-    backgroundColor: theme.palette.background.paper,
-    
+    backgroundColor: theme.palette.background.paper
   },
-  test:{
-background:"blue",
-
+  test: {
+    background: "blue"
   },
 
   menuButton: {
@@ -57,12 +57,11 @@ export var MenuButtonContext = React.createContext();
 
 export default function DenseAppBar() {
   const classes = useStyles();
- 
-  const [notifications,setNotifications]=useState([])
-  const [showNotifications,setShowNotifications]=useState(false)
-const [studentEmail,setStudentEmail]=useState("")
 
-  
+  const [notifications, setNotifications] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+
   const handleLogout = () => {
     sessionStorage.setItem("email", "");
     sessionStorage.setItem("token", "");
@@ -70,56 +69,61 @@ const [studentEmail,setStudentEmail]=useState("")
     sessionStorage.setItem("firstName", "");
     sessionStorage.setItem("lastName", "");
     sessionStorage.setItem("currentJob", "");
-    sessionStorage.setItem("notificationId","")
-    sessionStorage.setItem("notificationStudentEmail","")
-    sessionStorage.setItem("notificationUniversityEmail","")
-   
+    sessionStorage.setItem("notificationId", "");
+    sessionStorage.setItem("notificationStudentEmail", "");
+    sessionStorage.setItem("notificationUniversityEmail", "");
+
     document.location.href = "/login";
   };
 
-  var pusher = new Pusher('fadc34fcd344c46d6c16', {
-    cluster: 'eu',
+  var pusher = new Pusher("fadc34fcd344c46d6c16", {
+    cluster: "eu",
     forceTLS: true
   });
 
-  var channel = pusher.subscribe('my-channel');
+  var channel = pusher.subscribe("my-channel");
 
   useEffect(() => {
-   if(sessionStorage.getItem("auth")==="Professor"){
+    if (sessionStorage.getItem("auth") === "Professor") {
+      fetch(`http://localhost:3000/api/doctor/getNotifications`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "x-access-token": sessionStorage.getItem("token")
+        }
+      }).then(res => {
+        res.json().then(data => {
+          setNotifications(data.notifications.reverse());
+          setLoaded(true);
+        });
+      });
+      channel.bind("my-event", function(data) {
+        setNotifications(notifications => [...notifications, data]);
+      });
+    }
+  }, []);
 
-   
-    fetch(`http://localhost:3000/api/doctor/getNotifications`, {
-      method: "GET",
+  const handleNotificationClick = (id, studentEmail, universityEmail) => {
+    fetch(`http://localhost:3000/api/doctor/readNotification`, {
+      method: "POST",
+      body: JSON.stringify({
+        notificationId: id
+      }),
       headers: {
         "Content-Type": "application/json",
-        "x-access-token":sessionStorage.getItem("token")
+        "x-access-token": sessionStorage.getItem("token")
       }
     }).then(res => {
-      res.json().then(data => {
-        setNotifications(data.notifications.reverse());
-        
-      });
+      console.log(res.status);
+      if (res.status === 200) {
+        sessionStorage.setItem("notificationId", id);
+        sessionStorage.setItem("notificationStudentEmail", studentEmail);
+        sessionStorage.setItem("notificationUniversityEmail", universityEmail);
+
+        document.location.href = "/createRecommendation";
+      }
     });
-    channel.bind('my-event', function(data) {
-      console.log(data.studentEmail)
-      setStudentEmail(data.studentEmail)
-      console.log(data.id)
-      console.log(data.universityEmail)
-      console.log(data.studentName)
-      //Here you need to create an instance of a notification by adding it to the array 
-      //and find a way to dynamically make the mapping function detect the array change
-      //so that it would appear as a notification
-     });
-   
-
-  }
-}, []);
-
-  console.log(notifications)
-
-
- 
-
+  };
 
   const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
     <Button
@@ -127,7 +131,7 @@ const [studentEmail,setStudentEmail]=useState("")
       onClick={e => {
         e.preventDefault();
         onClick(e);
-        setShowNotifications(!showNotifications)
+        setShowNotifications(!showNotifications);
       }}
       color="transparent"
       href=""
@@ -140,14 +144,12 @@ const [studentEmail,setStudentEmail]=useState("")
     </Button>
   ));
 
-
-  
-
   return (
-
     <div id="navbar" className={classes.root}>
-      
-      <AppBar position="static" style={{ background: "#212121",position:"relative",zIndex:"1000" }}>
+      <AppBar
+        position="static"
+        style={{ background: "#212121", position: "relative", zIndex: "1000" }}
+      >
         <Toolbar variant="dense">
           <MenuButtonContext.Provider
             value={{
@@ -155,7 +157,7 @@ const [studentEmail,setStudentEmail]=useState("")
               handleLogout: handleLogout
             }}
           >
-            <MenuDrawer style={{zIndex:"9999"}}/>
+            <MenuDrawer style={{ zIndex: "9999" }} />
           </MenuButtonContext.Provider>
           <div className={classes.title}></div>
           <Button
@@ -168,47 +170,58 @@ const [studentEmail,setStudentEmail]=useState("")
             <Explore className={classes.icons} />
             Discover
           </Button>
-
-          {sessionStorage.getItem("auth") === "Professor" ? (
-            
-            <Dropdown  bsPrefix={{}}>
+{sessionStorage.getItem("auth") === "Professor" ?(  notifications.length > 0 ? (
+            <Dropdown bsPrefix={{}}>
               <Dropdown.Toggle as={CustomToggle} />
-            
-  
-              
-              <Dropdown.Menu  >
-              
+
+              <Dropdown.Menu>
                 <List
                   dense
-                  
-                  style={{ maxHeight: 400, overflow: "auto",position:"relative",zIndex:5 }}
+                  style={{
+                    maxHeight: 400,
+                    overflow: "auto",
+                    position: "relative",
+                    zIndex: 5
+                  }}
                 >
-                  {notifications.map((value,i) => {
-           
+                  {notifications.map((value, i) => {
                     return (
-                      <ListItem key={i} button  onClick={e=>{
-                      sessionStorage.setItem("notificationId",value._id)
-                      sessionStorage.setItem("notificationStudentEmail",value.studentEmail)
-                      sessionStorage.setItem("notificationUniversityEmail",value.universityEmail)
-                        
-                        document.location.href="/createRecommendation"
-                      }}>
+                      <ListItem
+                        key={i}
+                        button
+                        onClick={e => {
+                          value.read = true;
+                          handleNotificationClick(
+                            value._id,
+                            value.studentEmail,
+                            value.universityEmail
+                          );
+                        }}
+                      >
                         <ListItemIcon>
                           <Checkbox
                             edge="end"
                             disableRipple
                             checked={value.read}
-                         
                             inputProps={{ "aria-labelledby": i }}
                           />
                         </ListItemIcon>
                         <ListItemText
                           id={i}
-                          primary={value.studentName+  ` has requested your recommendation`}
+                          primary={
+                            value.studentName +
+                            ` has requested your recommendation`
+                          }
                         />
 
                         <ListItemSecondaryAction>
-                          <IconButton edge="end" aria-label="delete" onClick={e=>{console.log("delete")}}>
+                          <IconButton
+                            edge="end"
+                            aria-label="delete"
+                            onClick={e => {
+                              console.log("delete");
+                            }}
+                          >
                             <DeleteIcon />
                           </IconButton>
                         </ListItemSecondaryAction>
@@ -216,16 +229,44 @@ const [studentEmail,setStudentEmail]=useState("")
                     );
                   })}
                 </List>
-                
-               
               </Dropdown.Menu>
-             
             </Dropdown>
-            
           ) : (
-            // console.log('t')
-            console.log("t")
-          )}
+           
+            <Dropdown bsPrefix={{}}>
+              <Dropdown.Toggle as={CustomToggle} />
+
+              <Dropdown.Menu style={{ background: "#F5F5F5" }}>
+                <List
+                  dense
+                  style={{
+                    maxHeight: 400,
+                    overflow: "auto",
+                    position: "relative",
+                    zIndex: 5
+                  }}
+                >
+                  {loaded ? (
+                    <Paper style={{ margin: "5%", padding: "2%" }}>
+                      <NotificationsActive style={{ alignContent: "center" }} />
+                      <Typography variant="subtitle1">
+                        No Notifications Available
+                      </Typography>
+                    </Paper>
+                  ) : (
+                    <CircularProgress
+                      style={{ color: "#8e24aa", marginLeft: "42%" }}
+                      thickness={2.5}
+                      size={20}
+                      color="inherit"
+                    />
+                  )}
+                </List>
+              </Dropdown.Menu>
+            </Dropdown>
+          )):(<></>)
+
+         }
 
           {sessionStorage.getItem("token") === "" ||
           sessionStorage.getItem("token") === null ? (
@@ -254,8 +295,6 @@ const [studentEmail,setStudentEmail]=useState("")
           )}
         </Toolbar>
       </AppBar>
-     
     </div>
-    
   );
 }

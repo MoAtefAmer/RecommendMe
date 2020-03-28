@@ -284,7 +284,7 @@ var pusher = new Pusher({
   key: process.env.PUSHER_APP_KEY,
   secret: process.env.PUSHER_APP_SECRET,
   cluster: 'eu',
-  encrypted: true
+  useTLS: true
 });
 
 
@@ -381,7 +381,8 @@ router.post("/requestRecommendation", async (req, res) => {
           studentName: sName,
           universityEmail:req.body.uemail,
           studentEmail:sEmail,
-          id:theNotification._id
+          _id:theNotification._id,
+          read:false
         });
 
         transporter.sendMail(mailOptions, function(error, info) {

@@ -33,7 +33,7 @@ export default function InformationModal() {
   var target = "_blank";
 
   var infoModalCallback = context.callback;
-  console.log(context);
+  
   return (
     <>
       <Modal
