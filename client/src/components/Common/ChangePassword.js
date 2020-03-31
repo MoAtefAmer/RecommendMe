@@ -1,36 +1,26 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Grid,
-  CssBaseline,
   TextField,
   Typography,
   Snackbar,
   Button,
   Container,
   CircularProgress,
-  Switch,
   Card
 
 } from "@material-ui/core";
-import { Info, SettingsInputComponent } from "@material-ui/icons";
+
 import MuiAlert from "@material-ui/lab/Alert";
-import Autocomplete from "@material-ui/lab/Autocomplete";
+
 import { grey, lightBlue, green,purple } from "@material-ui/core/colors";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
-import { TestContext } from "../../App";
+
 import clsx from "clsx";
 import { IoIosUnlock } from "react-icons/io";
 import {Spring} from 'react-spring/renderprops';
 
 
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      Mohamed Atef {" © "} {new Date().getFullYear()}
-    </Typography>
-  );
-}
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -82,19 +72,6 @@ const useStyles = makeStyles(theme => ({
   infoIcon: {}
 }));
 
-const ViewSwitch = withStyles({
-  switchBase: {
-    color: grey[300],
-    "&$checked": {
-      color: green[700]
-    },
-    "&$checked + $track": {
-      backgroundColor: green[900]
-    }
-  },
-  checked: {},
-  track: {}
-})(Switch);
 
 export default function ChangePassword() {
   const classes = useStyles();
@@ -259,7 +236,7 @@ export default function ChangePassword() {
           "x-access-token":sessionStorage.getItem("token")
         }
       }).then(res => {
-        console.log(res.status);
+       
         if (res.status === 200) {
           setLoading(false);
           setSuccess(true);
@@ -317,6 +294,7 @@ export default function ChangePassword() {
   };
 
   return (
+   
     <Container component="main" maxWidth="xs">
 
 
@@ -327,10 +305,11 @@ export default function ChangePassword() {
   
   >
   {props => <div style={props}>
-    
+    <br/>
+    <br/>
   <Card
           raised
-          style={{marginTop:"20%"}}
+         
           >
       <div className={classes.paper}>
         <IoIosUnlock style={{ fontSize: "60px" }} />
@@ -416,7 +395,7 @@ export default function ChangePassword() {
              
               disabled={loading}
               onClick={handleSendRequest}
-              disabled={loading}
+             
             >
               Change Password
             </ColorButton>
@@ -442,5 +421,6 @@ export default function ChangePassword() {
         </Grid>
       </Container>
     </Container>
+ 
   );
 }

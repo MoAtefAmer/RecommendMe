@@ -125,9 +125,7 @@ export default function DocSignUp() {
   const [currentJobError, setCurrentJobError] = useState("");
   const [currentJobErrorToggle, setCurrentJobErrorToggle] = useState(false);
 
-  //Test context
-  // const sss = useContext(TestContext);
-  //console.log(sss);
+  
 
   const buttonClassname = clsx({
     [classes.buttonSuccess]: success,
@@ -281,7 +279,7 @@ export default function DocSignUp() {
 
   const handleSignUp = e => {
     e.preventDefault();
-    console.log("button clicked");
+
 
     const err = validate();
 
@@ -320,20 +318,13 @@ export default function DocSignUp() {
           setMastersTitle("");
           setPhdTitle("");
           setContactInfo("");
-          setTimeout(() => (document.location.href = "/login"), 4000);
+         document.location.href = "/login"
         } else {
           setLoading(false);
         }
       });
     }
   };
-  // console.log(firstName)
-  // console.log(lastName)
-  // console.log(email)
-  // console.log(password)
-  //console.log(viewRecommendation);
-  // console.log("loading:" + loading);
-  // console.log("success:" + success);
 
   return (
     <Container component="main" maxWidth="xs">

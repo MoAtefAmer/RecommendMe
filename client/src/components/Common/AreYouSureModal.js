@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useContext } from "react";
 import { SmallModalContext } from "./RecommendationCard";
 import { Modal } from "react-bootstrap";
 import { withStyles, Button } from "@material-ui/core";
@@ -32,7 +32,7 @@ if(sessionStorage.getItem("auth")==="Professor"){
       "x-access-token": sessionStorage.getItem("token")
     }
   }).then(res => {
-    console.log("yeahhh");
+    
     window.location.reload();
   });
 
@@ -49,7 +49,7 @@ if(sessionStorage.getItem("auth")==="University"){
       "x-access-token": sessionStorage.getItem("token")
     }
   }).then(res => {
-    console.log("yeahhh");
+   
     window.location.reload();
   });
 
@@ -66,7 +66,7 @@ if(sessionStorage.getItem("auth")==="Student"){
       "x-access-token": sessionStorage.getItem("token")
     }
   }).then(res => {
-    console.log("yeahhh");
+
     window.location.reload();
   });
 

@@ -1,4 +1,4 @@
-import React, { useState, useContext, createContext, useEffect } from "react";
+import React, { useState, useContext, useEffect } from "react";
 
 import {
   Typography,
@@ -6,7 +6,6 @@ import {
   Grid,
   CardContent,
   CardActionArea,
-  IconButton,
   Button
 } from "@material-ui/core";
 
@@ -14,8 +13,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import { grey } from "@material-ui/core/colors";
 
 import { RecommendationCardContext } from "./ViewRecommendations";
-import { FaClipboard, FaClipboardList } from "react-icons/fa";
-import { FiClipboard } from "react-icons/fi";
+import {  FaClipboardList } from "react-icons/fa";
+
 import { Delete } from "@material-ui/icons";
 import InformationModal from "./InformationModal";
 import AreYouSureModal from "./AreYouSureModal";
@@ -43,7 +42,7 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: "#F5F5F5"
   },
 
-  iconStyling: {
+  iconStyling2: {
     position: "relative",
     fontSize: "62px",
     marginLeft: "40%",
@@ -96,7 +95,7 @@ export default function RecommendationCard() {
     setRaised(false);
   };
 
-  const [icon, SetIcon] = useState(<div />);
+  
   const [raised, setRaised] = useState(false);
   const [infoModal, setInfoModal] = useState(<div />);
   const [infoModalShow, setInfoModalShow] = useState(false);

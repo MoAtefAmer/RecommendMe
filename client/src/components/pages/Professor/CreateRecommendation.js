@@ -1,5 +1,5 @@
-import React, { useState, useEffect,useContext } from "react";
-import clsx from "clsx";
+import React, { useState, useEffect } from "react";
+
 import PropTypes from "prop-types";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import {
@@ -14,7 +14,6 @@ import {
   Grid,
   TextField,
   Button,
-  Backdrop,
   CircularProgress,
   Chip,
   Snackbar
@@ -28,15 +27,8 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import { storage } from "../../../firebase";
 import { FaFolderOpen, FaFolderPlus } from "react-icons/fa";
 import { Spring } from "react-spring/renderprops";
-import {TestContext} from "../../../App"
+import UniversityImage from "../../Images/university.jpg";
 
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      Mohamed Atef {" © "} {new Date().getFullYear()}
-    </Typography>
-  );
-}
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -75,7 +67,9 @@ function Alert(props) {
 const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1,
-    backgroundColor: "#F5F5F5"
+    backgroundImage: "url(" + UniversityImage + ")",
+    backgroundSize: "cover",
+    height: "94vh"
   },
   form: {
     padding: "3%",
@@ -91,7 +85,7 @@ const useStyles = makeStyles(theme => ({
     position: "absolute",
     top: "50%",
     left: "50%",
-    marginTop: -12,
+    marginTop: -14,
     marginLeft: -12
   },
   buttonSuccess: {
@@ -102,8 +96,7 @@ const useStyles = makeStyles(theme => ({
   },
 
   wrapper: {
-    margin: theme.spacing(1),
-    
+    margin: theme.spacing(1)
   },
   normalForm: {
     backgroundColor: "linear-gradient(60deg, #ab47bc, #8e24aa)",
@@ -112,14 +105,14 @@ const useStyles = makeStyles(theme => ({
     }
   },
   tabBackgroundColor: {
-    backgroundColor: "#F5F5F5"
+    backgroundImage: "url(" + UniversityImage + ")",
+    backgroundSize: "cover",
+    height: "150vh"
   },
 
   iconStyling: {
-    
     fontSize: "65px",
-    marginLeft: "40%",
-
+    marginLeft: "40%"
   },
   CardMaster: {
     "&:hover": {
@@ -158,10 +151,12 @@ export var CardContext = React.createContext();
 export default function CreateRecommendation() {
   const classes = useStyles();
   const [value, setValue] = useState(0);
-  const [universityEmail, setUniversityEmail] = useState(sessionStorage.getItem("notificationUniversityEmail"));
+  const [universityEmail, setUniversityEmail] = useState(
+    sessionStorage.getItem("notificationUniversityEmail")
+  );
 
-  const context = useContext(TestContext)
 
+  const [progress, setProgress] = useState(0);
   const [value0, setValue0] = useState(3);
   const [value1, setValue1] = useState(3);
   const [value2, setValue2] = useState(3);
@@ -174,7 +169,9 @@ export default function CreateRecommendation() {
   const [value9, setValue9] = useState(3);
   const [studentsEmailList, setStudentsEmailList] = useState([]);
   const [universityEmailList, setUniversityEmailList] = useState([]);
-  const [studentEmail, setStudentEmail] = useState(sessionStorage.getItem("notificationStudentEmail"));
+  const [studentEmail, setStudentEmail] = useState(
+    sessionStorage.getItem("notificationStudentEmail")
+  );
   const [studentName, setStudentName] = useState("");
   const [studentMajor, setStudentMajor] = useState("");
   const [universityName, setUniversityName] = useState("");
@@ -184,8 +181,13 @@ export default function CreateRecommendation() {
   const [loading, setLoading] = useState(false);
   const [chooseFileLoading, setChooseFileLoading] = useState(false);
   const [remarks, setRemarks] = useState("");
-  const [universityWebsiteLinkError,setUniversityWebsiteLinkError]=useState("")
-  const [universityWebsiteLinkErrorToggle,setUniversityWebsiteLinkErrorToggle]=useState(false)
+  const [universityWebsiteLinkError, setUniversityWebsiteLinkError] = useState(
+    ""
+  );
+  const [
+    universityWebsiteLinkErrorToggle,
+    setUniversityWebsiteLinkErrorToggle
+  ] = useState(false);
 
   const [file, setFile] = useState();
   const [studentMajorError, setStudentMajorError] = useState("");
@@ -203,8 +205,9 @@ export default function CreateRecommendation() {
   const [isFileUploaded, setIsFileUploaded] = useState(true);
   const [fileSelectedText, setFileSelectedText] = useState("No File Selected");
   const [open, setOpen] = useState(false);
-  const [pdfLink, setPdfLink] = useState("");
-  const [backdrop, setBackdrop] = useState(false);
+  const [pdfLink, setPdfLink] = useState("3eeb");
+  
+  const [superImportantBoolean, setSuperImportantBoolean] = useState(false);
 
   const SliderCallback = (count, i) => {
     switch (i) {
@@ -255,6 +258,70 @@ export default function CreateRecommendation() {
   ];
 
   useEffect(() => {
+    if (pdfLink !== "3eeb" && superImportantBoolean === true) {
+      fetch(`http://localhost:3000/api/doctor/sendRecommendation`, {
+        method: "POST",
+        body: JSON.stringify({
+          subject: "Notification Email from RecommendME",
+          message:
+            "Professor " +
+            sessionStorage.getItem("firstName") +
+            " " +
+            sessionStorage.getItem("lastName") +
+            " has posted a new recommendation for Student: " +
+            studentName +
+            " to " +
+            universityName +
+            "\n http://localhost:3001/login" +
+            "\n",
+          studentName: studentName,
+          studentEmail: studentEmail,
+          major: studentMajor,
+          professorName:
+            sessionStorage.getItem("firstName") +
+            " " +
+            sessionStorage.getItem("lastName"),
+          professorEmail: sessionStorage.getItem("email"),
+          professorCurrentJob: sessionStorage.getItem("currentJob"),
+          uemail: universityEmail,
+          universityName: universityName,
+          universityLink: universityWebsiteLink,
+          communicationSkills: value1,
+          problemSolvingSkills: value4,
+          researchSkills: value3,
+          technicalKnowledge: value2,
+          analyticalSkills: value0,
+          stressHandling: value8,
+          punctuality: value6,
+          adaptationSkills: value5,
+          grades: value9,
+          englishSkills: value7,
+          pdfLink: pdfLink,
+          remarks: remarks
+        }),
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Headers": "*",
+          "x-access-token": sessionStorage.getItem("token")
+        }
+      }).then(res => {
+        if (res.status === 200) {
+          setLoading(false);
+
+          setOpen(true);
+          
+
+          document.location.href = "/createRecommendation";
+        } else {
+          // setLoading(false);
+
+         
+        }
+      });
+    }
+  }, [pdfLink]);
+
+  useEffect(() => {
     if (studentName.length >= 1) {
       setStudentNameErrorToggle(false);
       setStudentNameError("");
@@ -268,7 +335,6 @@ export default function CreateRecommendation() {
     }
   }, [studentMajor]);
 
-
   useEffect(() => {
     if (universityWebsiteLinkError.length >= 1) {
       setUniversityWebsiteLinkErrorToggle(false);
@@ -276,14 +342,12 @@ export default function CreateRecommendation() {
     }
   }, [universityWebsiteLink]);
 
-
   useEffect(() => {
     if (studentEmail !== "") {
       studentsEmailList.filter(element => {
         if (element.email === studentEmail) {
           setStudentName(element.Name);
           setStudentMajor(element.major);
-   
         }
       });
     }
@@ -292,7 +356,7 @@ export default function CreateRecommendation() {
       setStudentEmailErrorToggle(false);
       setStudentEmailError("");
     }
-  }, [studentEmail,studentsEmailList]);
+  }, [studentEmail, studentsEmailList]);
 
   useEffect(() => {
     if (universityEmail !== "") {
@@ -307,8 +371,7 @@ export default function CreateRecommendation() {
       setUniversityEmailErrorToggle(false);
       setUniversityEmailError("");
     }
-   
-  }, [universityEmail,universityEmailList]);
+  }, [universityEmail, universityEmailList]);
 
   useEffect(() => {
     if (universityName !== "") {
@@ -323,10 +386,9 @@ export default function CreateRecommendation() {
       setUniversityNameErrorToggle(false);
       setUniversityNameError("");
     }
-  }, [universityName,universityEmailList]);
+  }, [universityName, universityEmailList]);
 
   useEffect(() => {
-    // console.log("useEffect");
     fetch(`http://localhost:3000/api/student/getStudentsEmails`, {
       method: "GET",
       headers: {
@@ -367,11 +429,9 @@ export default function CreateRecommendation() {
       isError = true;
       errors.studentEmailError = "Please enter a valid email";
       errors.studentEmailErrorToggle = true;
-     
     } else {
       setStudentEmailErrorToggle(false);
       setStudentEmailError("");
-     
     }
 
     if (!re.test(universityEmail)) {
@@ -405,7 +465,6 @@ export default function CreateRecommendation() {
       isError = true;
       errors.universityNameError = "Please enter the University's Name";
       errors.universityNameErrorToggle = true;
-   
     } else {
       setUniversityNameErrorToggle(false);
       setUniversityNameError("");
@@ -413,14 +472,13 @@ export default function CreateRecommendation() {
 
     if (universityWebsiteLink.length <= 8) {
       isError = true;
-      errors.universityWebsiteLinkError = "Please enter the University's Website Link";
+      errors.universityWebsiteLinkError =
+        "Please enter the University's Website Link";
       errors.universityWebsiteLinkErrorToggle = true;
-   
     } else {
       setUniversityWebsiteLinkErrorToggle(false);
       setUniversityWebsiteLinkError("");
     }
-
 
     if (isError) {
       // setEmailError(errors.emailError);
@@ -437,14 +495,16 @@ export default function CreateRecommendation() {
       setStudentMajorError(errors.studentMajorError);
       setUniversityEmailErrorToggle(errors.universityEmailErrorToggle);
       setUniversityEmailError(errors.universityEmailError);
-      setUniversityWebsiteLinkErrorToggle(errors.universityWebsiteLinkErrorToggle);
+      setUniversityWebsiteLinkErrorToggle(
+        errors.universityWebsiteLinkErrorToggle
+      );
       setUniversityWebsiteLinkError(errors.universityWebsiteLinkError);
     }
 
     return isError;
   };
 
-  // console.log(universityEmailList)
+  
   const [cardsArray] = useState([
     { question: "Analytical Skills", id: 0, icon: "analytics" },
     { question: "Communication Skills", id: 1, icon: "communication" },
@@ -458,7 +518,6 @@ export default function CreateRecommendation() {
     { question: "GPA", id: 9, icon: "gpa" }
   ]);
 
-  
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -476,96 +535,28 @@ export default function CreateRecommendation() {
       if (file != null) {
         setIsFileUploaded(false);
         handleUpload();
-        // setPdfLink(sessionStorage.getItem("firebase"))
-        // console.log(sessionStorage.getItem("firebase"))
       }
       if (isFileUploaded === true) {
-        // setPdfLink(sessionStorage.getItem("firebase")+"")
-        // console.log(pdfLink)
-        setChooseFileLoading(true)
-        fetch(`http://localhost:3000/api/doctor/sendRecommendation`, {
-          method: "POST",
-          body: JSON.stringify({
-            subject: "Notification Email from RecommendME",
-            message:
-              "Professor " +
-              sessionStorage.getItem("firstName") +
-              " " +
-              sessionStorage.getItem("lastName") +
-              " has posted a new recommendation for Student: " +
-              studentName +
-              " to " +
-              universityName +
-              "\n http://localhost:3001/login"+"\n",
-            studentName: studentName,
-            studentEmail: studentEmail,
-            major: studentMajor,
-            professorName:
-              sessionStorage.getItem("firstName") +
-              " " +
-              sessionStorage.getItem("lastName"),
-            professorEmail: sessionStorage.getItem("email"),
-            professorCurrentJob: sessionStorage.getItem("currentJob"),
-            uemail: universityEmail,
-            universityName: universityName,
-            universityLink: universityWebsiteLink,
-            communicationSkills: value1,
-            problemSolvingSkills: value4,
-            researchSkills: value3,
-            technicalKnowledge: value2,
-            analyticalSkills: value0,
-            stressHandling: value8,
-            punctuality: value6,
-            adaptationSkills: value5,
-            grades: value9,
-            englishSkills: value7,
-            pdfLink: sessionStorage.getItem("firebase"),
-            remarks: remarks
-          }),
-          headers: {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Headers": "*",
-            "x-access-token": sessionStorage.getItem("token")
-          }
-        }).then(res => {
-          
-          if (res.status === 200) {
-            setLoading(false);
-            //sessionStorage.setItem("firebase","")
-          
-            setOpen(true);
-            setBackdrop(false);
-            // setEmail("");
-            // setPassword("");
-            // setFirstName("");
-            // setLastName("");
-            setTimeout(() => {
-              sessionStorage.setItem("firebase", "");
-              document.location.href = "/createRecommendation";
-            }, 4000);
-          } else {
-            // setLoading(false);
-           
-            setBackdrop(false);
-          }
-        });
+        setChooseFileLoading(true);
+        setSuperImportantBoolean(true);
+      } else {
       }
     } else {
       if (err) setValue(0);
     }
   };
-
   const handleUpload = () => {
     const uploadTask = storage.ref(`recommendationPdfs/${file.name}`).put(file);
     uploadTask.on(
       "state_changed",
       snapshot => {
         //Progress function
-     
+        const loaded = Math.round(
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+        );
+        setProgress(loaded);
       },
-      error => {
-      
-      },
+      error => {},
       () => {
         //complete Function
         storage
@@ -573,19 +564,17 @@ export default function CreateRecommendation() {
           .child(file.name)
           .getDownloadURL()
           .then(url => {
-            sessionStorage.setItem("firebase", url);
-           
-            setTimeout(() => setIsFileUploaded(true), 3000);
+            setIsFileUploaded(true);
+
+            setPdfLink(url);
           });
       }
     );
   };
 
-
-
   return (
     <div className={classes.root}>
-      <AppBar position="sticky" color="default" style={{zIndex:"998"}}>
+      <AppBar position="sticky" color="default" style={{ zIndex: "998" }}>
         <Tabs
           value={value}
           onChange={handleChange}
@@ -605,274 +594,275 @@ export default function CreateRecommendation() {
         <CssBaseline />
 
         <Container maxWidth="lg" style={{ flexGrow: 1 }}>
-        <div style={{zIndex:"-1",position:"static"}}>
-          <Spring
-            from={{ opacity: 0, transform: "translate3d(-100%,0,0)" }}
-            to={{ opacity: 1, transform: "translate3d(0,0,0)" }}
-          >
-            {props => (
-              <div style={props}>
-                <Paper elevation={3} style={{ height: "auto" }}>
-                  <form className={classes.form}>
-                    <div>
-                      <div style={{ textAlign: "center" }}>
-                        <p
-                          style={{ fontSize: "1.5625rem", lineHeight: "1.4em" }}
-                        >
-                          Student Information
-                        </p>
+          <div style={{ zIndex: "-1", position: "static" }}>
+            <Spring
+              from={{ opacity: 0, transform: "translate3d(-100%,0,0)" }}
+              to={{ opacity: 1, transform: "translate3d(0,0,0)" }}
+            >
+              {props => (
+                <div style={props}>
+                  <Paper elevation={3} style={{ height: "auto" }}>
+                    <form className={classes.form}>
+                      <div>
+                        <div style={{ textAlign: "center" }}>
+                          <p
+                            style={{
+                              fontSize: "1.5625rem",
+                              lineHeight: "1.4em"
+                            }}
+                          >
+                            Student Information
+                          </p>
+                        </div>
+                        <Grid container spacing={2}>
+                          <Grid item xs={12} sm={4}>
+                            <TextField
+                              name="Student Name"
+                              variant="outlined"
+                              required
+                              fullWidth
+                              id="StudentName"
+                              label="Student Name"
+                              value={studentName}
+                              error={studentNameErrorToggle}
+                              helperText={studentNameError}
+                              onChange={e => {
+                                setStudentName(e.target.value);
+                              }}
+                              autoFocus
+                            />
+                          </Grid>
+                          <Grid item xs={12} sm={4}>
+                            <Autocomplete
+                              id="combo-box-demo"
+                              clearOnEscape
+                              options={studentsEmailList.map(
+                                option => option.email
+                              )}
+                              style={{ width: "100%" }}
+                              freeSolo
+                              value={studentEmail}
+                              onChange={(e, value) => {
+                                if (value !== null) {
+                                  setStudentEmail(value);
+                                } else {
+                                  setStudentEmail("");
+                                }
+                              }}
+                              renderInput={params => (
+                                <TextField
+                                  {...params}
+                                  label="Student Email"
+                                  variant="outlined"
+                                  required
+                                  error={studentEmailErrorToggle}
+                                  helperText={studentEmailError}
+                                  value={studentEmail}
+                                  onChange={e => {
+                                    setStudentEmail(e.target.value);
+                                  }}
+                                />
+                              )}
+                            />
+                          </Grid>
+                          <Grid item xs={12} sm={4}>
+                            <TextField
+                              autoComplete="Major"
+                              name="Major"
+                              variant="outlined"
+                              required
+                              fullWidth
+                              id="Major"
+                              value={studentMajor}
+                              error={studentMajorErrorToggle}
+                              helperText={studentMajorError}
+                              label="Major"
+                              onChange={e => {
+                                setStudentMajor(e.target.value);
+                              }}
+                              autoFocus
+                            />
+                          </Grid>
+                        </Grid>
                       </div>
-                      <Grid container spacing={2}>
-                        <Grid item xs={12} sm={4}>
-                          <TextField
-                            name="Student Name"
-                            variant="outlined"
-                            required
-                            fullWidth
-                            id="StudentName"
-                            label="Student Name"
-                            value={studentName}
-                            error={studentNameErrorToggle}
-                            helperText={studentNameError}
-                            onChange={e => {
-                              setStudentName(e.target.value);
+                      <div>
+                        <div style={{ textAlign: "center" }}>
+                          <p
+                            style={{
+                              fontSize: "1.5625rem",
+                              lineHeight: "1.4em",
+                              paddingTop: "4%"
                             }}
-                            autoFocus
-                          />
+                          >
+                            University Information
+                          </p>
+                        </div>
+                        <Grid container spacing={2}>
+                          <Grid item xs={12} sm={4}>
+                            <Autocomplete
+                              id="combo-box-demo"
+                              clearOnEscape
+                              options={universityEmailList.map(
+                                option => option.Name
+                              )}
+                              style={{ width: "100%" }}
+                              freeSolo
+                              required
+                              value={universityName}
+                              onChange={(e, value) => {
+                                if (value !== null) {
+                                  setUniversityName(value);
+                                } else {
+                                  setUniversityName("");
+                                }
+                              }}
+                              renderInput={params => (
+                                <TextField
+                                  {...params}
+                                  label="University Name"
+                                  variant="outlined"
+                                  required
+                                  error={universityNameErrorToggle}
+                                  helperText={universityNameError}
+                                  value={universityName}
+                                  onChange={e => {
+                                    setUniversityName(e.target.value);
+                                  }}
+                                />
+                              )}
+                            />
+                          </Grid>
+                          <Grid item xs={12} sm={4}>
+                            <Autocomplete
+                              id="combo-box-demo"
+                              clearOnEscape
+                              options={universityEmailList.map(
+                                option => option.uemail
+                              )}
+                              style={{ width: "100%" }}
+                              freeSolo
+                              required
+                              value={universityEmail}
+                              onChange={(e, value) => {
+                                if (value !== null) {
+                                  setUniversityEmail(value);
+                                } else {
+                                  setUniversityEmail("");
+                                }
+                              }}
+                              renderInput={params => (
+                                <TextField
+                                  {...params}
+                                  label="University Email"
+                                  variant="outlined"
+                                  required
+                                  error={universityEmailErrorToggle}
+                                  helperText={universityEmailError}
+                                  value={universityEmail}
+                                  onChange={e => {
+                                    setUniversityEmail(e.target.value);
+                                  }}
+                                />
+                              )}
+                            />
+                          </Grid>
+                          <Grid item xs={12} sm={4}>
+                            <TextField
+                              name="University Link"
+                              variant="outlined"
+                              fullWidth
+                              id="University Link"
+                              label="University Website Link"
+                              value={universityWebsiteLink}
+                              required
+                              error={universityWebsiteLinkErrorToggle}
+                              helperText={universityWebsiteLinkError}
+                              onChange={e => {
+                                setUniversityWebsiteLink(e.target.value);
+                              }}
+                              autoFocus
+                            />
+                          </Grid>
                         </Grid>
-                        <Grid item xs={12} sm={4}>
-                          <Autocomplete
-                            id="combo-box-demo"
-                            clearOnEscape
-                            options={studentsEmailList.map(
-                              option => option.email
-                            )}
-                            style={{ width: "100%" }}
-                            freeSolo
-                            value={studentEmail}
-                            onChange={(e, value) => {
-                              if (value !== null) {
-                               
-                                setStudentEmail(value);
-                              } else {
-                                setStudentEmail("");
+                      </div>
+                      <div>
+                        <div style={{ textAlign: "center" }}>
+                          <p
+                            style={{
+                              fontSize: "1.5625rem",
+                              lineHeight: "1.4em",
+                              paddingTop: "4%"
+                            }}
+                          >
+                            My Information
+                          </p>
+                        </div>
+                        <Grid container spacing={2}>
+                          <Grid item xs={12} sm={4}>
+                            <TextField
+                              name="Name"
+                              variant="standard"
+                              fullWidth
+                              id="Name"
+                              label="Name"
+                              value={
+                                sessionStorage.getItem("firstName") +
+                                " " +
+                                sessionStorage.getItem("lastName")
                               }
-                            }}
-                            renderInput={params => (
-                              <TextField
-                                {...params}
-                                label="Student Email"
-                                variant="outlined"
-                                required
-                                error={studentEmailErrorToggle}
-                                helperText={studentEmailError}
-                                value={studentEmail}
-                                onChange={e => {
-                                  setStudentEmail(e.target.value);
-                                }}
-                              />
-                            )}
-                          />
+                              autoFocus
+                              disabled
+                            />
+                          </Grid>
+                          <Grid item xs={12} sm={4}>
+                            <TextField
+                              name="Email"
+                              variant="standard"
+                              required
+                              fullWidth
+                              id="Email"
+                              label="Email"
+                              value={sessionStorage.getItem("email")}
+                              autoFocus
+                              disabled
+                            />
+                          </Grid>
+                          <Grid item xs={12} sm={4}>
+                            <TextField
+                              name="Current Job"
+                              variant="standard"
+                              fullWidth
+                              id="CurrentJob"
+                              label="Current Job"
+                              autoFocus
+                              disabled
+                              value={sessionStorage.getItem("currentJob")}
+                            />
+                          </Grid>
                         </Grid>
-                        <Grid item xs={12} sm={4}>
-                          <TextField
-                            autoComplete="Major"
-                            name="Major"
-                            variant="outlined"
-                            required
-                            fullWidth
-                            id="Major"
-                            value={studentMajor}
-                            error={studentMajorErrorToggle}
-                            helperText={studentMajorError}
-                            label="Major"
-                            onChange={e => {
-                              setStudentMajor(e.target.value);
-                            }}
-                            autoFocus
-                          />
-                        </Grid>
-                      </Grid>
-                    </div>
-                    <div>
-                      <div style={{ textAlign: "center" }}>
-                        <p
-                          style={{
-                            fontSize: "1.5625rem",
-                            lineHeight: "1.4em",
-                            paddingTop: "4%"
+                      </div>
+                      <div style={{ textAlign: "right", paddingTop: "5%" }}>
+                        <ColorButton
+                          variant="contained"
+                          onClick={e => {
+                            setValue(1);
                           }}
                         >
-                          University Information
-                        </p>
+                          {" "}
+                          Next
+                        </ColorButton>
                       </div>
-                      <Grid container spacing={2}>
-                        <Grid item xs={12} sm={4}>
-                          <Autocomplete
-                            id="combo-box-demo"
-                            clearOnEscape
-                            options={universityEmailList.map(
-                              option => option.Name
-                            )}
-                            style={{ width: "100%" }}
-                            freeSolo
-                            required
-                            value={universityName}
-                            onChange={(e, value) => {
-                              if (value !== null) {
-                                setUniversityName(value);
-                              } else {
-                                setUniversityName("");
-                              }
-                            }}
-                            renderInput={params => (
-                              <TextField
-                                {...params}
-                                label="University Name"
-                                variant="outlined"
-                                required
-                                error={universityNameErrorToggle}
-                                helperText={universityNameError}
-                                value={universityName}
-                                onChange={e => {
-                                  setUniversityName(e.target.value);
-                                }}
-                              />
-                            )}
-                          />
-                        </Grid>
-                        <Grid item xs={12} sm={4}>
-                          <Autocomplete
-                            id="combo-box-demo"
-                            clearOnEscape
-                            options={universityEmailList.map(
-                              option => option.uemail
-                            )}
-                            style={{ width: "100%" }}
-                            freeSolo
-                            required
-                            value={universityEmail}
-                            onChange={(e, value) => {
-                              if (value !== null) {
-                             
-                                setUniversityEmail(value);
-                              } else {
-                                setUniversityEmail("");
-                              }
-                            }}
-                            renderInput={params => (
-                              <TextField
-                                {...params}
-                                label="University Email"
-                                variant="outlined"
-                                required
-                                error={universityEmailErrorToggle}
-                                helperText={universityEmailError}
-                                value={universityEmail}
-                                onChange={e => {
-                                  setUniversityEmail(e.target.value);
-                                }}
-                              />
-                            )}
-                          />
-                        </Grid>
-                        <Grid item xs={12} sm={4}>
-                          <TextField
-                            name="University Link"
-                            variant="outlined"
-                            fullWidth
-                            id="University Link"
-                            label="University Website Link"
-                            value={universityWebsiteLink}
-                            required
-                            error={universityWebsiteLinkErrorToggle}
-                            helperText={universityWebsiteLinkError}
-                            onChange={e => {
-                              setUniversityWebsiteLink(e.target.value);
-                            }}
-                            autoFocus
-                          />
-                        </Grid>
-                      </Grid>
-                    </div>
-                    <div>
-                      <div style={{ textAlign: "center" }}>
-                        <p
-                          style={{
-                            fontSize: "1.5625rem",
-                            lineHeight: "1.4em",
-                            paddingTop: "4%"
-                          }}
-                        >
-                          My Information
-                        </p>
-                      </div>
-                      <Grid container spacing={2}>
-                        <Grid item xs={12} sm={4}>
-                          <TextField
-                            name="Name"
-                            variant="standard"
-                            fullWidth
-                            id="Name"
-                            label="Name"
-                            value={
-                              sessionStorage.getItem("firstName") +
-                              " " +
-                              sessionStorage.getItem("lastName")
-                            }
-                            autoFocus
-                            disabled
-                          />
-                        </Grid>
-                        <Grid item xs={12} sm={4}>
-                          <TextField
-                            name="Email"
-                            variant="standard"
-                            required
-                            fullWidth
-                            id="Email"
-                            label="Email"
-                            value={sessionStorage.getItem("email")}
-                            autoFocus
-                            disabled
-                          />
-                        </Grid>
-                        <Grid item xs={12} sm={4}>
-                          <TextField
-                            name="Current Job"
-                            variant="standard"
-                            fullWidth
-                            id="CurrentJob"
-                            label="Current Job"
-                            autoFocus
-                            disabled
-                            value={sessionStorage.getItem("currentJob")}
-                          />
-                        </Grid>
-                      </Grid>
-                    </div>
-                    <div style={{ textAlign: "right", paddingTop: "5%" }}>
-                      <ColorButton
-                        variant="contained"
-                        onClick={e => {
-                          setValue(1);
-                        }}
-                      >
-                        {" "}
-                        Next
-                      </ColorButton>
-                    </div>
-                  </form>
-                </Paper>
-              </div>
-            )}
-          </Spring>
+                    </form>
+                  </Paper>
+                </div>
+              )}
+            </Spring>
           </div>
         </Container>
       </TabPanel>
       {/* //Atef */}
       <TabPanel className={classes.tabBackgroundColor} value={value} index={1}>
-        <Container maxWidth="lg" style={{ flexGrow: 1 }}>
+        <Container maxWidth="lg">
           <Spring
             from={{ opacity: 0, transform: "translate3d(-100%,0,0)" }}
             to={{ opacity: 1, transform: "translate3d(0,0,0)" }}
@@ -888,7 +878,7 @@ export default function CreateRecommendation() {
                         callback: SliderCallback,
                         index: i,
                         valueArray: testArray[i],
-                        question:card.question
+                        question: card.question
                       }}
                     >
                       <QuestionCard />
@@ -1012,8 +1002,10 @@ export default function CreateRecommendation() {
                             Choose File
                             {loading && (
                               <CircularProgress
-                                size={24}
+                                size={30}
                                 className={classes.buttonProgress}
+                                variant="determinate"
+                                value={progress}
                               />
                             )}
                           </Button>
@@ -1040,12 +1032,6 @@ export default function CreateRecommendation() {
                           {" "}
                           Submit
                         </Button>
-                        {loading && (
-                          <CircularProgress
-                            size={24}
-                            className={classes.buttonProgress}
-                          />
-                        )}
                       </div>
                     </div>
                   </form>

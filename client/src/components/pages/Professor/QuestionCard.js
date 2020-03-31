@@ -7,10 +7,9 @@ import { grey } from "@material-ui/core/colors";
 import { Group, Search, School } from "@material-ui/icons";
 import { CardContext } from "./CreateRecommendation";
 import { IoMdAnalytics, IoMdBuild, IoMdTime, IoIosSad } from "react-icons/io";
-import { GiChameleonGlyph, GiScaleMail } from "react-icons/gi";
+import { GiChameleonGlyph } from "react-icons/gi";
 import { FaEtsy, FaChess } from "react-icons/fa";
 import clsx from "clsx"
-import { Spring,Transition } from 'react-spring/renderprops'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -88,16 +87,6 @@ const [slizor,setSlizor]=useState(context.valueArray);
 
 
 
-//console.log(context.sliderValue[context.index])
-
-//console.log(context.sliderValue[context.index])
-
-
-// useEffect(() => {
-  
-//   parentCallback=context.callback
-  
-// }, [slide]);
 
  
   useEffect(() => {

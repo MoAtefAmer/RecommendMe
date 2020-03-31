@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -11,7 +11,7 @@ import logoutIcon from "@iconify/icons-mdi/logout";
 import loginIcon from "@iconify/icons-mdi/login";
 import MenuDrawer from "./Drawer";
 import { Notifications, NotificationsActive } from "@material-ui/icons";
-import { Dropdown, DropdownButton } from "react-bootstrap";
+import { Dropdown } from "react-bootstrap";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
@@ -22,7 +22,7 @@ import IconButton from "@material-ui/core/IconButton";
 import Paper from "@material-ui/core/Paper";
 import DeleteIcon from "@material-ui/icons/Delete";
 
-import { ButtonGroup, Modal, Popover } from "react-bootstrap";
+
 
 import Pusher from "pusher-js";
 import { Typography, CircularProgress } from "@material-ui/core";
@@ -103,6 +103,37 @@ export default function DenseAppBar() {
     }
   }, []);
 
+
+const handleNotificationDelete =(index,id) =>{
+
+  fetch(`http://localhost:3000/api/doctor/deleteNotification`, {
+      method: "Delete",
+      body: JSON.stringify({
+        notificationId: id
+      }),
+      headers: {
+        "Content-Type": "application/json",
+        "x-access-token": sessionStorage.getItem("token")
+      }
+    }).then(res => {
+    
+      if (res.status === 200) {
+        console.log(notifications.splice(index,1))
+        setShowNotifications(!showNotifications);
+      
+      
+
+       
+      }
+    });
+  
+
+
+ 
+}
+
+
+
   const handleNotificationClick = (id, studentEmail, universityEmail) => {
     fetch(`http://localhost:3000/api/doctor/readNotification`, {
       method: "POST",
@@ -147,10 +178,10 @@ export default function DenseAppBar() {
   return (
     <div id="navbar" className={classes.root}>
       <AppBar
-        position="static"
-        style={{ background: "#212121", position: "relative", zIndex: "1000" }}
+        position="sticky"
+        style={{ background: "#212121", position: "relative", zIndex: "1000"}}
       >
-        <Toolbar variant="dense">
+        <Toolbar variant="dense" style={{position:"sticky"}}>
           <MenuButtonContext.Provider
             value={{
               foo: "test",
@@ -162,7 +193,7 @@ export default function DenseAppBar() {
           <div className={classes.title}></div>
           <Button
             className={classes.navLink}
-            onClick={e => e.preventDefault()}
+            onClick={e => document.location.href="/"}
             color="transparent"
             size="sm"
           >
@@ -219,7 +250,9 @@ export default function DenseAppBar() {
                             edge="end"
                             aria-label="delete"
                             onClick={e => {
-                              console.log("delete");
+                             
+                             handleNotificationDelete(i,value._id)
+                          
                             }}
                           >
                             <DeleteIcon />

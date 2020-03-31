@@ -8,7 +8,6 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import IconButton from "@material-ui/core/IconButton";
 import MenuIcon from "@material-ui/icons/Menu";
-import { Icon } from "@iconify/react";
 import { MenuButtonContext } from "./ButtonAppBar";
 import StudentIcon from "@material-ui/icons/School";
 import DoctorIcon from "@material-ui/icons/Group";
@@ -37,11 +36,9 @@ export var DrawerContext = React.createContext();
 export default function TemporaryDrawer() {
   const classes = useStyles();
 
-  
   const openDrawer = useContext(MenuButtonContext);
 
   const [left, setLeft] = useState(openDrawer.menuClick);
- 
 
   const toggleDrawer = (side, open) => event => {
     if (
@@ -65,38 +62,41 @@ export default function TemporaryDrawer() {
         {sessionStorage.getItem("token") === "" ||
         sessionStorage.getItem("token") === null ? (
           <>
-            <ListItem button key={"Sign Up as a Student"}  onClick={() => {
-                  document.location.href = "/studentSignup";
-                }}>
+            <ListItem
+              button
+              key={"Sign Up as a Student"}
+              onClick={() => {
+                document.location.href = "/studentSignup";
+              }}
+            >
               <ListItemIcon>
                 <StudentIcon />
               </ListItemIcon>
-              <ListItemText
-               
-                primary={"Register as a Student"}
-              />
+              <ListItemText primary={"Register as a Student"} />
             </ListItem>
-            <ListItem button key={"Sign Up as a University"}    onClick={() => {
-                  document.location.href = "/universitySignup";
-                }}>
+            <ListItem
+              button
+              key={"Sign Up as a University"}
+              onClick={() => {
+                document.location.href = "/universitySignup";
+              }}
+            >
               <ListItemIcon>
                 <UniversityIcon />
               </ListItemIcon>
-              <ListItemText
-             
-                primary={"Register as a University"}
-              />
+              <ListItemText primary={"Register as a University"} />
             </ListItem>
-            <ListItem button key={"Sign Up as a Professor"}    onClick={() => {
-                  document.location.href = "/doctorSignup";
-                }}>
+            <ListItem
+              button
+              key={"Sign Up as a Professor"}
+              onClick={() => {
+                document.location.href = "/doctorSignup";
+              }}
+            >
               <ListItemIcon>
                 <DoctorIcon />
               </ListItemIcon>
-              <ListItemText
-             
-                primary={"Register as a Professor"}
-              />
+              <ListItemText primary={"Register as a Professor"} />
             </ListItem>
           </>
         ) : sessionStorage.getItem("auth") === "Student" ? (
@@ -111,7 +111,6 @@ export default function TemporaryDrawer() {
             >
               <DrawerButtonItem />
             </DrawerContext.Provider>
-
 
             <DrawerContext.Provider
               value={{
@@ -134,9 +133,6 @@ export default function TemporaryDrawer() {
             >
               <DrawerButtonItem />
             </DrawerContext.Provider>
-
-          
-
           </>
         ) : sessionStorage.getItem("auth") === "Professor" ? (
           <>
@@ -179,7 +175,7 @@ export default function TemporaryDrawer() {
                 key: "View Recommendations2",
                 primary: "View Recommendations",
                 onClick: "vr",
-                icon:<MdLibraryBooks style={{ fontSize: "25px" }} />
+                icon: <MdLibraryBooks style={{ fontSize: "25px" }} />
               }}
             >
               <DrawerButtonItem />
@@ -215,28 +211,30 @@ export default function TemporaryDrawer() {
       <List>
         {sessionStorage.getItem("token") === "" ||
         sessionStorage.getItem("token") === null ? (
-          <ListItem button key={"LogIn"}>
+          <ListItem
+            button
+            key={"LogIn"}
+            onClick={() => {
+              document.location.href = "/login";
+            }}
+          >
             <ListItemIcon>
               <IoIosLogIn style={{ fontSize: "25px" }} />
             </ListItemIcon>
-            <ListItemText
-              primary={"Login"}
-              onClick={() => {
-                document.location.href = "/login";
-              }}
-            />
+            <ListItemText primary={"Login"} />
           </ListItem>
         ) : (
-          <ListItem button key={"logout"}>
+          <ListItem
+            button
+            key={"logout"}
+            onClick={() => {
+              openDrawer.handleLogout();
+            }}
+          >
             <ListItemIcon>
               <IoIosLogOut style={{ fontSize: "25px" }} />
             </ListItemIcon>
-            <ListItemText
-              primary={"Logout"}
-              onClick={() => {
-                openDrawer.handleLogout();
-              }}
-            />
+            <ListItemText primary={"Logout"} />
           </ListItem>
         )}
       </List>

@@ -15,7 +15,6 @@ import Container from "@material-ui/core/Container";
 import Switch from "@material-ui/core/Switch";
 import { grey, lightBlue, green } from "@material-ui/core/colors";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import { TestContext } from "../../App";
 import MuiAlert from "@material-ui/lab/Alert";
 import Snackbar from "@material-ui/core/Snackbar";
 import { Spring } from "react-spring/renderprops";
@@ -34,7 +33,7 @@ const useStyles = makeStyles(theme => ({
     marginTop: theme.spacing(8),
     display: "flex",
     flexDirection: "column",
-    alignItems: "center"
+    alignItems: "center",
   },
   avatar: {
     margin: theme.spacing(1),
@@ -48,7 +47,7 @@ const useStyles = makeStyles(theme => ({
     margin: theme.spacing(3, 0, 2)
   },
   paperContainer: {
-    backgroundImage: `url(${Image})`
+    
   },
 
   buttonProgress: {
@@ -120,9 +119,7 @@ export default function SignUp() {
   const [majorError,setMajorError]=useState("");
   const [majorErrorToggle,setMajorErrorToggle]=useState(false)
 
-  //Test context
-  // const sss = useContext(TestContext);
-  // console.log(sss);
+
 
   const buttonClassname = clsx({
     [classes.buttonSuccess]: success,
@@ -317,16 +314,10 @@ export default function SignUp() {
       });
     }
   };
-  // console.log(firstName)
-  // console.log(lastName)
-  // console.log(email)
-  // console.log(password)
-  //console.log(viewRecommendation);
-  // console.log("loading:" + loading);
-  // console.log("success:" + success);
+
 
   return (
-    <Container component="main" maxWidth="xs">
+    <Container component="main" maxWidth="xs" >
       <CssBaseline />
 
       <Spring

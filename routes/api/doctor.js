@@ -219,6 +219,55 @@ var pusher = new Pusher({
   useTLS: true
 });
 
+
+
+//Delete Notification
+
+router.delete("/deleteNotification", async (req,res)=>{
+  var stat = 0;
+  var token = req.headers["x-access-token"];
+  if (!token) {
+    return res
+      .status(401)
+      .send({ auth: false, message: "Please login first." });
+  }
+  jwt.verify(token, config.secret, async function(err, decoded) {
+    if (err) {
+      return res
+        .status(500)
+        .send({ auth: false, message: "Failed to authenticate token." });
+    }
+    stat = decoded.id;
+
+    const doctor = await Doctor.findById(stat);
+    if (!doctor) {
+      return res.status(404).send({ error: "Invalid Token" });
+    }
+
+    const notificationid=req.body.notificationId
+  
+
+  //   await Doctor.findOneAndUpdate(
+  //     { "notifications._id" :notificationid }, 
+  //     { "$pull": { "notifications.$.read" :false } } 
+  // )
+
+  await Doctor.findOneAndUpdate(
+    { "notifications._id": notificationid },
+    { $pull: { notifications: { _id: notificationid } } }
+)
+   
+  
+      res.status(200).send({msg:"Notfication Deleted Successfully"})
+  
+      
+
+
+  })
+
+})
+
+
 //Read Notification
 router.post("/readNotification", async(req,res)=>{
 
@@ -275,7 +324,7 @@ router.get("/activateAccount/:activationToken", async (req, res) => {
       activated: true,
       activationToken: null
     });
-    res.status(200).redirect("https://localhost:3001/");
+    res.status(200).redirect("http://localhost:3001/");
   } else {
     res.status(400).send({ msg: "Link Expired" });
   }

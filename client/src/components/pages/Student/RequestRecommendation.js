@@ -1,36 +1,25 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Grid,
-  CssBaseline,
   TextField,
   Typography,
   Snackbar,
   Button,
   Container,
   CircularProgress,
-  Switch,
   Card
-
 } from "@material-ui/core";
 import { Info } from "@material-ui/icons";
 import MuiAlert from "@material-ui/lab/Alert";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { grey, lightBlue, green,purple } from "@material-ui/core/colors";
+import { grey, lightBlue, green, purple } from "@material-ui/core/colors";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
-import { TestContext } from "../../../App";
 import clsx from "clsx";
 import { IoIosCreate } from "react-icons/io";
-import {Spring} from 'react-spring/renderprops';
+import { Spring } from "react-spring/renderprops";
 
 
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      Mohamed Atef {" © "} {new Date().getFullYear()}
-    </Typography>
-  );
-}
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -82,19 +71,7 @@ const useStyles = makeStyles(theme => ({
   infoIcon: {}
 }));
 
-const ViewSwitch = withStyles({
-  switchBase: {
-    color: grey[300],
-    "&$checked": {
-      color: green[700]
-    },
-    "&$checked + $track": {
-      backgroundColor: green[900]
-    }
-  },
-  checked: {},
-  track: {}
-})(Switch);
+
 
 export default function RequestRecommendation() {
   const classes = useStyles();
@@ -102,38 +79,34 @@ export default function RequestRecommendation() {
   const [success, setSuccess] = useState(false);
   const [open, setOpen] = React.useState(false);
   const [professorEmail, setProfessorEmail] = useState("");
-  const [universityEmail,setUniversityEmail]=useState()
+  const [universityEmail, setUniversityEmail] = useState();
   const [professorsEmailList, setProfessorEmailList] = useState([]);
-  const [universityEmailList,setUniversityEmailList]=useState([])
+  const [universityEmailList, setUniversityEmailList] = useState([]);
 
   const [emailError, setEmailError] = useState("");
   const [emailErrorToggle, setEmailErrorToggle] = useState(false);
-  
+
   const [uemailError, setUEmailError] = useState("");
   const [uemailErrorToggle, setUEmailErrorToggle] = useState(false);
-
 
   const ColorButton = withStyles(theme => ({
     root: {
       color: theme.palette.getContrastText(purple[500]),
-      background: "linear-gradient(60deg, #ab47bc, #8e24aa)",
-     
+      background: "linear-gradient(60deg, #ab47bc, #8e24aa)"
     }
   }))(Button);
 
+  // Speed up calls to hasOwnProperty
+  var hasOwnProperty = Object.prototype.hasOwnProperty;
 
-// Speed up calls to hasOwnProperty
-var hasOwnProperty = Object.prototype.hasOwnProperty;
-
-function isEmpty(obj) {
-
+  function isEmpty(obj) {
     // null and undefined are "empty"
     if (obj == null) return true;
 
     // Assume if it has a length property with a non-zero value
     // that that property is correct.
-    if (obj.length > 0)    return false;
-    if (obj.length === 0)  return true;
+    if (obj.length > 0) return false;
+    if (obj.length === 0) return true;
 
     // If it isn't an object at this point
     // it is empty, but it can't be anything *but* empty
@@ -144,18 +117,16 @@ function isEmpty(obj) {
     // Note that this doesn't handle
     // toString and valueOf enumeration bugs in IE < 9
     for (var key in obj) {
-        if (hasOwnProperty.call(obj, key)) return false;
+      if (hasOwnProperty.call(obj, key)) return false;
     }
 
     return true;
-}
-
+  }
 
   const validate = () => {
     let isError = false;
     const errors = {};
     let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
 
     if (!re.test(professorEmail)) {
       isError = true;
@@ -165,43 +136,39 @@ function isEmpty(obj) {
       setEmailErrorToggle(false);
       setEmailError("");
     }
-    
-    if(typeof universityEmail=="string"){
-    isError=true;
-    errors.uemailError = "Please press the `Enter` button on your keyboard";
-    errors.uemailErrorToggle = true;
+
+    if (typeof universityEmail == "string") {
+      isError = true;
+      errors.uemailError = "Please press the `Enter` button on your keyboard";
+      errors.uemailErrorToggle = true;
     }
 
-if(isEmpty(universityEmail)){
-  
-  isError=true;
-  errors.uemailError = "Please fill in the field";
-  errors.uemailErrorToggle = true;
-}
+    if (isEmpty(universityEmail)) {
+      isError = true;
+      errors.uemailError = "Please fill in the field";
+      errors.uemailErrorToggle = true;
+    }
 
-   if(typeof universityEmail==="object"){
-  console.log(universityEmail==="")
-    universityEmail.map(item=>{
-      if(!re.test(item)){
-        isError = true;
-        errors.uemailError = "Please enter a valid email";
-        errors.uemailErrorToggle = true;
-      }else{
-        setUEmailErrorToggle(false);
-        setUEmailError("");
+    if (typeof universityEmail === "object") {
+      universityEmail.map(item => {
+        if (!re.test(item)) {
+          isError = true;
+          errors.uemailError = "Please enter a valid email";
+          errors.uemailErrorToggle = true;
+        } else {
+          setUEmailErrorToggle(false);
+          setUEmailError("");
+        }
       }
-    })
-
-  }
-
+      
+      );
+    }
 
     if (isError) {
-     
       setEmailError(errors.emailError);
       setEmailErrorToggle(errors.emailErrorToggle);
       setUEmailError(errors.uemailError);
       setUEmailErrorToggle(errors.uemailErrorToggle);
-     
     }
 
     return isError;
@@ -219,26 +186,23 @@ if(isEmpty(universityEmail)){
       fetch(`http://localhost:3000/api/student/requestRecommendation`, {
         method: "POST",
         body: JSON.stringify({
-          
           remail: professorEmail,
-          uemail:universityEmail.toString()
-      
+          uemail: universityEmail.toString()
         }),
         headers: {
           "Content-Type": "application/json",
           "Access-Control-Allow-Headers": "*",
-          "x-access-token":sessionStorage.getItem("token")
+          "x-access-token": sessionStorage.getItem("token")
         }
       }).then(res => {
-        console.log(res.status);
         if (res.status === 200) {
           setLoading(false);
           setSuccess(true);
           setOpen(true);
           setProfessorEmail("");
-          setUniversityEmail("")
-         
-          document.location.reload()
+          setUniversityEmail("");
+
+          document.location.reload();
         } else {
           setLoading(false);
         }
@@ -246,9 +210,7 @@ if(isEmpty(universityEmail)){
     }
   };
 
-
   useEffect(() => {
-    console.log("useEffect");
     fetch(`http://localhost:3000/api/doctor/getDocEmails`, {
       method: "GET",
       headers: {
@@ -272,14 +234,6 @@ if(isEmpty(universityEmail)){
     });
   }, []);
 
-  
-
-  console.log("Email: " + sessionStorage.getItem("email"));
-console.log(isEmpty(universityEmail)) 
-
-console.log(typeof universityEmail)
-  //console.log(universityEmail.toString());
- 
   const buttonClassname = clsx({
     [classes.buttonSuccess]: success,
     [classes.normalForm]: !success
@@ -301,177 +255,176 @@ console.log(typeof universityEmail)
 
   return (
     <Container component="main" maxWidth="xs">
-
-
-
       <Spring
-  from={{ opacity: 0,transform: 'translate3d(0,-100%,0)'}}
-  to={{ opacity: 1,transform: 'translate3d(0px,0,0)' }}
-  
-  >
-  {props => <div style={props}>
-    
-  <Card
-          raised
-          style={{marginTop:"20%"}}
-          >
-      <div className={classes.paper}>
-        <IoIosCreate style={{ fontSize: "60px" }} />
+        from={{ opacity: 0, transform: "translate3d(0,-100%,0)" }}
+        to={{ opacity: 1, transform: "translate3d(0px,0,0)" }}
+      >
+        {props => (
+          <div style={props}>
+            <br />
+            <br />
+            <Card raised>
+              <div className={classes.paper}>
+                <IoIosCreate style={{ fontSize: "60px" }} />
 
-        <Typography component="h1" variant="h5">
-          Request a recommendation
-        </Typography>
-        <form className={classes.form} noValidate>
-          <Grid container spacing={1} alignItems="flex-end">
-            <OverlayTrigger
-              key={"left"}
-              placement={"left"}
-              overlay={
-                <Tooltip id={`tooltip-left`}>
-                  Choose a <strong>Professor</strong> from our website <br />
-                  OR
+                <Typography component="h1" variant="h5">
+                  Request a recommendation
+                </Typography>
+                <form className={classes.form} noValidate>
+                  <Grid container spacing={1} alignItems="flex-end">
+                    <OverlayTrigger
+                      key={"left"}
+                      placement={"left"}
+                      overlay={
+                        <Tooltip id={`tooltip-left`}>
+                          Choose a <strong>Professor</strong> from our website{" "}
+                          <br />
+                          OR
+                          <br />
+                          Fill in a <strong>Professor's email</strong> and
+                          he/she will recieve an email notification and a new
+                          account on our website
+                        </Tooltip>
+                      }
+                    >
+                      <Button
+                        onClick={e => {
+                          e.preventDefault();
+                        }}
+                      >
+                        <Grid style={{ cursor: "pointer" }} item>
+                          <Info />
+                        </Grid>
+                      </Button>
+                    </OverlayTrigger>
+
+                    <Grid style={{ width: "80%" }} item>
+                      <Autocomplete
+                        id="combo-box-demo"
+                        clearOnEscape
+                        options={professorsEmailList.map(
+                          option => option.email
+                        )}
+                        style={{ width: "100%" }}
+                        freeSolo
+                        onChange={(e, value) => {
+                          if (value !== null) {
+                            setProfessorEmail(value);
+                          } else {
+                            setProfessorEmail("");
+                          }
+                        }}
+                        renderInput={params => (
+                          <TextField
+                            {...params}
+                            label="Professor's Email"
+                            variant="standard"
+                            error={emailErrorToggle}
+                            helperText={emailError}
+                            value={professorEmail}
+                            onChange={e => {
+                              setProfessorEmail(e.target.value);
+                            }}
+                          />
+                        )}
+                      />
+                    </Grid>
+                  </Grid>
                   <br />
-                  Fill in a <strong>Professor's email</strong> and he/she will
-                  recieve an email notification and a new account on our website
-                </Tooltip>
-              }
-            >
-              <Button
-                onClick={e => {
-                  e.preventDefault();
-                }}
-              >
-                <Grid style={{ cursor: "pointer" }} item>
-                  <Info />
-                </Grid>
-              </Button>
-            </OverlayTrigger>
+                  <Grid container spacing={1} alignItems="flex-end">
+                    <OverlayTrigger
+                      key={"left"}
+                      placement={"left"}
+                      overlay={
+                        <Tooltip id={`tooltip-left`}>
+                          Choose <strong>Universities</strong> from our website{" "}
+                          <br /> you wish to get recommended to
+                          <br />
+                          OR
+                          <br />
+                          Fill in <strong>Universitiess' email(s)</strong> you
+                          wish to get recommended tooltip.
+                          <br />(<i>Multiple selections is allowed</i>)
+                        </Tooltip>
+                      }
+                    >
+                      <Button
+                        onClick={e => {
+                          e.preventDefault();
+                        }}
+                      >
+                        <Grid style={{ cursor: "pointer" }} item>
+                          <Info />
+                        </Grid>
+                      </Button>
+                    </OverlayTrigger>
 
-            <Grid style={{ width: "80%" }} item>
-              <Autocomplete
-                id="combo-box-demo"
-                clearOnEscape
-                options={professorsEmailList.map(option => option.email)}
-                style={{ width: "100%" }}
-                freeSolo
-           
-                onChange={(e, value) => {
-                  if (value !== null) {
-                    console.log(value);
-                    setProfessorEmail(value);
-                  }else{
-                    setProfessorEmail("")
-                  }
-                }}
-                renderInput={params => (
-                  <TextField
-                    {...params}
-                    label="Professor's Email"
-                    variant="standard"
-                    error={emailErrorToggle}
-                    helperText={emailError}
-                    value={professorEmail}
-                    onChange={e => {
-                      setProfessorEmail(e.target.value);
-                    }}
-                  />
-                )}
-              />
-            </Grid>
-          </Grid>
-          <br/>
-          <Grid container spacing={1} alignItems="flex-end">
-            <OverlayTrigger
-              key={"left"}
-              placement={"left"}
-              overlay={
-                <Tooltip id={`tooltip-left`}>
-                  Choose <strong>Universities</strong> from our website <br /> you wish to get recommended to
-                  <br />
-                  OR
-                  <br />
-                  Fill in  <strong>Universitiess' email(s)</strong> you wish to get recommended tooltip.
-                  <br/>
-                  (<i>Multiple selections is allowed</i>)
-                </Tooltip>
-              }
-            >
-              <Button
-                onClick={e => {
-                  e.preventDefault();
-                }}
-              >
-                <Grid style={{ cursor: "pointer" }} item>
-                  <Info />
-                </Grid>
-              </Button>
-            </OverlayTrigger>
+                    <Grid style={{ width: "80%" }} item>
+                      <Autocomplete
+                        id="combo-box-demo"
+                        clearOnEscape
+                        options={universityEmailList.map(
+                          option => option.uemail
+                        )}
+                        style={{ width: "100%" }}
+                        freeSolo
+                        multiple
+                        onChange={(e, value) => {
+                          if (value !== null) {
+                            setUniversityEmail(value);
+                          } else {
+                            setUniversityEmail("");
+                          }
+                        }}
+                        renderInput={params => (
+                          <TextField
+                            {...params}
+                            label="Universitys' Email(s)"
+                            variant="standard"
+                            error={uemailErrorToggle}
+                            helperText={uemailError}
+                            value={universityEmail}
+                            onChange={e => {
+                              setUniversityEmail(e.target.value);
+                            }}
+                          />
+                        )}
+                      />
+                    </Grid>
+                  </Grid>
 
-            <Grid style={{ width: "80%" }} item>
-              <Autocomplete
-                id="combo-box-demo"
-                clearOnEscape
-                options={universityEmailList.map(option => option.uemail)}
-                style={{ width: "100%" }}
-                freeSolo
-                multiple
-                onChange={(e, value) => {
-                  if (value !== null) {
-                    console.log(value);
-                    setUniversityEmail(value);
-                  }else{
-                    setUniversityEmail("")
-                  }
-                }}
-                renderInput={params => (
-                  <TextField
-                    {...params}
-                    label="Universitys' Email(s)"
-                    variant="standard"
-                    error={uemailErrorToggle}
-                    helperText={uemailError}
-                    value={universityEmail}
-                    onChange={e => {
-                      setUniversityEmail(e.target.value);
-                    }}
-                  />
-                )}
-              />
-              
-            </Grid>
-          </Grid>
-
-          <div className={classes.wrapper}>
-            <ColorButton
-              type="submit"
-              size="medium"
-              variant="contained"
-              color="primary"
-              className={buttonClassname}
-             
-              disabled={loading}
-              onClick={handleSendRequest}
-              disabled={loading}
-            >
-              Send Request
-            </ColorButton>
-            {loading && (
-              <CircularProgress size={24} className={classes.buttonProgress} />
-            )}
+                  <div className={classes.wrapper}>
+                    <ColorButton
+                      type="submit"
+                      size="medium"
+                      variant="contained"
+                      color="primary"
+                      className={buttonClassname}
+                      disabled={loading}
+                      onClick={handleSendRequest}
+                     
+                    >
+                      Send Request
+                    </ColorButton>
+                    {loading && (
+                      <CircularProgress
+                        size={24}
+                        className={classes.buttonProgress}
+                      />
+                    )}
+                  </div>
+                </form>
+              </div>
+            </Card>
           </div>
-        </form>
-      </div>
-      </Card>
-    
-    
-    </div>}
-</Spring>
-         
+        )}
+      </Spring>
+
       <Container>
         <Grid item>
           <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
             <Alert onClose={handleClose} severity="success">
-             Request Sent
+              Request Sent
             </Alert>
           </Snackbar>
         </Grid>

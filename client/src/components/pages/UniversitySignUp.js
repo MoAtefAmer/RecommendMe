@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -15,7 +15,7 @@ import Container from "@material-ui/core/Container";
 import { grey, lightBlue, green } from "@material-ui/core/colors";
 import MuiAlert from "@material-ui/lab/Alert";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import { TestContext } from "../../App";
+
 import { Spring } from "react-spring/renderprops";
 function Copyright() {
   return (
@@ -101,7 +101,7 @@ export default function UniversitySignUp() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [image, setImage] = useState("");
+ 
   const [websiteLink, setWebsiteLink] = useState("");
   const [open, setOpen] = React.useState(false);
   const [contactInfo, setContactInfo] = useState("");
@@ -121,8 +121,6 @@ export default function UniversitySignUp() {
   );
 
   //Test context
-  const sss = useContext(TestContext);
-  ///console.log(sss);
 
   const buttonClassname = clsx({
     [classes.buttonSuccess]: success,
@@ -251,13 +249,7 @@ export default function UniversitySignUp() {
   
 }
   };
-  // console.log(firstName)
-  // console.log(lastName)
-  // console.log(email)
-  // console.log(password)
-  //console.log(viewRecommendation);
-  // console.log("loading:" + loading);
-  // console.log("success:" + success);
+
 
   return (
     <Container component="main" maxWidth="xs">

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useContext } from "react";
 import { Modal, ModalFooter, FormControl } from "react-bootstrap";
 import { InfoModalContext } from "./RecommendationCard";
 import {
@@ -6,12 +6,12 @@ import {
   Grid,
   makeStyles,
   Slider,
-  Avata,
+
   Button,
   Container
 } from "@material-ui/core";
-import { Person } from "@material-ui/icons";
-import { IoMdContact, IoIosContact } from "react-icons/io";
+
+import { IoIosContact } from "react-icons/io";
 import { FaFilePdf } from "react-icons/fa";
 
 const useStyles = makeStyles(theme => ({
