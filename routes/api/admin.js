@@ -13,7 +13,7 @@ var cors = require("cors");
 const validator = require("../../validations/AdminValidations");
 //var emailCheck = require("email-check");
 
-const Verifier = require("email-verifier");
+
 
 //Create Admin account
 router.post("/createAdmin", async (req, res) => {
@@ -84,7 +84,7 @@ router.post("/adminLogin", async (req, res) => {
     });
     res
       .status(200)
-      .send({ auth: true, token: token, id: admin._id, email: admin.email });
+      .send({ auth:"Admin", token: token, id: admin._id, email: admin.email });
   });
 });
 

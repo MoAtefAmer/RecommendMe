@@ -142,10 +142,7 @@ const RecommendationFormSchema = new Schema({
       message: "{VALUE} is not an integer value"
     }
   },
-  otherlanguages: {
-    type: String,
-    required: false
-  },
+ 
   remarks: {
     type: String,
     required: false
@@ -153,6 +150,18 @@ const RecommendationFormSchema = new Schema({
   pdfLink: {
     type: String,
     required: false
+  },
+  profView:{
+type:Boolean,
+default:true
+  },
+  uniView:{
+    type:Boolean,
+    default:true
+  },
+  studentView:{
+    type:Boolean,
+    default:true
   }
 });
 

@@ -6,6 +6,7 @@ var config = require("../../config/jwt");
 const University = require("../../models/University");
 const validator = require("../../validations/UniversityValidations");
 const mailer = require("nodemailer");
+const RecommendationForm = require("../../models/RecommendationForm");
 var cors = require("cors");
 
 router.use(cors());
@@ -75,6 +76,60 @@ router.post("/uniSignup", async (req, res) => {
 });
 
 
+
+//Change Password
+
+router.post("/changePassword", async (req, res) => {
+  var stat = 0;
+  var token = req.headers["x-access-token"];
+  if (!token) {
+    return res
+      .status(401)
+      .send({ auth: false, message: "Please login first." });
+  }
+  jwt.verify(token, config.secret, async function(err, decoded) {
+    if (err) {
+      return res
+        .status(500)
+        .send({ auth: false, message: "Failed to authenticate token." });
+    }
+    stat = decoded.id;
+
+    const university = await University.findById(stat);
+    if (!university) {
+      return res.status(404).send({ error: "Invalid Token" });
+    }
+
+    const oldPassword = req.body.oldPassword;
+    const newPassword = req.body.newPassword;
+
+    if (oldPassword !== newPassword) {
+      const isCorrectPassword = bcrypt.compareSync(
+        oldPassword,
+        university.password
+      );
+      if (!isCorrectPassword) {
+        return res.status(401).send({ msg: "Incorrect password" });
+      } else {
+        const hashedPassword = bcrypt.hashSync(newPassword, 10);
+
+        await University.findByIdAndUpdate(stat, { password: hashedPassword });
+
+        return res.status(200).send({ msg: "Password Updated" });
+      }
+    } else {
+      return res.status(400).send({ msg: "You cannot set the same password!" });
+    }
+  });
+});
+
+
+
+
+
+
+
+
 // Account activation 
 router.get("/activateAccount/:activationToken", async (req, res) => {
   const activationToken = req.params.activationToken;
@@ -90,6 +145,100 @@ router.get("/activateAccount/:activationToken", async (req, res) => {
     res.status(400).send({ msg: "Link Expired" });
   }
 });
+
+
+//View My Recommendations
+router.get("/getRecommendations", async (req, res) => {
+  try {
+    var stat = 0;
+    var token = req.headers["x-access-token"];
+    if (!token) {
+      return res
+        .status(401)
+        .send({ auth: false, message: "Please login first." });
+    }
+    jwt.verify(token, config.secret, async function(err, decoded) {
+      if (err) {
+        return res
+          .status(500)
+          .send({ auth: false, message: "Failed to authenticate token." });
+      }
+      stat = decoded.id;
+
+      const university = await University.findById(stat);
+      if (!university) {
+        return res.status(404).send({ error: "Invalid Token" });
+      }
+      const universityEmail = await university.uemail;
+      const page = parseInt(req.query.page);
+      const limit = parseInt(req.query.limit);
+      const count= await RecommendationForm.countDocuments({uemail: universityEmail,uniView:true})
+     recommendationForms = await RecommendationForm.find({
+        uemail: universityEmail,
+        uniView:true
+     
+      }).skip((page-1)*limit).limit(limit)
+
+
+      
+      // const startIndex = (page - 1) * limit;
+      // const endIndex = page * limit;
+      // const resultForms = recommendationForms.slice(startIndex, endIndex);
+
+      res.send({count:count,data:recommendationForms});
+    });
+  } catch (error) {
+    console.log(error);
+  }
+
+  //
+});
+
+
+
+//Delete UniView
+router.post("/deleteUniView", async (req,res)=>{
+
+  try {
+    var stat = 0;
+    var token = req.headers["x-access-token"];
+    if (!token) {
+      return res
+        .status(401)
+        .send({ auth: false, message: "Please login first." });
+    }
+    jwt.verify(token, config.secret, async function(err, decoded) {
+      if (err) {
+        return res
+          .status(500)
+          .send({ auth: false, message: "Failed to authenticate token." });
+      }
+      stat = decoded.id;
+
+      const university = await University.findById(stat);
+      if (!university) {
+        return res.status(404).send({ error: "Invalid Token" });
+      }
+    
+const formId=req.body.id
+
+const theForm = await RecommendationForm.findByIdAndUpdate(formId,{uniView:false})
+
+if(theForm){
+  res.status(200).send({msg:"Document Successfully Updated"})
+}else{
+res.status(404).send({msg:"document not found"})
+}
+
+
+    });
+  } catch (error) {
+    console.log(error);
+  }
+
+  
+})
+
 
 
 //University Login
@@ -146,6 +295,20 @@ router.get("/viewProfile", async (req, res) => {
     res.json({ Profile });
   }
 });
+
+//Get a List of All Unis
+router.get("/getUniEmails", async (req, res) => {
+
+  const uniList = await University.find({},{uemail:1,_id:0,Name:1,websiteLink:1})
+
+  if (!uniList) {
+    return res.status(404).send({ error: "No Universities Found" });
+  } else {
+    
+    res.json({uniList });
+  }
+});
+
 
 
 //Edit My Profile as a University

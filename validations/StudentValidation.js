@@ -29,6 +29,7 @@ module.exports = {
         recommendersEmails:Joi.array(),
         remail:Joi.string(),
         uemail:Joi.string(),
+        major:Joi.string().required(),
     }
 
     return Joi.validate(request, createSchema)

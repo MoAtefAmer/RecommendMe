@@ -1,4 +1,4 @@
-import React, { useState,useContext } from "react";
+import React, { useState } from "react";
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
 import InputAdornment from "@material-ui/core/InputAdornment";
@@ -25,11 +25,13 @@ import clsx from "clsx";
 import Snackbar from "@material-ui/core/Snackbar";
 import Grid from "@material-ui/core/Grid";
 import MuiAlert from "@material-ui/lab/Alert";
-import { TestContext } from "../../App";
+import { Spring } from "react-spring/renderprops";
 
 import styles from "../../assets/jss/material-kit-react/views/loginPage.js";
 
 import image from "../Images/studentSignup.jpg";
+
+export var LoginContext = React.createContext();
 
 export default function LoginPage(props) {
   //The State
@@ -45,10 +47,7 @@ export default function LoginPage(props) {
   const [open, setOpen] = React.useState(false);
   const [snackbarErrorMessage, setSnackbarErrorMessage] = useState("");
   const [severity, setSeverity] = useState("");
-//Test Context
-  const sss = useContext(TestContext);
-  // console.log(sss);
-
+  //Test Context
 
   const useStyles = makeStyles(styles);
   var useStyles2 = makeStyles(theme => ({
@@ -113,7 +112,7 @@ export default function LoginPage(props) {
     if (isError) {
       setEmailErrorToggle(errors.emailErrorToggle);
       setPasswordErrorToggle(errors.passwordErrorToggle);
-      if(errors.emailErrorToggle || errors.passwordErrorToggle){
+      if (errors.emailErrorToggle || errors.passwordErrorToggle) {
         setSeverity("error");
         setSnackbarErrorMessage("Please enter your username and password");
         setOpen(true);
@@ -157,7 +156,6 @@ export default function LoginPage(props) {
               }
             }).then(res => {
               res.json().then(data => {
-                console.log(res.status);
                 if (res.status === 400) {
                   setSeverity("warning");
                   setSnackbarErrorMessage("Please activate your account");
@@ -165,14 +163,17 @@ export default function LoginPage(props) {
                 }
                 if (res.status === 200) {
                   if (data.auth === accountType) {
-                    setEmail("");
-                    setPassword("");
+                    sessionStorage.setItem("email", email);
                     sessionStorage.setItem("token", data.token);
                     sessionStorage.setItem("auth", data.auth);
+
+                    setEmail("");
+                    setPassword("");
                     setSeverity("success");
                     setSnackbarErrorMessage("Login Successful");
                     setOpen(true);
-                    setTimeout(() => (document.location.href = "/"), 3000);
+
+                    document.location.href = "/viewRecommendations";
                   }
                 }
 
@@ -197,8 +198,6 @@ export default function LoginPage(props) {
               }
             }).then(res => {
               res.json().then(data => {
-                console.log("Status code: " + res.status);
-                console.log("Data : " + data.auth);
                 if (res.status === 400) {
                   setSeverity("warning");
                   setSnackbarErrorMessage("Please activate your account");
@@ -207,14 +206,22 @@ export default function LoginPage(props) {
 
                 if (res.status === 200) {
                   if (data.auth === accountType) {
+                    sessionStorage.setItem("email", email);
                     setEmail("");
                     setPassword("");
+                    sessionStorage.setItem("firstName", data.data.firstName);
+                    sessionStorage.setItem("lastName", data.data.lastName);
+                    sessionStorage.setItem("currentJob", data.data.currentJob);
                     sessionStorage.setItem("token", data.token);
                     sessionStorage.setItem("auth", data.auth);
+                    sessionStorage.setItem("notificationId", "");
+                    sessionStorage.setItem("notificationStudentEmail", "");
+                    sessionStorage.setItem("notificationUniversityEmail", "");
                     setSeverity("success");
                     setSnackbarErrorMessage("Login Successful");
                     setOpen(true);
-                    setTimeout(() => (document.location.href = "/"), 3000);
+
+                    document.location.href = "/createRecommendation";
                   }
                 }
                 if (res.status === 401) {
@@ -239,8 +246,6 @@ export default function LoginPage(props) {
               }
             }).then(res => {
               res.json().then(data => {
-                console.log(res.status);
-
                 if (res.status === 400) {
                   setSeverity("warning");
                   setSnackbarErrorMessage("Please activate your account");
@@ -248,6 +253,7 @@ export default function LoginPage(props) {
                 }
                 if (res.status === 200) {
                   if (data.auth === accountType) {
+                    sessionStorage.setItem("email", email);
                     setEmail("");
                     setPassword("");
                     sessionStorage.setItem("token", data.token);
@@ -255,7 +261,7 @@ export default function LoginPage(props) {
                     setSeverity("success");
                     setSnackbarErrorMessage("Login Successful");
                     setOpen(true);
-                    setTimeout(() => (document.location.href = "/"), 3000);
+                    document.location.href = "/viewRecommendations";
                   }
                 }
                 if (res.status === 401) {
@@ -281,175 +287,179 @@ export default function LoginPage(props) {
     }
   };
 
-  //console.log(accountType);
-
   return (
     <div>
-      <div
-        className={classes.pageHeader}
-        style={{
-          backgroundImage: "url(" + image + ")",
-          backgroundSize: "cover",
-          backgroundPosition: "top center"
-        }}
-      >
-        <div className={classes.container}>
-          <GridContainer justify="center">
-            <GridItem xs={12} sm={12} md={4}>
-              <Card className={classes[cardAnimaton]}>
-                <form className={classes.form}>
-                  <CardHeader color="primary" className={classes.cardHeader}>
-                    <h4>Login</h4>
-                    <div className={classes.socialLine}>
-                      <OverlayTrigger
-                        key={"left"}
-                        placement={"left"}
-                        overlay={
-                          <Tooltip id={`tooltip-left`}>
-                            Log in as a <strong>Student</strong>.
-                          </Tooltip>
-                        }
-                      >
-                        <Button
-                          justIcon
-                          href="#pablo"
-                          target="_blank"
-                          color="transparent"
-                          onClick={e => {
-                            e.preventDefault();
-                            setAccountType("Student");
-                          }}
+      <Spring from={{ opacity: 0 }} to={{ opacity: 1 }} config={{ delay: 600 }}>
+        {props => (
+          <div style={props}>
+            <div
+              className={classes.pageHeader}
+              style={{
+                backgroundImage: "url(" + image + ")",
+                backgroundSize: "cover",
+                backgroundPosition: "top center"
+              }}
+            >
+              <div className={classes.container}>
+                <GridContainer justify="center">
+                  <GridItem xs={12} sm={12} md={4}>
+                    <Card className={classes[cardAnimaton]}>
+                      <form className={classes.form}>
+                        <CardHeader
+                          color="primary"
+                          className={classes.cardHeader}
                         >
-                          <Avatar className={studentAvatar}>
-                            <StudentIcon />
-                          </Avatar>
-                        </Button>
-                      </OverlayTrigger>
+                          <h4>Login</h4>
+                          <div className={classes.socialLine}>
+                            <OverlayTrigger
+                              key={"left"}
+                              placement={"left"}
+                              overlay={
+                                <Tooltip id={`tooltip-left`}>
+                                  Log in as a <strong>Student</strong>.
+                                </Tooltip>
+                              }
+                            >
+                              <Button
+                                justIcon
+                                color="transparent"
+                                onClick={e => {
+                                  e.preventDefault();
+                                  setAccountType("Student");
+                                }}
+                              >
+                                <Avatar className={studentAvatar}>
+                                  <StudentIcon />
+                                </Avatar>
+                              </Button>
+                            </OverlayTrigger>
 
-                      <OverlayTrigger
-                        key={"bottom"}
-                        placement={"bottom"}
-                        overlay={
-                          <Tooltip id={`tooltip-bottom`}>
-                            Log in as a <strong>University</strong>
-                          </Tooltip>
-                        }
-                      >
-                        <Button
-                          justIcon
-                          href="#pablo"
-                          target="_blank"
-                          color="transparent"
-                          onClick={e => {
-                            e.preventDefault();
-                            setAccountType("University");
-                          }}
-                        >
-                          <Avatar className={universityAvatar}>
-                            <UniversityIcon />
-                          </Avatar>
-                        </Button>
-                      </OverlayTrigger>
+                            <OverlayTrigger
+                              key={"bottom"}
+                              placement={"bottom"}
+                              overlay={
+                                <Tooltip id={`tooltip-bottom`}>
+                                  Log in as a <strong>University</strong>
+                                </Tooltip>
+                              }
+                            >
+                              <Button
+                                justIcon
+                                color="transparent"
+                                onClick={e => {
+                                  e.preventDefault();
+                                  setAccountType("University");
+                                }}
+                              >
+                                <Avatar className={universityAvatar}>
+                                  <UniversityIcon />
+                                </Avatar>
+                              </Button>
+                            </OverlayTrigger>
 
-                      <OverlayTrigger
-                        key={"right"}
-                        placement={"right"}
-                        overlay={
-                          <Tooltip id={`tooltip-right`}>
-                            Log in as a <strong>Professor</strong>
-                          </Tooltip>
-                        }
-                      >
-                        <Button
-                          justIcon
-                          href="#pablo"
-                          target="_blank"
-                          color="transparent"
-                          onClick={e => {
-                            e.preventDefault();
-                            setAccountType("Professor");
-                          }}
-                        >
-                          <Avatar className={professorAvatar}>
-                            <DoctorIcon />
-                          </Avatar>
-                        </Button>
-                      </OverlayTrigger>
-                    </div>
-                  </CardHeader>
+                            <OverlayTrigger
+                              key={"right"}
+                              placement={"right"}
+                              overlay={
+                                <Tooltip id={`tooltip-right`}>
+                                  Log in as a <strong>Professor</strong>
+                                </Tooltip>
+                              }
+                            >
+                              <Button
+                                justIcon
+                                color="transparent"
+                                onClick={e => {
+                                  e.preventDefault();
+                                  setAccountType("Professor");
+                                }}
+                              >
+                                <Avatar className={professorAvatar}>
+                                  <DoctorIcon />
+                                </Avatar>
+                              </Button>
+                            </OverlayTrigger>
+                          </div>
+                        </CardHeader>
 
-                  <CardBody>
-                    <CustomInput
-                      labelText="Email..."
-                      id="email"
-                      value={email}
-                      error={emailErrorToggle}
-                      formControlProps={{
-                        fullWidth: true
-                      }}
-                      inputProps={{
-                        type: "email",
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <Email className={classes.inputIconsColor} />
-                          </InputAdornment>
-                        ),
-                        onChange: event => setEmail(event.target.value),
-                        autoComplete: "off"
-                      }}
-                    />
+                        <CardBody>
+                          <CustomInput
+                            labelText="Email..."
+                            id="email"
+                            value={email}
+                            error={emailErrorToggle}
+                            formControlProps={{
+                              fullWidth: true
+                            }}
+                            inputProps={{
+                              type: "email",
+                              endAdornment: (
+                                <InputAdornment position="end">
+                                  <Email className={classes.inputIconsColor} />
+                                </InputAdornment>
+                              ),
+                              onChange: event => setEmail(event.target.value),
+                              autoComplete: "off"
+                            }}
+                          />
 
-                    <CustomInput
-                      labelText="Password"
-                      id="pass"
-                      error={passwordErrorToggle}
-                      value={password}
-                      formControlProps={{
-                        fullWidth: true
-                      }}
-                      inputProps={{
-                        type: "password",
+                          <CustomInput
+                            labelText="Password"
+                            id="pass"
+                            error={passwordErrorToggle}
+                            value={password}
+                            formControlProps={{
+                              fullWidth: true
+                            }}
+                            inputProps={{
+                              type: "password",
 
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <Icon className={classes.inputIconsColor}>
-                              lock_outline
-                            </Icon>
-                          </InputAdornment>
-                        ),
-                        onChange: event => setPassword(event.target.value),
-                        autoComplete: "off"
-                      }}
-                    />
-                  </CardBody>
-                  <CardFooter className={classes.cardFooter}>
-                    <Button
-                      simple
-                      color="primary"
-                      size="lg"
-                      onClick={handleLogin}
+                              endAdornment: (
+                                <InputAdornment position="end">
+                                  <Icon className={classes.inputIconsColor}>
+                                    lock_outline
+                                  </Icon>
+                                </InputAdornment>
+                              ),
+                              onChange: event =>
+                                setPassword(event.target.value),
+                              autoComplete: "off"
+                            }}
+                          />
+                        </CardBody>
+                        <CardFooter className={classes.cardFooter}>
+                          <Button
+                            simple
+                            color="primary"
+                            size="lg"
+                            onClick={handleLogin}
+                          >
+                            Login
+                          </Button>
+                        </CardFooter>
+                      </form>
+                    </Card>
+                  </GridItem>
+
+                  <Grid item>
+                    <Snackbar
+                      open={open}
+                      autoHideDuration={6000}
+                      onClose={handleClose}
                     >
-                      Login
-                    </Button>
-                  </CardFooter>
-                </form>
-              </Card>
-            </GridItem>
-            <Grid item>
-              <Snackbar
-                open={open}
-                autoHideDuration={6000}
-                onClose={handleClose}
-              >
-                <Alert onClose={handleClose} severity={severity}>
-                  {snackbarErrorMessage}
-                </Alert>
-              </Snackbar>
-            </Grid>
-          </GridContainer>
-        </div>
-        <Footer whiteFont />
-      </div>
+                      <Alert onClose={handleClose} severity={severity}>
+                        {snackbarErrorMessage}
+                      </Alert>
+                    </Snackbar>
+                  </Grid>
+                </GridContainer>
+              </div>
+
+              <Footer whiteFont />
+            </div>
+          </div>
+        )}
+      </Spring>
     </div>
   );
 }

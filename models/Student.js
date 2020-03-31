@@ -22,6 +22,10 @@ const StudentSchema = new Schema({
     type: String,
     default: null
   },
+  major:{
+type:String,
+required:false
+  },
   viewRecommendation: {
     type: Boolean,
     required: true

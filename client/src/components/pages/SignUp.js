@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -15,9 +15,9 @@ import Container from "@material-ui/core/Container";
 import Switch from "@material-ui/core/Switch";
 import { grey, lightBlue, green } from "@material-ui/core/colors";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import { TestContext } from "../../App";
 import MuiAlert from "@material-ui/lab/Alert";
 import Snackbar from "@material-ui/core/Snackbar";
+import { Spring } from "react-spring/renderprops";
 
 
 function Copyright() {
@@ -33,7 +33,7 @@ const useStyles = makeStyles(theme => ({
     marginTop: theme.spacing(8),
     display: "flex",
     flexDirection: "column",
-    alignItems: "center"
+    alignItems: "center",
   },
   avatar: {
     margin: theme.spacing(1),
@@ -47,7 +47,7 @@ const useStyles = makeStyles(theme => ({
     margin: theme.spacing(3, 0, 2)
   },
   paperContainer: {
-    backgroundImage: `url(${Image})`
+    
   },
 
   buttonProgress: {
@@ -97,7 +97,8 @@ export default function SignUp() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [viewRecommendation, setViewRecommendation] = useState(false);
+  const [viewRecommendation, setViewRecommendation] = useState(true);
+  const [major,setMajor]=useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [open, setOpen] = React.useState(false);
@@ -115,10 +116,10 @@ export default function SignUp() {
   const [confirmPasswordErrorToggle, setConfirmPasswordErrorToggle] = useState(
     false
   );
+  const [majorError,setMajorError]=useState("");
+  const [majorErrorToggle,setMajorErrorToggle]=useState(false)
 
-  //Test context
-  const sss = useContext(TestContext);
-  console.log(sss);
+
 
   const buttonClassname = clsx({
     [classes.buttonSuccess]: success,
@@ -160,6 +161,15 @@ export default function SignUp() {
     } else {
       setLastNameErrorToggle(false);
       setLastNameError("");
+    }
+
+    if (major.length <= 0) {
+      isError = true;
+      errors.majorError = "Please fill in the field";
+      errors.majorErrorToggle = true;
+    } else {
+      setMajorErrorToggle(false);
+      setMajorError("");
     }
 
     if (!re.test(email)) {
@@ -208,10 +218,62 @@ export default function SignUp() {
       setPasswordErrorToggle(errors.passwordErrorToggle);
       setConfirmPasswordError(errors.confirmPasswordError);
       setConfirmPasswordErrorToggle(errors.confirmPasswordErrorToggle);
+      setMajorError(errors.majorError);
+      setMajorErrorToggle(errors.majorErrorToggle)
     }
 
     return isError;
   };
+
+  useEffect(() => {
+    if (major.length >= 1) {
+      setMajorErrorToggle(false);
+      setMajorError("");
+    }
+  }, [major]);
+
+
+  useEffect(() => {
+    if (firstName.length >= 1) {
+      setFirstNameErrorToggle(false);
+      setFirstNameError("");
+    }
+  }, [firstName]);
+
+  
+  useEffect(() => {
+    if (lastName.length >= 1) {
+      setLastNameErrorToggle(false);
+      setLastNameError("");
+    }
+  }, [lastName]);
+
+  useEffect(() => {
+    if (email.length >= 1) {
+      setEmailErrorToggle(false);
+      setEmailError("");
+    }
+  }, [email]);
+
+
+
+  useEffect(() => {
+    if ((password === confirmPassword)) {
+   
+      setPasswordError("")
+      setPasswordErrorToggle(false)
+      setConfirmPasswordError("")
+    setConfirmPasswordErrorToggle(false)
+    }
+  
+
+  }, [password,confirmPassword]);
+
+
+
+ 
+
+
 
   const handleSignUp = e => {
     e.preventDefault();
@@ -228,7 +290,8 @@ export default function SignUp() {
           Name: firstName + "" + lastName,
           email: email,
           password: password,
-          viewRecommendation: viewRecommendation
+          viewRecommendation: viewRecommendation,
+          major:major
         }),
         headers: {
           "Content-Type": "application/json",
@@ -244,25 +307,25 @@ export default function SignUp() {
           setPassword("");
           setFirstName("");
           setLastName("");
-          setTimeout(() => (document.location.href = "/login"), 4000);
+          document.location.href = "/login"
         } else {
           setLoading(false);
         }
       });
     }
   };
-  // console.log(firstName)
-  // console.log(lastName)
-  // console.log(email)
-  // console.log(password)
-  //console.log(viewRecommendation);
-  // console.log("loading:" + loading);
-  // console.log("success:" + success);
+
 
   return (
-    <Container component="main" maxWidth="xs">
+    <Container component="main" maxWidth="xs" >
       <CssBaseline />
-      <div className={classes.paper}>
+
+      <Spring
+  from={{ opacity: 0, transform: "translate3d(-100%,0,0)" }}
+   to={{ opacity: 1, transform: "translate3d(0,0,0)" }}>
+  {props => <div style={props}>
+    
+  <div className={classes.paper}>
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
         </Avatar>
@@ -302,6 +365,25 @@ export default function SignUp() {
                 value={lastName}
                 onChange={e => {
                   setLastName(e.target.value);
+                }}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <TextField
+                variant="outlined"
+                type="text"
+                required
+                fullWidth
+                helperText={majorError}
+                error={majorErrorToggle}
+                id="major"
+                label="Major"
+                name="major"
+              
+                value={major}
+                onChange={e => {
+                  setMajor(e.target.value);
                 }}
               />
             </Grid>
@@ -399,6 +481,10 @@ export default function SignUp() {
           </Grid>
         </form>
       </div>
+    
+    </div>}
+</Spring>
+     
       <Box mt={5}>
         <Copyright />
       </Box>

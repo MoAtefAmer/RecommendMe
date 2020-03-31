@@ -48,7 +48,20 @@ const DoctorSchema = new Schema({
    contactInfo:{
      type:String,
      required:false
-   }
+   },
+   notifications:{
+    type:[{
+      studentEmail:String,
+      universityEmail:String,
+      studentName:String,
+      read:{
+         type:Boolean,
+         default:false
+      },
+    }]
+    
+    
+}
    
   
   })
