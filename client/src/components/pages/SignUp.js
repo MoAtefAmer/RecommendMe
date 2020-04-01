@@ -284,7 +284,7 @@ export default function SignUp() {
       if (!loading) {
         setLoading(true);
       }
-      fetch(`http://localhost:3000/api/student/studentSignup`, {
+      fetch(`https://recommendationsystematef.herokuapp.com/api/student/studentSignup`, {
         method: "POST",
         body: JSON.stringify({
           Name: firstName + "" + lastName,

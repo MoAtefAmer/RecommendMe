@@ -55,7 +55,7 @@ router.post("/studentSignup", async (req, res) => {
       rejectUnauthorized: false
     }
   });
-  const url = `http://localhost:3000/api/student/activateAccount/` + token;
+  const url = `https://recommendationsystematef.herokuapp.com/api/student/activateAccount/` + token;
 
   let mailOptions = {
     from: '"RecommendMe" <recommendationsystemmailer@gmail.com>',
@@ -102,7 +102,7 @@ router.get("/activateAccount/:activationToken", async (req, res) => {
       activated: true,
       activationToken: null
     });
-    res.status(200).redirect("http://localhost:3001/");
+    res.status(200).redirect("https://recommendationsystematef.herokuapp.com/");
   } else {
     res.status(400).send({ msg: "Link Expired" });
   }
@@ -415,9 +415,9 @@ router.post("/requestRecommendation", async (req, res) => {
 
 
       
-        const url = `http://localhost:3000/api/doctor/activateAccount/` + cryptoToken;
+        const url = `https://recommendationsystematef.herokuapp.com/api/doctor/activateAccount/` + cryptoToken;
         const delUrl =
-          `http://localhost:3000/api/doctor/deleteAccount/` + cryptoToken;
+          `https://recommendationsystematef.herokuapp.com/api/doctor/deleteAccount/` + cryptoToken;
 
         let mailOptions2 = {
           from: '"RecommendMe" <recommendationsystemmailer@gmail.com>',

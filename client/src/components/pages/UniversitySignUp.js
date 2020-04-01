@@ -216,7 +216,7 @@ export default function UniversitySignUp() {
  
       
       
-      fetch(`http://localhost:3000/api/university/uniSignup`, {
+      fetch(`https://recommendationsystematef.herokuapp.com/api/university/uniSignup`, {
         method: "POST",
         body: JSON.stringify({
           uemail: uemail,

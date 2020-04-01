@@ -222,7 +222,7 @@ export default function ChangePassword() {
       
       }
 
-      fetch(`http://localhost:3000/api/${stateLoad}/changePassword`, {
+      fetch(`https://recommendationsystematef.herokuapp.com/api/${stateLoad}/changePassword`, {
         method: "POST",
         body: JSON.stringify({
           

@@ -23,7 +23,7 @@ export default function AreYouSureModal() {
  
 if(sessionStorage.getItem("auth")==="Professor"){
 
-  fetch(`http://localhost:3000/api/doctor/deleteProfView`, {
+  fetch(`https://recommendationsystematef.herokuapp.com/api/doctor/deleteProfView`, {
     method: "POST",
     body: JSON.stringify({ id: docId }),
 
@@ -40,7 +40,7 @@ if(sessionStorage.getItem("auth")==="Professor"){
 
 if(sessionStorage.getItem("auth")==="University"){
 
-  fetch(`http://localhost:3000/api/university/deleteUniView`, {
+  fetch(`https://recommendationsystematef.herokuapp.com/api/university/deleteUniView`, {
     method: "POST",
     body: JSON.stringify({ id: docId }),
 
@@ -57,7 +57,7 @@ if(sessionStorage.getItem("auth")==="University"){
 
 if(sessionStorage.getItem("auth")==="Student"){
 
-  fetch(`http://localhost:3000/api/student/deleteStudentView`, {
+  fetch(`https://recommendationsystematef.herokuapp.com/api/student/deleteStudentView`, {
     method: "POST",
     body: JSON.stringify({ id: docId }),
 

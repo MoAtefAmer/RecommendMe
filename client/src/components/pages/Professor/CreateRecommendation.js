@@ -259,7 +259,7 @@ export default function CreateRecommendation() {
 
   useEffect(() => {
     if (pdfLink !== "3eeb" && superImportantBoolean === true) {
-      fetch(`http://localhost:3000/api/doctor/sendRecommendation`, {
+      fetch(`https://recommendationsystematef.herokuapp.com/api/doctor/sendRecommendation`, {
         method: "POST",
         body: JSON.stringify({
           subject: "Notification Email from RecommendME",
@@ -389,7 +389,7 @@ export default function CreateRecommendation() {
   }, [universityName, universityEmailList]);
 
   useEffect(() => {
-    fetch(`http://localhost:3000/api/student/getStudentsEmails`, {
+    fetch(`https://recommendationsystematef.herokuapp.com/api/student/getStudentsEmails`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json"
@@ -400,7 +400,7 @@ export default function CreateRecommendation() {
       });
     });
 
-    fetch(`http://localhost:3000/api/university/getUniEmails`, {
+    fetch(`https://recommendationsystematef.herokuapp.com/api/university/getUniEmails`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json"
