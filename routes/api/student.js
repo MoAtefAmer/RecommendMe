@@ -339,7 +339,7 @@ router.post("/requestRecommendation", async (req, res) => {
           rejectUnauthorized: false
         }
       });
-      const url2 = `http://localhost:3001/login`;
+      const url2 = `https://recommendationsystematef.herokuapp.com/login`;
 
       const email = req.body.remail;
       const sName = student.Name;
