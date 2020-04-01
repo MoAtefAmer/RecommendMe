@@ -1,6 +1,9 @@
 {
   "name": "reccomendation-system",
   "version": "1.0.0",
+  "engines": {
+    "node": "10.16.0"
+  },
   "description": "recommendation system between universities, doctors and students",
   "main": "server.js",
   "dependencies": {
