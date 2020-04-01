@@ -145,7 +145,7 @@ export default function LoginPage(props) {
       if (accountType) {
         switch (accountType) {
           case "Student":
-            fetch(`http://localhost:3000/api/student/studentLogin`, {
+            fetch(`https://recommendationsystematef.herokuapp.com/api/student/studentLogin`, {
               method: "POST",
               body: JSON.stringify({
                 email: email,
@@ -187,7 +187,7 @@ export default function LoginPage(props) {
             break;
 
           case "Professor":
-            fetch(`http://localhost:3000/api/doctor/docLogin`, {
+            fetch(`https://recommendationsystematef.herokuapp.com/api/doctor/docLogin`, {
               method: "POST",
               body: JSON.stringify({
                 email: email,
@@ -235,7 +235,7 @@ export default function LoginPage(props) {
             break;
 
           case "University":
-            fetch(`http://localhost:3000/api/university/uniLogin`, {
+            fetch(`https://recommendationsystematef.herokuapp.com/api/university/uniLogin`, {
               method: "POST",
               body: JSON.stringify({
                 uemail: email,
