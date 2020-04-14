@@ -85,7 +85,7 @@ export default function DenseAppBar() {
 
   useEffect(() => {
     if (sessionStorage.getItem("auth") === "Professor") {
-      fetch(`http://localhost:3000/api/doctor/getNotifications`, {
+      fetch(`https://recommendationsystematef.herokuapp.com/api/doctor/getNotifications`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -106,7 +106,7 @@ export default function DenseAppBar() {
 
 const handleNotificationDelete =(index,id) =>{
 
-  fetch(`http://localhost:3000/api/doctor/deleteNotification`, {
+  fetch(`https://recommendationsystematef.herokuapp.com/api/doctor/deleteNotification`, {
       method: "Delete",
       body: JSON.stringify({
         notificationId: id
@@ -135,7 +135,7 @@ const handleNotificationDelete =(index,id) =>{
 
 
   const handleNotificationClick = (id, studentEmail, universityEmail) => {
-    fetch(`http://localhost:3000/api/doctor/readNotification`, {
+    fetch(`https://recommendationsystematef.herokuapp.com/api/doctor/readNotification`, {
       method: "POST",
       body: JSON.stringify({
         notificationId: id

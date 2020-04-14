@@ -61,7 +61,7 @@ export default function ViewRecommendations() {
 
     setLoading(true);
     fetch(
-      `http://localhost:3000/api/${stateLoad}/getRecommendations?page=${page}&limit=${limit}`,
+      `https://recommendationsystematef.herokuapp.com/api/${stateLoad}/getRecommendations?page=${page}&limit=${limit}`,
       {
         method: "GET",
         headers: {

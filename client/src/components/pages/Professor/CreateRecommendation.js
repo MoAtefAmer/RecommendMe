@@ -258,8 +258,11 @@ export default function CreateRecommendation() {
   ];
 
   useEffect(() => {
-    if (pdfLink !== "3eeb" && superImportantBoolean === true) {
-      fetch(`http://localhost:3000/api/doctor/sendRecommendation`, {
+
+
+
+    if ( superImportantBoolean === true) {
+      fetch(`https://recommendationsystematef.herokuapp.com/api/doctor/sendRecommendation`, {
         method: "POST",
         body: JSON.stringify({
           subject: "Notification Email from RecommendME",
@@ -272,7 +275,7 @@ export default function CreateRecommendation() {
             studentName +
             " to " +
             universityName +
-            "\n http://localhost:3001/login" +
+            "\n https://recommendationsystematef.herokuapp.com/" +
             "\n",
           studentName: studentName,
           studentEmail: studentEmail,
@@ -319,7 +322,7 @@ export default function CreateRecommendation() {
         }
       });
     }
-  }, [pdfLink]);
+  }, [superImportantBoolean]);
 
   useEffect(() => {
     if (studentName.length >= 1) {
@@ -389,7 +392,7 @@ export default function CreateRecommendation() {
   }, [universityName, universityEmailList]);
 
   useEffect(() => {
-    fetch(`http://localhost:3000/api/student/getStudentsEmails`, {
+    fetch(`https://recommendationsystematef.herokuapp.com/api/student/getStudentsEmails`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json"
@@ -400,7 +403,7 @@ export default function CreateRecommendation() {
       });
     });
 
-    fetch(`http://localhost:3000/api/university/getUniEmails`, {
+    fetch(`https://recommendationsystematef.herokuapp.com/api/university/getUniEmails`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json"
@@ -540,6 +543,9 @@ export default function CreateRecommendation() {
         setChooseFileLoading(true);
         setSuperImportantBoolean(true);
       } else {
+        if(fileSelectedText==="No File Selected"){
+          setSuperImportantBoolean(true)
+        }
       }
     } else {
       if (err) setValue(0);

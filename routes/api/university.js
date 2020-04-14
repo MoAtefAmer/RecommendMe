@@ -51,7 +51,7 @@ router.post("/uniSignup", async (req, res) => {
       rejectUnauthorized: false
     }
   });
-  const url = `http://localhost:3000/api/university/activateAccount/` + token;
+  const url = `https://recommendationsystematef.herokuapp.com/api/university/activateAccount/` + token;
 
   let mailOptions = {
     from: '"RecommendMe" <recommendationsystemmailer@gmail.com>',
@@ -140,7 +140,7 @@ router.get("/activateAccount/:activationToken", async (req, res) => {
       "activated": true,
       "activationToken": null
     });
-    res.status(200).redirect("https://google.com");
+    res.status(200).redirect("https://recommendationsystematef.herokuapp.com/");
   } else {
     res.status(400).send({ msg: "Link Expired" });
   }

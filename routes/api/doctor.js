@@ -66,7 +66,7 @@ router.post("/docSignup", async (req, res) => {
       rejectUnauthorized: false
     }
   });
-  const url = `http://localhost:3000/api/doctor/activateAccount/` + token;
+  const url = `https://recommendationsystematef.herokuapp.com/api/doctor/activateAccount/` + token;
 
   let mailOptions = {
     from: '"RecommendMe" <recommendationsystemmailer@gmail.com>',
@@ -204,9 +204,9 @@ router.get("/deleteAccount/:activationToken", async (req, res) => {
 
 
     
-    return res.status(200).redirect("http://localhost:3001/");
+    return res.status(200).redirect("https://recommendationsystematef.herokuapp.com");
   } else {
-    return res.status(400).redirect("http://localhost:3001/login");
+    return res.status(400).redirect("https://recommendationsystematef.herokuapp.com/login");
   }
 });
 
@@ -324,7 +324,7 @@ router.get("/activateAccount/:activationToken", async (req, res) => {
       activated: true,
       activationToken: null
     });
-    res.status(200).redirect("http://localhost:3001/");
+    res.status(200).redirect("https://recommendationsystematef.herokuapp.com");
   } else {
     res.status(400).send({ msg: "Link Expired" });
   }
@@ -609,7 +609,7 @@ router.post("/sendRecommendation", async (req, res) => {
           activationToken: token
         });
         const url =
-          `http://localhost:3000/api/student/activateAccount/` + token;
+          `https://recommendationsystematef.herokuapp.com/api/student/activateAccount/` + token;
           appendedMessageStudent =
           `There has been a new Recommendation posted on our website concerning this email. Since you do not have an account on our website, we made you one. Click <a href="${url}">Here</a> to activate your account then kindly use this temporary <b>password: </b>` +
           password +
@@ -647,7 +647,7 @@ router.post("/sendRecommendation", async (req, res) => {
           activationToken: token
         });
         const url =
-          `http://localhost:3000/api/university/activateAccount/` + token;
+          `https://recommendationsystematef.herokuapp.com/api/university/activateAccount/` + token;
           appendedMessageUniversity =
           `There has been a new Recommendation posted on our website concerning the owner(s) of this email. Since you do not have an account on our website, we made you one. Click <a href="${url}">Here</a> to activate your account then kindly use this temporary <b>password: </b>` +
           password +
@@ -693,25 +693,7 @@ router.post("/sendRecommendation", async (req, res) => {
           return res.status(401).send({ msg: "Error while sending email" });
         } else {
           console.log("Email sent: " + info.response);
-          // const uemail = req.body.receiver;
-          // let uni = await University.findOne({ uemail });
-
-          // if (uni != null) {
-          //   let uniID = await uni._id;
-
-          //   await University.findByIdAndUpdate(uniID, {
-          //     $addToSet: {
-          //       notificationList: {
-          //         info:
-          //           "Professor " +
-          //           doctor.firstName +
-          //           " " +
-          //           doctor.lastName +
-          //           " has sent you an email"
-          //       }
-          //     }
-          //   });
-          // }
+        
           return res
             .status(200)
             .send({ msg: "recommendation email sent successfully" });

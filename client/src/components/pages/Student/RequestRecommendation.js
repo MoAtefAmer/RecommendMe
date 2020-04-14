@@ -183,7 +183,7 @@ export default function RequestRecommendation() {
       if (!loading) {
         setLoading(true);
       }
-      fetch(`http://localhost:3000/api/student/requestRecommendation`, {
+      fetch(`https://recommendationsystematef.herokuapp.com/api/student/requestRecommendation`, {
         method: "POST",
         body: JSON.stringify({
           remail: professorEmail,
@@ -211,7 +211,7 @@ export default function RequestRecommendation() {
   };
 
   useEffect(() => {
-    fetch(`http://localhost:3000/api/doctor/getDocEmails`, {
+    fetch(`https://recommendationsystematef.herokuapp.com/api/doctor/getDocEmails`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json"
@@ -222,7 +222,7 @@ export default function RequestRecommendation() {
       });
     });
 
-    fetch(`http://localhost:3000/api/university/getUniEmails`, {
+    fetch(`https://recommendationsystematef.herokuapp.com/api/university/getUniEmails`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json"

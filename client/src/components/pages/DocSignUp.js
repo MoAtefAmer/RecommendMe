@@ -287,7 +287,7 @@ export default function DocSignUp() {
       if (!loading) {
         setLoading(true);
       }
-      fetch(`http://localhost:3000/api/doctor/docSignup`, {
+      fetch(`https://recommendationsystematef.herokuapp.com/api/doctor/docSignup`, {
         method: "POST",
         body: JSON.stringify({
           firstName: firstName,

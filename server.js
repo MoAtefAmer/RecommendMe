@@ -6,7 +6,7 @@ const admin = require('./routes/api/admin')
 const university=require('./routes/api/university')
 const doctor=require('./routes/api/doctor')
 const student=require('./routes/api/student')
-
+const path=require('path')
 
 
 // DB Config
@@ -48,6 +48,18 @@ app.use(express.urlencoded({ extended: false }))
   app.use('/api/doctor',doctor)
   app.use('/api/student',student)
 
+
+  //Serve static assets if in Production
+  if(process.env.NODE_ENV==='production'){
+    //set Static folder
+    app.use(express.static('client/build'));
+
+    app.get('*',(req,res)=>{
+
+      res.sendFile(path.resolve(__dirname,'client','build','index.html'))
+
+    })
+  }
 
   app.use((req, res) => {
     res.status(404).send({ err: 'We can not find what you are looking for' })
