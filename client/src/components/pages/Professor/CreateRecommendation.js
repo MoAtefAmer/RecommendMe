@@ -258,7 +258,10 @@ export default function CreateRecommendation() {
   ];
 
   useEffect(() => {
-    if (pdfLink !== "3eeb" && superImportantBoolean === true) {
+
+
+
+    if ( superImportantBoolean === true) {
       fetch(`https://recommendationsystematef.herokuapp.com/api/doctor/sendRecommendation`, {
         method: "POST",
         body: JSON.stringify({
@@ -272,7 +275,7 @@ export default function CreateRecommendation() {
             studentName +
             " to " +
             universityName +
-            "\n http://localhost:3001/login" +
+            "\n https://recommendationsystematef.herokuapp.com/" +
             "\n",
           studentName: studentName,
           studentEmail: studentEmail,
@@ -319,7 +322,7 @@ export default function CreateRecommendation() {
         }
       });
     }
-  }, [pdfLink]);
+  }, [superImportantBoolean]);
 
   useEffect(() => {
     if (studentName.length >= 1) {
@@ -540,6 +543,9 @@ export default function CreateRecommendation() {
         setChooseFileLoading(true);
         setSuperImportantBoolean(true);
       } else {
+        if(fileSelectedText==="No File Selected"){
+          setSuperImportantBoolean(true)
+        }
       }
     } else {
       if (err) setValue(0);

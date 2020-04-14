@@ -693,25 +693,7 @@ router.post("/sendRecommendation", async (req, res) => {
           return res.status(401).send({ msg: "Error while sending email" });
         } else {
           console.log("Email sent: " + info.response);
-          // const uemail = req.body.receiver;
-          // let uni = await University.findOne({ uemail });
-
-          // if (uni != null) {
-          //   let uniID = await uni._id;
-
-          //   await University.findByIdAndUpdate(uniID, {
-          //     $addToSet: {
-          //       notificationList: {
-          //         info:
-          //           "Professor " +
-          //           doctor.firstName +
-          //           " " +
-          //           doctor.lastName +
-          //           " has sent you an email"
-          //       }
-          //     }
-          //   });
-          // }
+        
           return res
             .status(200)
             .send({ msg: "recommendation email sent successfully" });
