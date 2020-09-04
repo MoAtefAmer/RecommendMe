@@ -543,21 +543,25 @@ export default function CreateRecommendation() {
       }
 
       if (file != null) {
+       
         setIsFileUploaded(false);
         handleUpload();
       }
-      if (isFileUploaded === true) {
+      if (file !== undefined) {
         setChooseFileLoading(true);
+        console.log(file)
      //   {pdfLink !=="3eeb" && setSuperImportantBoolean(true);}
         
       } else {
         if(fileSelectedText==="No File Selected"){
+          
           setSuperImportantBoolean(true)
         }
       }
     } else {
       if (err) setValue(0);
     }
+    
   };
   const handleUpload = () => {
     const uploadTask = storage.ref(`recommendationPdfs/${file.name}`).put(file);

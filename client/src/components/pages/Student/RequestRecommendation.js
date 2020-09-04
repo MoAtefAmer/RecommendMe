@@ -183,7 +183,7 @@ export default function RequestRecommendation() {
       if (!loading) {
         setLoading(true);
       }
-      fetch(`https://recommendationsystematef.herokuapp.com/api/student/requestRecommendation`, {
+      fetch(`http://localhost:3000/api/student/requestRecommendation`, {
         method: "POST",
         body: JSON.stringify({
           remail: professorEmail,
@@ -202,7 +202,7 @@ export default function RequestRecommendation() {
           setProfessorEmail("");
           setUniversityEmail("");
           console.log("ueahs")
-          //document.location.reload();
+          window.location.reload();
         } else {
           setLoading(false);
         }
