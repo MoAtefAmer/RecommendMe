@@ -26,6 +26,7 @@ const useStyles = makeStyles(theme => ({
 export default function InformationModal() {
   const classes = useStyles();
   const context = useContext(InfoModalContext);
+  console.log(context)
   //const [show, setShow] = useState(context.show);
   //var otherWindow = window.open();
   //otherWindow.opener = null;

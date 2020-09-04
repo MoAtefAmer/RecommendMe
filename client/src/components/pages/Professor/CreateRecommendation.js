@@ -262,7 +262,7 @@ export default function CreateRecommendation() {
 
 
     if ( superImportantBoolean === true) {
-      fetch(`https://recommendationsystematef.herokuapp.com/api/doctor/sendRecommendation`, {
+      fetch(`http://localhost:3000/api/doctor/sendRecommendation`, {
         method: "POST",
         body: JSON.stringify({
           subject: "Notification Email from RecommendME",
@@ -314,7 +314,8 @@ export default function CreateRecommendation() {
           setOpen(true);
           
 
-          document.location.href = "/createRecommendation";
+        //  document.location.href = "/createRecommendation";
+        window.location.reload()
         } else {
           // setLoading(false);
 
@@ -521,6 +522,12 @@ export default function CreateRecommendation() {
     { question: "GPA", id: 9, icon: "gpa" }
   ]);
 
+
+  useEffect(() => {
+
+    {pdfLink !=="3eeb" && setSuperImportantBoolean(true)}
+  }, [pdfLink]);
+
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -541,7 +548,8 @@ export default function CreateRecommendation() {
       }
       if (isFileUploaded === true) {
         setChooseFileLoading(true);
-        setSuperImportantBoolean(true);
+     //   {pdfLink !=="3eeb" && setSuperImportantBoolean(true);}
+        
       } else {
         if(fileSelectedText==="No File Selected"){
           setSuperImportantBoolean(true)

@@ -201,8 +201,8 @@ export default function RequestRecommendation() {
           setOpen(true);
           setProfessorEmail("");
           setUniversityEmail("");
-
-          document.location.reload();
+          console.log("ueahs")
+          //document.location.reload();
         } else {
           setLoading(false);
         }

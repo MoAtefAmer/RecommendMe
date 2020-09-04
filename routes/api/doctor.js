@@ -690,6 +690,7 @@ router.post("/sendRecommendation", async (req, res) => {
       transporter.sendMail(mailOptions, async function(error, info) {
         if (error) {
           console.log(error);
+          console.log("aysta");
           return res.status(401).send({ msg: "Error while sending email" });
         } else {
           console.log("Email sent: " + info.response);
@@ -705,12 +706,14 @@ router.post("/sendRecommendation", async (req, res) => {
       transporter.sendMail(studentMailOptions, async function(error, info) {
         if (error) {
           console.log(error);
+          console.log("aysta");
           return res.status(401).send({ msg: "Error while sending email" });
         } else {
           console.log("Email sent: " + info.response);
           transporter.sendMail(universityMailOptions, async function(error, info) {
             if (error) {
               console.log(error);
+              console.log("aysta");
               return res.status(401).send({ msg: "Error while sending email" });
             } else {
               console.log("Email2 sent: " + info.response);
@@ -769,6 +772,7 @@ router.post("/sendRecommendation", async (req, res) => {
       
       }, async function(error, info) {
         if (error) {
+          console.log(error);
           console.log(error);
           return res.status(401).send({ msg: "Error while sending email" });
         } else {
